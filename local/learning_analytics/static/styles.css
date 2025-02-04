@@ -1,0 +1,107 @@
+.learning_analytics-content .container-fluid {
+    padding: 0;
+}
+table.generaltable.latable {
+    overflow-x: auto;
+    display: table;
+}
+.latable .iconlarge {
+    vertical-align: bottom;
+}
+
+.bar {
+    width: 99%;
+    height: 4px;
+}
+
+.bar .segment {
+    background: #000;
+    height: 100%;
+    min-width: 1px;
+}
+.bar .segment.red {
+    background: #ea030e;
+}
+.bar .segment.green {
+    background: #a9cf54;
+}
+.bar .segment.orange {
+    background: #f26522;
+}
+.bar .segment.yellow {
+    background: #ffda6e;
+}
+.bar .segment.blue {
+    background: #66b5ab;
+}
+.bar .segment.gray {
+    background: #bbb;
+}
+.bar .segment.navy {
+    background: #000080;
+}
+.bar .segment.pdfred {
+    background: #d55351;
+}
+
+.showFullList {
+    text-align: center;
+}
+
+.la_params_form {
+    margin: 5px;
+}
+
+.la_params_form  input,
+select {
+    margin-left: 2px;
+    margin-right: 2px;
+}
+
+.la_nav li.active > a {
+    color: #000;
+}
+
+.courses-view-course {
+    font-size: 110%;
+    margin-left: 3px;
+}
+
+.coursedashboard-compare {
+    position: relative;
+    top: -10px;
+    text-align: right;
+    padding-right: 20px;
+}
+
+/* quiz report */
+table.generaltable.latable.quiztable th {
+    width: 18%;
+}
+table.generaltable.latable.quiztable th.c0 {
+    width: auto;
+}
+table.generaltable.latable.quiztable td.c0 {
+    white-space: nowrap;
+}
+
+/* loading animation */
+.plotly-wrapper {
+    background-image: url('./loading-indicator2.gif');
+    background-position: center center;
+    background-repeat: no-repeat;
+    overflow:hidden;
+}
+.plotly-wrapper .plot-container {
+    background: #fff;
+}
+.plotly-wrapper .plot-container .svg-container {
+    margin: 0 auto;
+}
+.headingfloater {
+    float: right;
+    margin-top: 3px;
+}
+.headingfloater .form-control {
+    margin-left: 10px;
+}

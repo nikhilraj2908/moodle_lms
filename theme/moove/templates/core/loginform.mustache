@@ -1,0 +1,73 @@
+<div style="" class="form-all">
+    <!-- Error Message Box -->
+    <div id="error-message" 
+         style="">
+        Please fill out all the fields.
+    </div>
+
+    <!-- Login Form -->
+    <form action="{{loginurl}}" method="post" id="login" style="">
+        <input type="hidden" name="logintoken" value="{{logintoken}}">
+        
+       
+            <input type="text" name="username" placeholder="Enter the email" id="input-email" required 
+                   style="">
+     
+        
+        <div style="">
+            <input type="password" name="password" placeholder="Password input" id="input-pwd" required 
+                   style="">
+        </div>
+        
+        <div>
+            <button type="button" id="loginbtn" 
+                    style="">
+                LOGIN
+            </button>   
+        </div>
+    </form>
+</div>
+
+<!-- Additional Links -->
+<div class="input-head" style="">
+    <a class="forg" href="{{forgotpasswordurl}}" target="_blank" style="">Forgot Password?</a>
+</div>
+<div class="donthaveandacc">
+    <a class="dont" style="">Don't have an account?</a>
+    <a class="dont3" href="{{signupurl}}" target="_blank" style="">Create new account</a>
+</div>
+
+
+<script>
+    document.getElementById('loginbtn').addEventListener('click', function () {
+        // Get the input values
+        const username = document.getElementById('input-email').value.trim();
+        const password = document.getElementById('input-pwd').value.trim();
+        
+        // Error message element
+        const errorMessage = document.getElementById('error-message');
+
+        // Check if both fields are empty
+        if (!username && !password) {
+            errorMessage.textContent = "Please fill out all the fields.";
+            errorMessage.style.display = "block";
+        } 
+        // Check if only the username is empty
+        else if (!username) {
+            errorMessage.textContent = "Username cannot be empty.";
+            errorMessage.style.display = "block";
+        } 
+        // Check if only the password is empty
+        else if (!password) {
+            errorMessage.textContent = "Password cannot be empty.";
+            errorMessage.style.display = "block";
+        } 
+        
+        // If all validations pass
+        else {
+            errorMessage.style.display = "none";
+            document.getElementById('login').submit();
+        }
+    });
+</script>
+

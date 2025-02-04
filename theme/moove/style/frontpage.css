@@ -1,0 +1,40 @@
+/* frontpage.css */
+.header-section {
+    background-color: #f8f9fa;
+    padding: 1rem 0;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+}
+
+.nav-links li {
+    margin: 0 1rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+}
+
+.cta-button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.hero-section {
+    text-align: center;
+    padding: 4rem 0;
+    background-color: #e9ecef;
+}
+
+.about-section {
+    padding: 2rem 0;
+    text-align: center;
+}

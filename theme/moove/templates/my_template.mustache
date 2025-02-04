@@ -1,0 +1,11 @@
+<!-- my_template.mustache -->
+<div class="my-template">
+    <h1>{{title}}</h1>
+    <p>{{description}}</p>
+    {{#items}}
+        <li>{{name}}</li>
+    {{/items}}
+    {{^items}}
+        <p>No items found.</p>
+    {{/items}}
+</div>

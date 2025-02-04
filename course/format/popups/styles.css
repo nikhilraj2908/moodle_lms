@@ -1,0 +1,10 @@
+#format_popups_activity_content iframe {
+    width: 100%;
+}
+#format_popups_activity_content .navbottom,
+#format_popups_activity_content .navtop {
+    text-align: right;
+}
+#format_popups_activity_content .activity-navigation .urlselect {
+    display: none;
+}

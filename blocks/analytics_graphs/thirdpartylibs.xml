@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>highslide</location>
+        <name>Highslide JS</name>
+        <version>5.0.0</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+        <library>
+        <location>externalref</location>
+        <name>Highcharts JS</name>
+        <version>5.0.2</version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+</libraries>
