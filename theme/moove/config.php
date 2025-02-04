@@ -34,6 +34,8 @@ $THEME->usefallback = false;
 $THEME->scss = function($theme) {
     return theme_moove_get_main_scss_content($theme);
 };
+$THEME->sheets = ['custom'];
+
 
 $THEME->layouts = [
     // Most backwards compatible layout without the blocks.

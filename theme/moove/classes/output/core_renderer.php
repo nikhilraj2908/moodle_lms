@@ -212,7 +212,6 @@ class core_renderer extends \theme_boost\output\core_renderer {
                 $context->identityproviders[$key]['isfacebook'] = $isfacebook;
             }
         }
-
         return $this->render_from_template('core/loginform', $context);
     }
 
