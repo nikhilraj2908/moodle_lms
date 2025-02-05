@@ -159,7 +159,6 @@ button:hover {
     <!-- Back Button -->
   <!-- Back Button -->
 <a href="<?php echo $CFG->wwwroot; ?>/login/index.php" class="back-btn">⬅ Back to Login Page</a>
-
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
