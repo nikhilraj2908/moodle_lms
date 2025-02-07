@@ -77,8 +77,7 @@ if (\core_auth\digital_consent::is_age_digital_consent_verification_enabled()) {
 // Can be used to force additional actions before sign up such as acceptance of policies, validations, etc.
 core_login_pre_signup_requests();
 
-// $mform_signup = $authplugin->signup_form();///// changed "nikhil"
-redirect(new moodle_url('/custom_signup.php'));/////// replace by that by nikhil
+$mform_signup = $authplugin->signup_form();
 
 if ($mform_signup->is_cancelled()) {
     redirect(get_login_url());

@@ -1,17 +1,28 @@
 <?php
-require_once('config.php'); // Moodle core config
-require_once($CFG->libdir.'/moodlelib.php');
+require_once('config.php'); // Load Moodle config
+require_once($CFG->libdir . '/moodlelib.php');
 require_once($CFG->dirroot . '/user/lib.php');
+require_once($CFG->dirroot . '/lib/moodlelib.php'); // For random_string()
 
-// Get form data
-$username = trim($_POST['username']);
-$password = $_POST['password'];
-$email = trim($_POST['email']);
-$email_confirm = trim($_POST['email_confirm']);
-$firstname = trim($_POST['firstname']);
-$lastname = trim($_POST['lastname']);
-$city = trim($_POST['city']);
-$country = $_POST['country'];
+global $DB, $CFG;
+
+// Suppress debugging messages to prevent JSON errors
+@ini_set('display_errors', 0);
+error_reporting(0);
+header('Content-Type: application/json');
+
+// Set Moodle page context
+$PAGE->set_context(context_system::instance());
+
+// Get form data safely
+$username = isset($_POST['username']) ? trim($_POST['username']) : '';
+$password = isset($_POST['password']) ? $_POST['password'] : '';
+$email = isset($_POST['email']) ? trim($_POST['email']) : '';
+$email_confirm = isset($_POST['email_confirm']) ? trim($_POST['email_confirm']) : '';
+$firstname = isset($_POST['firstname']) ? trim($_POST['firstname']) : '';
+$lastname = isset($_POST['lastname']) ? trim($_POST['lastname']) : '';
+$city = isset($_POST['city']) ? trim($_POST['city']) : '';
+$country = isset($_POST['country']) ? $_POST['country'] : '';
 
 // Validate inputs
 if (empty($username) || empty($password) || empty($email) || empty($email_confirm) || empty($firstname) || empty($lastname)) {
@@ -39,10 +50,10 @@ if ($DB->record_exists('user', ['email' => $email])) {
     die(json_encode(["status" => "error", "message" => "Email already exists."]));
 }
 
-// Create new Moodle user
+// Create new Moodle user object with all necessary fields
 $user = new stdClass();
 $user->auth = 'manual'; // Moodle's default authentication method
-$user->confirmed = 1;
+$user->confirmed = 0;  // Set to 0, so user needs to confirm email
 $user->mnethostid = $CFG->mnet_localhost_id;
 $user->username = $username;
 $user->password = hash_internal_user_password($password);
@@ -53,13 +64,30 @@ $user->city = $city;
 $user->country = $country;
 $user->timecreated = time();
 $user->timemodified = time();
+$user->secret = random_string(15); // Generate unique confirmation key
 
-// Insert the user into Moodle's database
+// Fix missing fields error
+$user->firstnamephonetic = '';
+$user->lastnamephonetic = '';
+$user->middlename = '';
+$user->alternatename = '';
+
+// Insert user into Moodle's database
 $user->id = $DB->insert_record('user', $user);
 
 if ($user->id) {
-    echo json_encode(["status" => "success", "message" => "Registration successful! You can now log in."]);
+    // Send confirmation email
+    if (!send_confirmation_email($user)) {
+        error_log("Moodle: Failed to send confirmation email to " . $user->email);
+        die(json_encode(["status" => "error", "message" => "Could not send confirmation email. Please contact support."]));
+    }
+
+    echo json_encode([
+        "status" => "success",
+        "message" => "Registration successful! Please check your email to confirm your account.",
+        "redirect" => $CFG->wwwroot . "/login/index.php"
+    ]);
 } else {
-    echo json_encode(["status" => "error", "message" => "Error registering user. Please try again."]);
+    die(json_encode(["status" => "error", "message" => "Error registering user. Please try again."]));
 }
 ?>

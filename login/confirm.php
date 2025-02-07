@@ -1,110 +1,79 @@
 <?php
 
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * Confirm self registered user.
- *
- * @package    core
- * @subpackage auth
- * @copyright  1999 Martin Dougiamas  http://dougiamas.com
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 require(__DIR__ . '/../config.php');
 require_once(__DIR__ . '/lib.php');
 require_once($CFG->libdir . '/authlib.php');
 
-$data = optional_param('data', '', PARAM_RAW);  // Formatted as:  secret/username
-
-$p = optional_param('p', '', PARAM_ALPHANUM);   // Old parameter:  secret
-$s = optional_param('s', '', PARAM_RAW);        // Old parameter:  username
-$redirect = optional_param('redirect', '', PARAM_LOCALURL);    // Where to redirect the browser once the user has been confirmed.
-
 $PAGE->set_url('/login/confirm.php');
 $PAGE->set_context(context_system::instance());
 
+error_log("------ CONFIRMATION PROCESS STARTED ------");
+
+// Retrieve URL parameters
+$data = optional_param('data', '', PARAM_RAW);
+$p = optional_param('p', '', PARAM_ALPHANUM);
+$s = optional_param('s', '', PARAM_RAW);
+$redirect = optional_param('redirect', '', PARAM_LOCALURL);
+
+error_log("Full Request URI: " . $_SERVER['REQUEST_URI']);
+error_log("Received data: " . $data);
+error_log("Received p: " . $p);
+error_log("Received s: " . $s);
+
 if (!$authplugin = signup_get_user_confirmation_authplugin()) {
+    error_log("Error: Confirmation plugin not enabled");
     throw new moodle_exception('confirmationnotenabled');
 }
 
-if (!empty($data) || (!empty($p) && !empty($s))) {
-
-    if (!empty($data)) {
-        $dataelements = explode('/', $data, 2); // Stop after 1st slash. Rest is username. MDL-7647
-        $usersecret = $dataelements[0];
-        $username   = $dataelements[1];
-    } else {
-        $usersecret = $p;
-        $username   = $s;
+// Extract user secret and username
+if (!empty($data)) {
+    $dataelements = explode('/', $data, 2);
+    if (count($dataelements) !== 2) {
+        error_log("Error: Invalid data format received: " . $data);
+        throw new moodle_exception('invalidconfirmdata');
     }
 
-    $confirmed = $authplugin->user_confirm($username, $usersecret);
+    $usersecret = trim($dataelements[0]);
+    $username = trim($dataelements[1]);
 
-    if ($confirmed == AUTH_CONFIRM_ALREADY) {
-        $user = get_complete_user_data('username', $username);
-        $PAGE->navbar->add(get_string("alreadyconfirmed"));
-        $PAGE->set_title(get_string("alreadyconfirmed"));
-        $PAGE->set_heading($COURSE->fullname);
-        echo $OUTPUT->header();
-        echo $OUTPUT->box_start('generalbox centerpara boxwidthnormal boxaligncenter');
-        echo "<p>".get_string("alreadyconfirmed")."</p>\n";
-        echo $OUTPUT->single_button(core_login_get_return_url(), get_string('courses'));
-        echo $OUTPUT->box_end();
-        echo $OUTPUT->footer();
-        exit;
-
-    } else if ($confirmed == AUTH_CONFIRM_OK) {
-
-        // The user has confirmed successfully, let's log them in
-
-        if (!$user = get_complete_user_data('username', $username)) {
-            throw new \moodle_exception('cannotfinduser', '', '', s($username));
-        }
-
-        if (!$user->suspended) {
-            complete_user_login($user);
-
-            \core\session\manager::apply_concurrent_login_limit($user->id, session_id());
-
-            // Check where to go, $redirect has a higher preference.
-            if (!empty($redirect)) {
-                if (!empty($SESSION->wantsurl)) {
-                    unset($SESSION->wantsurl);
-                }
-                redirect($redirect);
-            }
-        }
-
-        $PAGE->navbar->add(get_string("confirmed"));
-        $PAGE->set_title(get_string("confirmed"));
-        $PAGE->set_heading($COURSE->fullname);
-        echo $OUTPUT->header();
-        echo $OUTPUT->box_start('generalbox centerpara boxwidthnormal boxaligncenter');
-        echo "<h3>".get_string("thanks").", ". fullname($USER) . "</h3>\n";
-        echo "<p>".get_string("confirmed")."</p>\n";
-        echo $OUTPUT->single_button(core_login_get_return_url(), get_string('continue'));
-        echo $OUTPUT->box_end();
-        echo $OUTPUT->footer();
-        exit;
-    } else {
-        throw new \moodle_exception('invalidconfirmdata');
-    }
+    error_log("Extracted secret: " . $usersecret);
+    error_log("Extracted username: " . $username);
 } else {
-    throw new \moodle_exception("errorwhenconfirming");
+    $usersecret = trim($p);
+    $username = trim($s);
 }
 
-redirect("$CFG->wwwroot/");
+// Check if user exists
+$user = $DB->get_record('user', ['username' => $username], '*');
+if (!$user) {
+    error_log("Error: User not found in database: " . $username);
+    throw new moodle_exception('cannotfinduser', '', '', s($username));
+}
+
+// Ensure secret matches database
+if ($user->secret !== $usersecret) {
+    error_log("Error: Secret key does not match for user: " . $username);
+    throw new moodle_exception('invalidconfirmdata');
+}
+
+// If user is already confirmed
+if ($user->confirmed == 1) {
+    error_log("User already confirmed: " . $username);
+    throw new moodle_exception('alreadyconfirmed');
+}
+
+// 🔥 **Manually Update the User's Confirmation Status**
+$user->confirmed = 1;
+$DB->update_record('user', $user);
+error_log("User successfully confirmed: " . $username);
+
+// 🔥 **Automatically log in the user**
+complete_user_login($user);
+error_log("User auto-login successful: " . fullname($user));
+
+// ✅ **Redirect User to Dashboard Instead of Login Page**
+redirect($CFG->wwwroot . '/my/'); // Redirect to user dashboard instead of login page
+
+error_log("------ CONFIRMATION PROCESS COMPLETED ------");
+
+?>

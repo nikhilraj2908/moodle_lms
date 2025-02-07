@@ -113,49 +113,101 @@ class auth_plugin_email extends auth_plugin_base {
      * @since Moodle 3.2
      */
     
-    public function user_signup_with_confirmation($user, $notify=true, $confirmationurl = null) {
-        global $CFG, $DB, $SESSION;
+    // public function user_signup_with_confirmation($user, $notify=true, $confirmationurl = null) {
+    //     global $CFG, $DB, $SESSION;
+    //     require_once($CFG->dirroot.'/user/profile/lib.php');
+    //     require_once($CFG->dirroot.'/user/lib.php');
+
+    //     $plainpassword = $user->password;
+    //     $user->password = hash_internal_user_password($user->password);
+    //     if (empty($user->calendartype)) {
+    //         $user->calendartype = $CFG->calendartype;
+    //     }
+
+    //     $user->id = user_create_user($user, false, false);
+
+    //     user_add_password_history($user->id, $plainpassword);
+
+    //     // Save any custom profile field information.
+    //     profile_save_data($user);
+
+    //     // Save wantsurl against user's profile, so we can return them there upon confirmation.
+    //     if (!empty($SESSION->wantsurl)) {
+    //         set_user_preference('auth_email_wantsurl', $SESSION->wantsurl, $user);
+    //     }
+
+    //     // Trigger event.
+    //     \core\event\user_created::create_from_userid($user->id)->trigger();
+
+    //     if (! send_confirmation_email($user, $confirmationurl)) {
+    //         throw new \moodle_exception('auth_emailnoemail', 'auth_email');
+    //     }
+
+    //     if ($notify) {
+    //         global $CFG, $PAGE, $OUTPUT;
+    //         $emailconfirm = get_string('emailconfirm');
+    //         $PAGE->navbar->add($emailconfirm);
+    //         $PAGE->set_title($emailconfirm);
+    //         $PAGE->set_heading($PAGE->course->fullname);
+    //         echo $OUTPUT->header();
+    //         notice(get_string('emailconfirmsent', '', $user->email), "$CFG->wwwroot/index.php");
+    //     } else {
+    //         return true;
+    //     }
+    // }
+
+
+    ///////////////////////////new added nikhil
+    public function user_signup_with_confirmation($user, $notify = true, $confirmationurl = null) {
+        global $CFG, $DB, $SESSION, $PAGE, $OUTPUT;
         require_once($CFG->dirroot.'/user/profile/lib.php');
         require_once($CFG->dirroot.'/user/lib.php');
-
+    
         $plainpassword = $user->password;
         $user->password = hash_internal_user_password($user->password);
+        
         if (empty($user->calendartype)) {
             $user->calendartype = $CFG->calendartype;
         }
-
+    
+        // Ensure user remains unconfirmed
+        $user->confirmed = 0;
+        $user->secret = random_string(15);
+    
         $user->id = user_create_user($user, false, false);
-
         user_add_password_history($user->id, $plainpassword);
-
-        // Save any custom profile field information.
+    
+        // Save any custom profile field information
         profile_save_data($user);
-
+    
         // Save wantsurl against user's profile, so we can return them there upon confirmation.
         if (!empty($SESSION->wantsurl)) {
             set_user_preference('auth_email_wantsurl', $SESSION->wantsurl, $user);
         }
-
-        // Trigger event.
+    
+        // Trigger user creation event
         \core\event\user_created::create_from_userid($user->id)->trigger();
-
-        if (! send_confirmation_email($user, $confirmationurl)) {
+    
+        // Send confirmation email
+        if (!send_confirmation_email($user, $confirmationurl)) {
             throw new \moodle_exception('auth_emailnoemail', 'auth_email');
         }
-
+    
         if ($notify) {
-            global $CFG, $PAGE, $OUTPUT;
+            // Redirect user to a page informing them to check their email
             $emailconfirm = get_string('emailconfirm');
             $PAGE->navbar->add($emailconfirm);
             $PAGE->set_title($emailconfirm);
             $PAGE->set_heading($PAGE->course->fullname);
             echo $OUTPUT->header();
-            notice(get_string('emailconfirmsent', '', $user->email), "$CFG->wwwroot/index.php");
+            notice(get_string('emailconfirmsent', '', $user->email), "$CFG->wwwroot/login/confirm.php");
+            echo $OUTPUT->footer();
+            exit;
         } else {
             return true;
         }
     }
-
+    
     /**
      * Returns true if plugin allows confirming of new users.
      *

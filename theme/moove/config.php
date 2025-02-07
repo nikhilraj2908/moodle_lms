@@ -169,6 +169,9 @@ $THEME->layouts = [
         'defaultregion' => 'side-pre',
     ],
 ];
+$CFG->debug = 32767;
+$CFG->debugdisplay = 1;
+$CFG->noemailever = false; // Ensure email is actually being sent
 
 $THEME->parents = ['boost'];
 $THEME->enable_dock = false;
@@ -189,3 +192,4 @@ $THEME->activityheaderconfig = [
     'notitle' => true,
 ];
 $CFG->mailnewline = "\r\n";
+

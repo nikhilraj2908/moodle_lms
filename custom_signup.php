@@ -29,10 +29,11 @@ $countries = get_string_manager()->get_list_of_countries(); // Get country list 
 }
 .main-inner {
     background: rgba(255, 255, 255, 0) !important; /* Light transparency */
+    
 }
 
 #region-main {
-    background: rgba(255, 255, 255, 0.1) !important; /* Same transparency */
+    background: rgba(255, 255, 255, 0) !important; /* Same transparency */
 }
 /* Dark overlay to improve readability */
 .overlay {
@@ -48,24 +49,25 @@ $countries = get_string_manager()->get_list_of_countries(); // Get country list 
 /* Centering the form properly */
 .form-container {
     position: relative; /* Changed from absolute to prevent overlap issues */
-    width: 35%;
-    margin: 50px auto; /* Adds space and prevents overlap */
+    width: 45%;
+    margin: 0px  auto; /* Adds space and prevents overlap */
     background: rgba(255, 255, 255, 0.95); /* Slight transparency */
     padding: 30px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
     border-radius: 10px;
     text-align: center;
     z-index: 2;
+    
 }
 
 /* Ensure inputs are well spaced and visible */
 input, select {
     width: 100%;
-    padding: 12px;
+    padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 15px;
     transition: 0.3s;
 }
 
@@ -158,30 +160,39 @@ button:hover {
 
     <!-- Back Button -->
   <!-- Back Button -->
-<a href="<?php echo $CFG->wwwroot; ?>/login/index.php" class="back-btn">⬅ Back to Login Page</a>
+    <a href="<?php echo $CFG->wwwroot; ?>/login/index.php" class="back-btn">⬅ Back to Login Page</a>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     function submitSignup(event) {
-        event.preventDefault();
-        $.ajax({
-            url: "custom_signup_process.php",
-            type: "POST",
-            data: $("#registerForm").serialize(),
-            dataType: "json",
-            success: function(response) {
-                if (response.status === "success") {
-                    alert(response.message);
-                    window.location.href = response.redirect;
-                } else {
-                    $("#error-msg").text(response.message);
-                }
-            },
-            error: function() {
-                $("#error-msg").text("An error occurred. Please try again.");
+    event.preventDefault();
+    $.ajax({
+        url: "custom_signup_process.php",
+        type: "POST",
+        data: $("#registerForm").serialize(),
+        dataType: "json",
+        success: function(response) {
+            console.log(response); // Debugging: Check response in browser console
+
+            if (response.status === "success") {
+                $(".form-container").html(`
+    <div class="confirmation-box">
+        <h2>Registration Successful</h2>
+        <p>An email has been sent to your address. Please check your inbox to confirm your registration.</p>
+        <a href="<?php echo $CFG->wwwroot; ?>/login/index.php" class="btn">Go to Login</a>
+    </div>
+`);
+            } else {
+                $("#error-msg").text(response.message).show();
             }
-        });
-    }
+        },
+        error: function(xhr, status, error) {
+            console.log(xhr.responseText); // Debugging: Show error response in console
+            $("#error-msg").text("An error occurred. Please try again.").show();
+        }
+    });
+}
+
     function goBack() {
         // If user came from another page, go back
         if (document.referrer) {
