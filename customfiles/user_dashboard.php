@@ -35,6 +35,14 @@ $completedCourses = $DB->count_records_sql("
     SELECT COUNT(id) FROM {course_completions} 
     WHERE userid = ? AND timecompleted IS NOT NULL", [$userid]);
 
+// Fetch total earned points
+$totalPoints = $DB->get_field_sql("
+    SELECT SUM(finalgrade) FROM {grade_grades} 
+    WHERE userid = ?", [$userid]);
+
+// Ensure points are not NULL
+$totalPoints = $totalPoints ? round($totalPoints, 2) : 0;
+
 // Convert data for Chart.js
 $courseCompletionJson = json_encode(array_values($courseCompletionData));
 ?>
@@ -87,6 +95,13 @@ $courseCompletionJson = json_encode(array_values($courseCompletionData));
             font-size: 18px;
             font-weight: bold;
         }
+        .points-display {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffcc00;
+            text-align: center;
+            margin-top: 20px;
+        }
         .user-info {
             display: flex;
             align-items: center;
@@ -98,27 +113,6 @@ $courseCompletionJson = json_encode(array_values($courseCompletionData));
             border-radius: 50%;
             width: 60px;
         }
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            font-size: 12px;
-            margin-top: 10px;
-        }
-        .legend span {
-            display: flex;
-            align-items: center;
-        }
-        .legend span i {
-            width: 10px;
-            height: 10px;
-            display: inline-block;
-            margin-right: 5px;
-            border-radius: 50%;
-        }
-        .green { background: green; }
-        .blue { background: blue; }
-        .red { background: red; }
     </style>
 </head>
 <body>
@@ -151,13 +145,25 @@ $courseCompletionJson = json_encode(array_values($courseCompletionData));
                 <div class="progress-text" id="curriculumText">0%</div>
             </div>
         </div>
+
+        <!-- Points Earned Card -->
+        <div class="card">
+            <h3>Total Points Earned</h3>
+            <p>Accumulated points from all completed courses</p>
+            <div class="progress-container">
+                <canvas id="pointsChart"></canvas>
+                <div class="progress-text" id="pointsText"><?php echo $totalPoints; ?></div>
+            </div>
+            <p class="points-display"><i class="fas fa-star"></i> <b><?php echo $totalPoints; ?></b> Points</p>
+        </div>
     </div>
 
     <script>
         // Dynamic Completion Data
         const courseCompletionData = <?php echo $courseCompletionJson; ?>;
         const learningPathPercentage = courseCompletionData.length > 0 ? courseCompletionData[0].completion_percentage : 0;
-        const curriculumPercentage = <?php echo $completedCourses > 0 ? round(($completedCourses / $totalCourses) * 100, 2) : 0; ?>;
+        const curriculumPercentage = <?php echo ($totalCourses > 0) ? round(($completedCourses / $totalCourses) * 100, 2) : 0; ?>;
+        const pointsValue = <?php echo $totalPoints; ?>;
 
         // Function to create gauge charts and display percentage in center
         function createGaugeChart(canvasId, textId, value) {
@@ -165,7 +171,7 @@ $courseCompletionJson = json_encode(array_values($courseCompletionData));
             new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Completed', 'Assigned'],
+                    labels: ['Completed', 'Remaining'],
                     datasets: [{
                         data: [value, 100 - value],
                         backgroundColor: ['green', 'blue']
@@ -176,21 +182,7 @@ $courseCompletionJson = json_encode(array_values($courseCompletionData));
                     maintainAspectRatio: false,
                     cutout: '70%',
                     plugins: {
-                        legend: { display: false },
-                        beforeDraw: function(chart) {
-                            let width = chart.width,
-                                height = chart.height,
-                                ctx = chart.ctx;
-                            ctx.restore();
-                            let fontSize = (height / 100).toFixed(2);
-                            ctx.font = fontSize + "em sans-serif";
-                            ctx.textBaseline = "middle";
-                            let text = value + "%",
-                                textX = Math.round((width - ctx.measureText(text).width) / 2),
-                                textY = height / 2;
-                            ctx.fillText(text, textX, textY);
-                            ctx.save();
-                        }
+                        legend: { display: false }
                     }
                 }
             });
@@ -199,9 +191,30 @@ $courseCompletionJson = json_encode(array_values($courseCompletionData));
             document.getElementById(textId).innerText = value + "%";
         }
 
-        // Initialize Charts
+        // Create Charts
         createGaugeChart('learningPathChart', 'learningPathText', learningPathPercentage);
         createGaugeChart('curriculumChart', 'curriculumText', curriculumPercentage);
+
+        // Points Chart
+        let ctxPoints = document.getElementById('pointsChart').getContext('2d');
+        new Chart(ctxPoints, {
+            type: 'doughnut',
+            data: {
+                labels: ['Points Earned'],
+                datasets: [{
+                    data: [pointsValue, 100 - pointsValue],
+                    backgroundColor: ['gold', 'gray']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
     </script>
 
 </body>

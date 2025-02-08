@@ -1,3 +1,24 @@
+<style>
+.dashboard-card {
+    
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+/* Hover Effect */
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(255, 255, 255, 0.1);
+}
+
+
+
+</style>
 <div class="card dashboard-card {{^visible}}dimmed{{/visible}}" role="listitem" data-region="course-content" data-course-id="{{{id}}}">
     <a href="{{courseurl}}" tabindex="-1">
         <div class="card-img dashboard-card-img" style="background-image: url({{{image}}});">
@@ -16,6 +37,7 @@
             {{/hasenrolmenticons}}
         </div>
     </a>
+
     <div class="card-body course-info-container">
         <div class="d-flex align-items-start">
             <div class="w-100">
@@ -33,28 +55,17 @@
             {{{summary}}}
         </div>
     </div>
+
     {{#hasprogress}}
-        <div class="d-flex align-items-start">
-            <div class="card-footer dashboard-card-footer border-0 bg-white w-100">
-                <div class="progress">
-                    <div class="progress-bar" role="progressbar" aria-valuenow="{{{progress}}}" style="width: {{{progress}}}%" aria-valuemin="0" aria-valuemax="{{{progress}}}"></div>
-                </div>
-                <p class="mb-0">{{#str}}completepercent, block_myoverview, {{progress}}{{/str}}</p>
-            </div>
+    <div class="card-footer dashboard-card-footer border-0 progress-container">
+        <div class="progress">
+            <div class="progress-bar progress-bar-animated" role="progressbar" aria-valuenow="{{{progress}}}" style="width: {{{progress}}}%" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
+        <p class="progress-text">{{progress}}% Complete</p>
+    </div>
     {{/hasprogress}}
 
-    {{#hascontacts}}
-        <div class="course-contacts">
-            {{#contacts}}
-                <a href="{{config.wwwroot}}/user/profile.php?id={{{id}}}" class="contact" data-toggle="tooltip" title="{{{fullname}}}">
-                    <img src="{{{userpicture}}}" class="rounded-circle" alt="{{{fullname}}}">
-                    <div class="info">
-                        <p class="name">{{{fullname}}}</p>
-                        <p class="role">{{{role}}}</p>
-                    </div>
-                </a>
-            {{/contacts}}
-        </div>
-    {{/hascontacts}}
+    <div class="card-footer course-actions">
+        <a href="{{courseurl}}" class="btn-view-course">View Course</a>
+    </div>
 </div>
