@@ -91,11 +91,13 @@
         .course_category_tree,
         .frontpage-course-list-enrolled,
         div[data-name="Site announcements"],
-        .subscribelink,
-        .frontpage-course-list-all {
+        .subscribelink {
             max-width: $modal-xl;
             margin: 0 auto;
         }
+    }
+    .frontpage-course-list-all{
+        max-width: 100% !important;
     }
     #frontpage-available-course-list,
     #site-news-forum {

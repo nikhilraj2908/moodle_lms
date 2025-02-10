@@ -1,3 +1,5 @@
+
+
 {{!
     This file is part of Moodle - http://moodle.org/
 
@@ -57,6 +59,7 @@
         {{{ output.standard_top_of_body_html }}}
         {{> theme_academi/header }}
         {{> theme_academi/slideshow }}
+
         {{#courseindex}}
             {{< theme_boost/drawer }}
                 {{$id}}theme_boost-drawers-courseindex{{/id}}
@@ -131,6 +134,49 @@
                         {{> core/moremenu}}
                     </div>
                 {{/secondarymoremenu}}
+           {{#isloggedin}}
+<div class="user-info">
+    {{{userpicture}}}
+    <div>
+        <h2>Welcome {{username}}</h2>
+        <p>A learning curve is essential to growth!</p>
+    </div>
+</div>
+
+<div class="dashboard-container">
+    <!-- Learning Path -->
+    <div class="card-progress">
+        <h3>Learning Path</h3>
+        <p><b>{{completedCourses}}</b> Completed / <b>{{totalCourses}}</b> Assigned</p>
+        <div class="progress-container">
+            <canvas id="learningPathChart"></canvas>
+            <div class="progress-text-new" id="learningPathText">{{completionPercentage}}%</div>  <!-- ✅ FIXED -->
+        </div>
+    </div>
+
+    <!-- Curriculum -->
+    <div class="card-progress">
+        <h3>Curriculum</h3>
+        <p><b>0</b> Overdue / <b>{{completedCourses}}</b> Completed / <b>{{totalCourses}}</b> Assigned</p>
+        <div class="progress-container">
+            <canvas id="curriculumChart"></canvas>
+            <div class="progress-text-new" id="curriculumText">{{completionPercentage}}%</div>  <!-- ✅ FIXED -->
+        </div>
+    </div>
+
+    <!-- Points Earned -->
+    <div class="card-progress">
+        <h3>Total Points Earned</h3>
+        <p>Accumulated points from all completed courses</p>
+        <div class="progress-container">
+            <canvas id="pointsChart"></canvas>
+            <div class="progress-text-new" id="pointsText">{{totalPoints}}</div>
+        </div>
+        <p class="points-display"><i class="fas fa-star"></i> <b>{{totalPoints}}</b> Points</p>
+    </div>
+</div>
+{{/isloggedin}}
+
                 <div id="page-content" class="pb-3 d-print-block">
                     <div id="region-main-box">
                         {{#hasregionmainsettingsmenu}}
@@ -167,4 +213,6 @@
         {{{ output.standard_after_main_region_html }}}
     </div>
 </body>
+
+
 </html>
