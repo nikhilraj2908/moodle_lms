@@ -1,0 +1,18 @@
+<div class="container">
+    <div class="row">
+        {{#progress_data}}
+        <div class="col-md-3 col-sm-6">
+            <div class="progress {{color}}">
+                <span class="progress-left">
+                    <span class="progress-bar"></span>
+                </span>
+                <span class="progress-right">
+                    <span class="progress-bar"></span>
+                </span>
+                <div class="inner-circle"></div>
+                <div class="progress-value"><span>{{value}}</span>%</div>
+            </div>
+        </div>
+        {{/progress_data}}
+    </div>
+</div>

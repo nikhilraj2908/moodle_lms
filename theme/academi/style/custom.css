@@ -1,55 +1,86 @@
-/* Dashboard Cards */
-.dashboard-container {
+/* .dashboard-container {
     display: flex;
-    justify-content: center;
-    gap: 20px;
+    justify-content: space-around;
     flex-wrap: wrap;
-    margin-top: 20px;
+    margin: 40px 0;
 }
-.card-progress {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    text-align: center;
+
+.circular-progress {
     position: relative;
-    margin: 10px;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
-.progress-container {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    margin: auto;
-}
-canvas {
-    width: 100px;
-    height: 100px;
-}
-.progress-text-new {
+
+.outer {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.1);
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 18px;
-    font-weight: bold;
-}
-.points-display {
-    font-size: 20px;
-    font-weight: bold;
-    color: #ffcc00;
-    text-align: center;
-    margin-top: 20px;
-}
-.user-info {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 15px;
-    margin-bottom: 20px;
-    margin-top: 20px;
 }
-.user-info img {
+
+.inner {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
-    width: 60px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
 }
+
+.percentage {
+    font-size: 20px;
+    font-weight: bold;
+    color: #666;
+}
+
+svg {
+    position: absolute;
+    transform: rotate(-90deg);
+}
+
+circle {
+    fill: none;
+    stroke-width: 8;
+}
+
+.background {
+    stroke: #ddd;
+}
+
+.progress-circle {
+    stroke-dasharray: 440;
+    stroke-dashoffset: 440;
+    transition: stroke-dashoffset 1.5s ease-out;
+}
+
+.learning-path {
+    stroke: #049dff;
+}
+
+.curriculum {
+    stroke: #fdba04;
+}
+
+.points {
+    stroke: #1abc9c;
+}
+
+.progress-label {
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    color: #333;
+} */
