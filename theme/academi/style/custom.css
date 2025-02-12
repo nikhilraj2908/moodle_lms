@@ -1,86 +1,240 @@
-/* .dashboard-container {
-    display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    margin: 40px 0;
+/* Container for all progress cards */
+.progress-dashboard-container {
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.1) 0%, rgba(34, 193, 195, 0.1) 50%, rgba(253, 187, 45, 0.1) 100%), 
+    url('../../theme/acadimi/pix/bg1.svg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin-top: -35px;
+    padding-top: 15px;
 }
 
-.circular-progress {
-    position: relative;
-    width: 160px;
-    height: 160px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.outer {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    background: #fff;
-    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.inner {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.percentage {
-    font-size: 20px;
+.welcome-text {
+    font-size: 26px;
     font-weight: bold;
-    color: #666;
+    color: #ff6600; /* Soft Orange */
+    text-transform: capitalize;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+.user-name p{
+    color:darkblue ;
 }
 
-svg {
-    position: absolute;
-    transform: rotate(-90deg);
+.card-progress {
+height: 19rem;
+/* background: white; */
+padding: 20px;
+/* border-radius: 12px; */
+box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+width: 280px;
+text-align: center;
+position: relative;
+border: 1px solid #ddd;
+/* transition: all 0.3s ease-in-out; */
+border-radius: 50px;
+background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+/* background: linear-gradient(135deg, rgb(0, 255, 214) 0%, rgb(8, 226, 96) 100%); */
+transition: all 0.3s ease-in-out;
+transform-style: preserve-3d;
 }
 
-circle {
-    fill: none;
-    stroke-width: 8;
+.card-progress:hover {
+transform: translateY(-5px);
+box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
 }
 
-.background {
-    stroke: #ddd;
+
+.dashboard-container {
+display: flex;
+justify-content: center;
+align-items: flex-start;
+gap: 30px;
+flex-wrap: wrap;
+margin-top: 30px;
+padding: 20px;
 }
 
-.progress-circle {
-    stroke-dasharray: 440;
-    stroke-dashoffset: 440;
-    transition: stroke-dashoffset 1.5s ease-out;
+.user-info{
+margin-top: 35px;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+.user-name{
+padding: 15px;
+}
+/* Individual Card Styling */
+.card-progress {
+height: 19rem;
+/* background: white; */
+padding: 20px;
+/* border-radius: 12px; */
+box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+width: 280px;
+text-align: center;
+position: relative;
+border: 1px solid #ddd;
+/* transition: all 0.3s ease-in-out; */
+border-radius: 50px;
+background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+/* background: linear-gradient(135deg, rgb(0, 255, 214) 0%, rgb(8, 226, 96) 100%); */
+transition: all 0.3s ease-in-out;
+transform-style: preserve-3d;
+}
+.card-progress:hover  {
+transform: rotate3d(1, 1, 0, 30deg);
+box-shadow: rgba(4, 23, 63, 0.3) 30px 50px 25px -40px, rgba(5, 19, 66, 0.1) 0px 25px 30px 0px;
 }
 
-.learning-path {
-    stroke: #049dff;
-}
-
-.curriculum {
-    stroke: #fdba04;
-}
-
-.points {
-    stroke: #1abc9c;
-}
-
-.progress-label {
-    text-align: center;
-    margin-top: 10px;
-    font-weight: bold;
-    color: #333;
+/* Card Hover Effect */
+/* .card-progress:hover {
+transform: translateY(-5px);
+box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
 } */
+
+/* Headings in Cards */
+.card-progress h3 {
+font-size: 18px;
+color: #ff6600;
+margin-bottom: 10px;
+font-weight: bold;
+}
+
+/* Subtext Below Headings */
+.card-progress p {
+font-size: 14px;
+color: #666;
+margin-bottom: 15px;
+}
+
+/* Circular Progress Bar Container */
+.progress-container {
+position: relative;
+width: 120px;
+height: 120px;
+margin: auto;
+}
+
+/* Canvas Size for Progress Bar */
+canvas {
+width: 120px;
+height: 120px;
+}
+
+/* Text Inside Progress Bar */
+.progress-text-new {
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 16px;
+font-weight: bold;
+color: #333;
+}
+
+/* Points Display */
+.points-display {
+font-size: 18px;
+font-weight: bold;
+color: #ffcc00;
+text-align: center;
+margin-top: 15px;
+z-index: 1;
+}
+
+
+.container-svg {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+font-size: 5em;
+font-weight: 900;
+color: #e10600;
+position: relative;
+transition: all 1s ease;
+text-align: center;
+margin-top: 20px;
+}
+.container__star {
+transition: all 0.7s ease-in-out;
+}
+
+.first {
+position: absolute;
+top: 20px;
+left: 50px;
+transition: all 0.7s ease-in-out;
+}
+
+/* Star Shape */
+.svg-icon {
+position: absolute;
+fill: #e94822;
+z-index: 1;
+}
+
+/* Rotating Star */
+.star-eight {
+background: #efd510;
+width: 120px;
+height: 120px;
+position: relative;
+text-align: center;
+animation: rot 3s infinite;
+border-radius: 50%;
+}
+
+/* Star Before Rotation */
+.star-eight::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+height: 120px;
+width: 120px;
+background: #efd510;
+transform: rotate(135deg);
+border-radius: 50%;
+}
+
+/* Hover Effect */
+.container-svg:hover .container__star {
+transform: rotateX(70deg) translateY(250px);
+box-shadow: 0px 0px 120px -100px #e4e727;
+}
+
+/* Star Growth Animation */
+.container-svg:hover .svg-icon {
+animation: grow 1s linear infinite;
+}
+
+/* Rotating Effect */
+@keyframes rot {
+0% {
+    transform: rotate(0deg);
+}
+50% {
+    transform: rotate(340deg);
+}
+100% {
+    transform: rotate(0deg);
+}
+}
+
+/* Wobble Effect */
+@keyframes grow {
+0% {
+    transform: rotate(0deg);
+}
+25% {
+    transform: rotate(-5deg);
+}
+75% {
+    transform: rotate(5deg);
+}
+100% {
+    transform: scale(1) rotate(0deg);
+}
+}

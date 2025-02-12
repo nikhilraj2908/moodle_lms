@@ -21,42 +21,40 @@ if (isloggedin() && !isguestuser()) {
     $username = fullname($USER);
     $userpicture = $OUTPUT->user_picture($USER, ['size' => 100]);
 
-    // Fetch course progress
-    $courseCompletionData = $DB->get_records_sql("
-        SELECT c.id AS course_id, 
-               c.fullname AS course_name, 
-               ROUND((COUNT(cmc.id) / COUNT(cm.id)) * 100, 2) AS completion_percentage
-        FROM {course_modules} cm
-        LEFT JOIN {course_modules_completion} cmc 
-            ON cm.id = cmc.coursemoduleid AND cmc.userid = ?
-        JOIN {course} c ON cm.course = c.id
-        WHERE c.id IN (SELECT course FROM {course_completions} WHERE userid = ?)
-        GROUP BY c.id
-    ", [$userid, $userid]);
+    // Fetch user progress, assigned courses, completed courses, and points
+    $userData = $DB->get_record_sql("
+        SELECT 
+            COUNT(DISTINCT ue.id) AS total_assigned_courses,
+            COUNT(DISTINCT cc.id) AS completed_courses,
+            (COUNT(DISTINCT cc.id) / COUNT(DISTINCT ue.id)) * 100 AS progress_percentage,
+            SUM(g.finalgrade) AS total_points
+        FROM mdl_user u
+        LEFT JOIN mdl_user_enrolments ue ON u.id = ue.userid
+        LEFT JOIN mdl_enrol e ON ue.enrolid = e.id
+        LEFT JOIN mdl_course c ON e.courseid = c.id
+        LEFT JOIN mdl_course_completions cc ON u.id = cc.userid AND cc.timecompleted IS NOT NULL
+        LEFT JOIN mdl_grade_grades g ON u.id = g.userid
+        WHERE u.id = ?
+    ", [$userid]);
 
-    // Fetch total assigned courses
-    $totalCourses = $DB->count_records('course_completions', ['userid' => $userid]);
-
-    // Fetch completed courses
-    $completedCourses = $DB->count_records_sql("
-        SELECT COUNT(id) FROM {course_completions} 
-        WHERE userid = ? AND timecompleted IS NOT NULL", [$userid]);
-
-    // Fetch total earned points
-    $totalPoints = $DB->get_field_sql("
-        SELECT SUM(finalgrade) FROM {grade_grades} 
-        WHERE userid = ?", [$userid]);
-
-    $totalPoints = $totalPoints ? round($totalPoints, 2) : 0;
-
+    // Assign fetched data to variables
+    $totalCourses = $userData->total_assigned_courses ?? 0;
+    $completedCourses = $userData->completed_courses ?? 0;
+    $progressPercentage = round($userData->progress_percentage ?? 0, 2);
+    $totalPoints = round($userData->total_points ?? 0, 2);
+    $formattedUsername = ucfirst(strtolower($username)); 
     $templatecontext += [
         'isloggedin' => true,
-        'username' => $username,
+        'username' =>  $formattedUsername ,
         'userpicture' => $userpicture,
         'completedCourses' => $completedCourses,
         'totalCourses' => $totalCourses,
-        'totalPoints' => $totalPoints
+        'totalPoints' => $totalPoints,
+        'learningPathPercentage' => ($totalCourses > 0) ? round(($completedCourses / $totalCourses) * 100, 2) : 0,
+        'curriculumPercentage' => ($totalCourses > 0) ? round(($completedCourses / $totalCourses) * 100, 2) : 0
     ];
+    
+
 } else {
     $templatecontext['isloggedin'] = false;
 }

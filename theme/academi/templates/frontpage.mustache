@@ -51,7 +51,9 @@
         "addblockbutton": ""
     }
 }}
+
 {{> theme_boost/head }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body {{{ bodyattributes }}}>
     {{> core/local/toast/wrapper}}
@@ -139,14 +141,13 @@
 
 
 
-           {{#isloggedin}}
-
-
-<div class="user-info">
+         {{#isloggedin}}
+         <div class="progress-dashboard-container">
+         <div class="user-info">
     {{{userpicture}}}
-    <div>
-        <h2>Welcome {{username}}</h2>
-        <p>A learning curve is essential to growth!</p>
+    <div class="user-name">
+        <h2 class="welcome-text">Welcome {{username}}</h2>
+        <p >A learning curve is essential to growth!</p>
     </div>
 </div>
 
@@ -156,8 +157,8 @@
         <h3>Learning Path</h3>
         <p><b>{{completedCourses}}</b> Completed / <b>{{totalCourses}}</b> Assigned</p>
         <div class="progress-container">
-            <canvas id="learningPathChart"></canvas>
-            <div class="progress-text-new" id="learningPathText">{{completionPercentage}}%</div>  <!-- ✅ FIXED -->
+            <canvas id="learningPathChart" data-progress="{{learningPathPercentage}}"></canvas>
+            <div class="progress-text-new" id="learningPathText">{{learningPathPercentage}}%</div>
         </div>
     </div>
 
@@ -166,23 +167,33 @@
         <h3>Curriculum</h3>
         <p><b>0</b> Overdue / <b>{{completedCourses}}</b> Completed / <b>{{totalCourses}}</b> Assigned</p>
         <div class="progress-container">
-            <canvas id="curriculumChart"></canvas>
-            <div class="progress-text-new" id="curriculumText">{{completionPercentage}}%</div>  <!-- ✅ FIXED -->
+            <canvas id="curriculumChart" data-progress="{{curriculumPercentage}}"></canvas>
+            <div class="progress-text-new" id="curriculumText">{{curriculumPercentage}}%</div>
         </div>
     </div>
 
-    <!-- Points Earned -->
+    <!-- Points Earned (Replaced Progress Circle with Animation) -->
     <div class="card-progress">
         <h3>Total Points Earned</h3>
-        <p>Accumulated points from all completed courses</p>
-        <div class="progress-container">
-            <canvas id="pointsChart"></canvas>
-            <div class="progress-text-new" id="pointsText">{{totalPoints}}</div>
+        <div class="points-display text-danger"><i class=" fas fa-star"></i> <b class="text-danger">{{totalPoints}}</b> Points</div>
+
+        <div class="container-svg">
+            <svg class="svg-icon" height="100" viewBox="0 0 100 100" width="100" xmlns="http://www.w3.org/2000/svg">
+                <path d="M62.11,53.93c22.582-3.125,22.304-23.471,18.152-29.929-4.166-6.444-10.36-2.153-10.36-2.153v-4.166H30.099v4.166s-6.194-4.291-10.36,2.153c-4.152,6.458-4.43,26.804,18.152,29.929l5.236,7.777v8.249s-.944,4.597-4.833,4.986c-3.903,.389-7.791,4.028-7.791,7.374h38.997c0-3.347-3.889-6.986-7.791-7.374-3.889-.389-4.833-4.986-4.833-4.986v-8.249l5.236-7.777Zm7.388-24.818s2.833-3.097,5.111-1.347c2.292,1.75,2.292,15.86-8.999,18.138l3.889-16.791Zm-44.108-1.347c2.278-1.75,5.111,1.347,5.111,1.347l3.889,16.791c-11.291-2.278-11.291-16.388-8.999-18.138Z">
+                </path>
+            </svg>  
+            <div class="container__star">
+                <div class="star-eight"></div>
+            </div>
         </div>
-        <p class="points-display"><i class="fas fa-star"></i> <b>{{totalPoints}}</b> Points</p>
     </div>
 </div>
+         
+         </div>
+
+
 {{/isloggedin}}
+
 
                 <div id="page-content" class="pb-3 d-print-block">
                     <div id="region-main-box">
@@ -220,6 +231,44 @@
         {{{ output.standard_after_main_region_html }}}
     </div>
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function createGaugeChart(canvasId, textId, value) {
+            let canvas = document.getElementById(canvasId);
+            if (!canvas) return; // Prevent errors if element doesn't exist
+            
+            let progressValue = parseFloat(canvas.getAttribute('data-progress')) || 0; // Read value from data-progress
+            
+            let ctx = canvas.getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Completed', 'Remaining'],
+                    datasets: [{
+                        data: [progressValue, 100 - progressValue],
+                        backgroundColor: ['green', 'lightgray']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            document.getElementById(textId).innerText = progressValue.toFixed(2) + "%";
+        }
+
+        // Call function for Learning Path & Curriculum only (not for Points)
+        createGaugeChart('learningPathChart', 'learningPathText');
+        createGaugeChart('curriculumChart', 'curriculumText');
+    });
+</script>
+
+
 
 
 </html>
