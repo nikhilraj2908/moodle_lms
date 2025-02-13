@@ -1,0 +1,196 @@
+<style>
+    /* General Styles */
+
+
+    /* Login Form Container */
+    .form-all {
+        background: #ffffff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        width: 380px;
+        text-align: center;
+    }
+
+    /* Error Message */
+    #error-message {
+        display: none;
+        color: red;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    /* Input Fields */
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    input:focus {
+        border-color: #0056b3;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 86, 179, 0.2);
+    }
+
+    /* Login Button */
+    #loginbtn {
+        width: 100%;
+        padding: 12px;
+        background-color: #0056b3;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    #loginbtn:hover {
+        background-color:   #ff6600;
+    }
+
+    /* Additional Links */
+    .input-head, .donthaveandacc {
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    .forg {
+        color: #003d82;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .forg:hover {
+        color: #ff6600;
+    }
+
+    .dont {
+        color: #333;
+        margin-right: 5px;
+    }
+
+    .dont3 {
+        color: #ff6600;
+        font-weight: bold;
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .dont3:hover {
+        color: #cc5500;
+    }
+</style>
+
+<div class="form-all">
+    <!-- Error Message Box -->
+    <div id="error-message"></div>
+
+    <!-- Login Form -->
+    <form action="{{loginurl}}" method="post" id="login">
+        <h2>LOGIN YOURSELF</h2>
+        <input type="hidden" name="logintoken" value="{{logintoken}}">
+
+        <input type="text" name="username" placeholder="Enter your email" id="input-email" required>
+
+        <input type="password" name="password" placeholder="Enter your password" id="input-pwd" required>
+
+        <button type="submit" id="loginbtn">LOGIN</button>
+        <!-- Loader -->
+        <div id="loader" style="display: none; margin-top: 15px;">
+            <div class="spinner"></div>
+            <p>Logging in, please wait...</p>
+        </div>
+
+    </form>
+</div>
+
+<!-- Additional Links -->
+<div class="input-head">
+    <a class="forg" href="{{forgotpasswordurl}}" target="_blank">Forgot Password?</a>
+</div>
+<div class="donthaveandacc">
+    <span class="dont">Don't have an account?</span>
+    <a class="dont3" href="../custom_signup.php" target="_blank">Create new account</a>
+</div>
+
+<script>
+document.getElementById('loginbtn').addEventListener('click', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const usernameInput = document.getElementById('input-email');
+    const passwordInput = document.getElementById('input-pwd');
+    const errorMessage = document.getElementById('error-message');
+    const loader = document.getElementById('loader');
+    const loginBtn = document.getElementById('loginbtn');
+
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+
+    // Reset previous error messages
+    errorMessage.textContent = "";
+    errorMessage.style.display = "none";
+
+    // Re-enable the login button in case it was disabled before
+    loginBtn.disabled = false;
+
+    if (!username && !password) {
+        errorMessage.textContent = "Please fill out all fields.";
+        errorMessage.style.display = "block";
+        return;
+    } else if (!username) {
+        errorMessage.textContent = "Username cannot be empty.";
+        errorMessage.style.display = "block";
+        return;
+    } else if (!password) {
+        errorMessage.textContent = "Password cannot be empty.";
+        errorMessage.style.display = "block";
+        return;
+    }
+
+    // If inputs are filled, start login process
+    errorMessage.style.display = "none";
+    loader.style.display = "block"; // Show loader
+    loginBtn.disabled = true; // Disable button to prevent multiple submissions
+
+    // Submit form and handle server-side response
+    fetch(document.getElementById('login').action, {
+        method: "POST",
+        body: new FormData(document.getElementById('login'))
+    })
+    .then(response => response.text())
+    .then(html => {
+        loader.style.display = "none"; // Hide loader
+
+        if (html.toLowerCase().includes("invalid login") || html.toLowerCase().includes("incorrect username or password")) {
+            errorMessage.textContent = "Incorrect username or password!";
+            errorMessage.style.display = "block";
+            loginBtn.disabled = false; // Re-enable button for next attempt
+
+            // ✅ Properly reset input fields
+            usernameInput.value = "";
+            passwordInput.value = "";
+
+            // Focus on the username field for a better UX
+            usernameInput.focus();
+        } else {
+            // ✅ Correct login should now proceed
+            errorMessage.style.display = "none";
+            window.location.href = "/moodle"; // Redirect on successful login
+        }
+    })
+    .catch(error => {
+        console.error("Login error:", error);
+        loader.style.display = "none"; // Hide loader on error
+        loginBtn.disabled = false; // Re-enable button
+        errorMessage.textContent = "An error occurred. Please try again.";
+        errorMessage.style.display = "block";
+    });
+});
+</script>

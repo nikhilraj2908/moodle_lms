@@ -136,7 +136,7 @@ button:hover {
 
 <!-- Signup Form -->
 <div class="form-container">
-    <h3 style="color: #0073e6;">Register Yourself</h3>
+    <h3 style="color: #ff6600;">Register Yourself</h3>
     
     <form id="registerForm">
         <input type="text" name="username" placeholder="Username" required>

@@ -182,6 +182,10 @@ class core_renderer extends \theme_boost\output\core_renderer {
      * @return string
      */
     public function render_login(\core_auth\output\login $form) {
+    global $CFG;
+
+    // Set the login URL
+    $form->set_login_url(new moodle_url($CFG->wwwroot . '/login/index.php'));
         global $SITE, $CFG;
 
         $context = $form->export_for_template($this);
@@ -553,4 +557,3 @@ class core_renderer extends \theme_boost\output\core_renderer {
         return $this->render_from_template('core/navbar', $newnav);
     }
 }
-
