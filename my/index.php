@@ -37,6 +37,10 @@
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->dirroot . '/my/lib.php');
 
+
+
+
+
 redirect_if_major_upgrade_required();
 
 // TODO Add sesskey check to edit
@@ -51,6 +55,8 @@ if ($hassiteconfig && moodle_needs_upgrading()) {
 }
 
 $strmymoodle = get_string('myhome');
+
+
 
 if (empty($CFG->enabledashboard)) {
     // Dashboard is disabled, so the /my page shouldn't be displayed.

@@ -139,8 +139,6 @@
 
 
 
-
-
          {{#isloggedin}}
          <div class="progress-dashboard-container">
          <div class="user-info">
@@ -190,10 +188,31 @@
 </div>
          
          </div>
+<div class="custom-courses-container">
+    <h2 class="custom-section-title"><span>My</span> Courses</h2>
+    
+    <div class="custom-course-grid">
+        {{#courses}}
+            <div class="custom-course-card">
+                <div class="custom-course-card-image">
+                    <img src="{{course_image_url}}" alt="{{course_name}}"
+                         onerror="this.src='/theme/academi/pix/defaultcourse.jpg';">
+                </div>
+                <div class="custom-course-card-info">
+                    <h3 class="custom-course-title">{{course_name}}</h3>
+                    <p class="custom-course-description">{{course_summary}}</p>
+                    <p><strong>Category:</strong> {{category_name}}</p>
+                    <p><strong>Start Date:</strong> {{course_startdate}}</p>
+                    <p><strong>End Date:</strong> {{course_enddate}}</p>
+                    <a href="{{course_url}}" class="custom-view-course-btn">View Course</a>
+                </div>
+            </div>
+        {{/courses}}
+    </div>
+</div>
 
 
 {{/isloggedin}}
-
 
                 <div id="page-content" class="pb-3 d-print-block">
                     <div id="region-main-box">
@@ -203,7 +222,6 @@
                         </div>
                         {{/hasregionmainsettingsmenu}}
                         <section id="region-main" aria-label="{{#str}}content{{/str}}">
-
                             {{#hasregionmainsettingsmenu}}
                                 <div class="region_main_settings_menu_proxy"></div>
                             {{/hasregionmainsettingsmenu}}
@@ -221,7 +239,6 @@
                             {{{ output.main_content }}}
                             {{{ output.activity_navigation }}}
                             {{{ output.course_content_footer }}}
-
                         </section>
                     </div>
                 </div>
@@ -230,6 +247,7 @@
         </div>
         {{{ output.standard_after_main_region_html }}}
     </div>
+    
 </body>
 <script>
     document.addEventListener("DOMContentLoaded", function() {

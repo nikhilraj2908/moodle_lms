@@ -430,4 +430,27 @@ class course_renderer extends \core_course_renderer {
 
         return $content;
     }
+    public function render_my_courses_home() {
+        global $USER, $OUTPUT;
+    
+        // Get enrolled courses
+        $courses = enrol_get_all_users_courses($USER->id, true);
+    
+        if (empty($courses)) {
+            return "<p>No courses available.</p>";
+        }
+    
+        $coursedata = [];
+        foreach ($courses as $course) {
+            $coursedata[] = [
+                'name' => format_string($course->fullname),
+                'link' => new moodle_url('/course/view.php', ['id' => $course->id]),
+                'imgurl' => new moodle_url('/theme/image.php', ['theme' => 'boost', 'component' => 'course', 'image' => 'default']),
+            ];
+        }
+    
+        // Pass the course data to the Mustache template
+        return $this->output->render_from_template('theme_academi/my_courses_home', ['courses' => $coursedata]);
+    }
+    
 }
