@@ -189,26 +189,32 @@
          
          </div>
 <div class="custom-courses-container">
-    <h2 class="custom-section-title"><span>My</span> Courses</h2>
-    
-    <div class="custom-course-grid">
+    <h2 class="custom-section-title">📚 <span>My</span> Courses</h2>
+
+    <div class="custom-course-grid" id="courseGrid">
         {{#courses}}
             <div class="custom-course-card">
                 <div class="custom-course-card-image">
-                    <img src="{{course_image_url}}" alt="{{course_name}}"
+                    <img src="{{course_image_url}}" alt="{{course_name}}" 
                          onerror="this.src='/theme/academi/pix/defaultcourse.jpg';">
+                    <a href="{{course_url}}" class="custom-view-more">View Course</a>
                 </div>
                 <div class="custom-course-card-info">
                     <h3 class="custom-course-title">{{course_name}}</h3>
-                    <p class="custom-course-description">{{course_summary}}</p>
-                    <p><strong>Category:</strong> {{category_name}}</p>
-                    <p><strong>Start Date:</strong> {{course_startdate}}</p>
-                    <p><strong>End Date:</strong> {{course_enddate}}</p>
-                    <a href="{{course_url}}" class="custom-view-course-btn">View Course</a>
+                    <p class="custom-course-category"><i class="fas fa-tag"></i> {{category_name}}</p>
+                    <p class="custom-course-dates">
+                        <i class="far fa-calendar-alt"></i> <strong>Start:</strong> {{course_startdate}} &nbsp; | &nbsp;
+                        <strong>End:</strong> {{course_enddate}}
+                    </p>
+                    <p class="custom-course-description">
+                        <strong>Description:</strong> {{course_summary}}
+                    </p>
                 </div>
             </div>
         {{/courses}}
     </div>
+
+    <button id="loadMoreBtn" class="custom-load-more">Load More</button>
 </div>
 
 
@@ -284,6 +290,54 @@
         createGaugeChart('learningPathChart', 'learningPathText');
         createGaugeChart('curriculumChart', 'curriculumText');
     });
+
+  {{!   ////////////////////////////////////////////////////////////// }}
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const courses = document.querySelectorAll(".custom-course-card");
+    const loadMoreBtn = document.getElementById("loadMoreBtn");
+
+    let visibleCourses = 4; // Initially show only 4 courses
+
+    // Hide all courses except the first 4
+    courses.forEach((course, index) => {
+        if (index >= visibleCourses) {
+            course.style.display = "none";
+        }
+    });
+
+    // Load More Button Click Event
+    loadMoreBtn.addEventListener("click", function () {
+        if (loadMoreBtn.innerText === "Load More") {
+            let nextCourses = visibleCourses + 4;
+
+            courses.forEach((course, index) => {
+                if (index < nextCourses) {
+                    course.style.display = "flex";
+                }
+            });
+
+            visibleCourses = nextCourses;
+
+            // If all courses are visible, change button text to "See Less"
+            if (visibleCourses >= courses.length) {
+                loadMoreBtn.innerText = "See Less";
+            }
+        } else {
+            // Reset to show only the first 4 courses
+            visibleCourses = 4;
+
+            courses.forEach((course, index) => {
+                if (index >= visibleCourses) {
+                    course.style.display = "none";
+                }
+            });
+
+            loadMoreBtn.innerText = "Load More";
+        }
+    });
+});
+
 </script>
 
 
