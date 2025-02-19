@@ -140,6 +140,14 @@
 
 
          {{#isloggedin}}
+       
+
+
+<svg class="svg-curve" viewBox="0 0 1920 250" xmlns="http://www.w3.org/2000/svg">
+  <path d="M0,160 C600,250 1200,80 1920,160 L1920,250 L0,250 Z" fill="white"></path>
+</svg>
+
+
          <div class="progress-dashboard-container">
          <div class="user-info">
     {{{userpicture}}}
@@ -197,24 +205,20 @@
                 <div class="custom-course-card-image">
                     <img src="{{course_image_url}}" alt="{{course_name}}" 
                          onerror="this.src='/theme/academi/pix/defaultcourse.jpg';">
-                    <a href="{{course_url}}" class="custom-view-more">View Course</a>
                 </div>
-                <div class="custom-course-card-info">
+                <div class="custom-course-content">
                     <h3 class="custom-course-title">{{course_name}}</h3>
-                    <p class="custom-course-category"><i class="fas fa-tag"></i> {{category_name}}</p>
-                    <p class="custom-course-dates">
-                        <i class="far fa-calendar-alt"></i> <strong>Start:</strong> {{course_startdate}} &nbsp; | &nbsp;
-                        <strong>End:</strong> {{course_enddate}}
-                    </p>
-                    <p class="custom-course-description">
-                        <strong>Description:</strong> {{course_summary}}
-                    </p>
+                    <p class="custom-course-description">{{course_summary}}</p>
+                    <a href="{{course_url}}" class="custom-view-more">Continue Learning →</a>
                 </div>
             </div>
         {{/courses}}
     </div>
+</div>
 
-    <button id="loadMoreBtn" class="custom-load-more">Load More</button>
+
+<div class="custom-load-more">
+    <button id="loadMoreBtn" >Load More</button>
 </div>
 
 

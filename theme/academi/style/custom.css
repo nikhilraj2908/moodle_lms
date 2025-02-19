@@ -1,11 +1,9 @@
 /* Container for all progress cards */
 .progress-dashboard-container {
-    border: 1px solid #ddd; /* Added border for better visibility */
+    /* border: 1px solid rgb(240, 243, 247); Added border for better visibility */
     /* border-radius: 8px; Rounded corners for the container */
 
-    background: linear-gradient(135deg, rgba(0, 0, 0, 0.1) 0%, rgba(34, 193, 195, 0.1) 50%, rgba(253, 187, 45, 0.1) 100%), 
-    url('../../theme/academi/pix/bg1.svg');
-
+    background: rgb(255, 255, 255);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -15,6 +13,10 @@
 /* Loader Styles */
 #loader {
     text-align: center;
+}
+.svg-curve{
+    margin-top: -10%;
+    background: transparent;
 }
 
 .spinner {
@@ -35,12 +37,34 @@
 .welcome-text {
     font-size: 26px;
     font-weight: bold;
-    color: #ff6600; /* Soft Orange */
+    color: #2b1202; /* Soft Orange */
     text-transform: capitalize;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
-.user-name p{
-    color:darkblue ;
+
+/* Gradient Animation */
+@keyframes gradientText {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Style for the Subtitle (Animated Gradient) */
+.user-name p {
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #1f0074, #02049e, #ffbb00, #0026ff);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientText 3s ease-in-out infinite;
 }
 
 
@@ -58,7 +82,10 @@ gap: 30px;
 flex-wrap: wrap;
 margin-top: 30px;
 padding: 20px;
+
 }
+
+
 
 .user-info{
 margin-top: 35px;
@@ -101,7 +128,7 @@ box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
 /* Headings in Cards */
 .card-progress h3 {
     font-size: 20px; /* Increased font size for better readability */
-    color: #ff6600;
+    color: #2b1202;
     margin-bottom: 10px;
     font-weight: bold;
 
@@ -265,7 +292,7 @@ body {
 
     font-size: 30px;
     font-weight: bold;
-    color: #ff6600;
+    color: #2b1202;
     margin-bottom: 20px;
     text-align: center;
     padding: 10px;
@@ -280,132 +307,96 @@ body {
 .custom-course-grid {
     display: grid;
         grid-template-columns: 6fr 6fr;
-    gap: 20px;
+    gap: 40px;
+    margin: 5% 12% 0% 12%;
 }
 
 /* Course Card - Horizontal */
+/* Default styling for the course card */
 .custom-course-card {
-    display: flex;
-    align-items: center;
-    background: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
-}
-
-.custom-course-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-/* Image Section */
-.custom-course-card-image {
     position: relative;
-    width: 35%;
-    height: 100%;
+    height: 300px; /* Ensuring all cards are the same height */
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2); /* Always show shadow */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-align: center;
 }
 
+/* Image inside the card (as background) */
+/* Ensure the image is properly displayed */
+.custom-course-card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0; /* Ensure image is not behind the content */
+}
+
+/* Ensure image is visible */
 .custom-course-card-image img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* Makes sure image covers the whole background */
+    display: block;
+    transition: transform 0.6s ease-in-out; 
 }
 
-/* View More Button Overlay */
-.custom-view-more {
-    text-align: center;
-    width: 75%;
-    position: absolute;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(13,1,104,255);
+
+/* Ensure text is always visible over the image */
+.custom-course-content {
+    align-content: center;
+    height: 100%;
+    position: relative;
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
     color: white;
-    padding: 6px 14px;
-    font-size: 14px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-    opacity: 0.9;
-    transition: all 0.3s ease;
-}
-
-.custom-view-more:hover {
-    background: #0056b3;
-    opacity: 1;
-}
-
-/* Course Info */
-.custom-course-card-info {
-    width: 65%;
     padding: 20px;
-    text-align: left;
+    border-radius: 0 0 10px 10px;
 }
 
+/* Title */
 .custom-course-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: #222;
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white;
 }
 
-.custom-course-category {
-    font-size: 16px;
-    font-weight: 600;
-    color: rgba(13,1,104,255);
-    margin-top: 5px;
-}
-
-.custom-course-dates {
-    font-size: 14px;
-    color: #666;
-    margin-top: 5px;
-}
-
+/* Description */
 .custom-course-description {
     font-size: 14px;
-    color: #444;
-    margin-top: 10px;
-    line-height: 1.5;
+    margin-bottom: 15px;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    .custom-course-card {
-        flex-direction: column;
-        height: auto;
-    }
-
-    .custom-course-card-image {
-        width: 100%;
-        height: 200px;
-    }
-
-    .custom-course-card-info {
-        width: 100%;
-        text-align: center;
-    }
-}
-.custom-load-more {
-    display: block;
-    margin: 20px auto;
+/* Button */
+.custom-view-more {
+    display: inline-block;
     padding: 10px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    background: rgba(13,1,104,255);
+    background: transparent;
+    border: 2px solid white;
     color: white;
-    border: none;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
     border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.3s ease;
 }
 
-.custom-load-more:hover {
-    background: #0056b3;
+/* Button hover effect */
+.custom-view-more:hover {
+    background: white;
+    color: black;
 }
 
-.custom-load-more:disabled {
-    background: #ccc;
-    cursor: not-allowed;
+/* On hover, make image zoom in */
+.custom-course-card:hover .custom-course-card-image img {
+    transform: scale(1.1);
+}
+
+.custom-load-more{
+    text-align: center;
 }
