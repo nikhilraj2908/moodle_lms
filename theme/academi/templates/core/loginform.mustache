@@ -1,196 +1,206 @@
-<style>
-    /* General Styles */
+{{!
+    This file is part of Moodle - http://moodle.org/
 
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-    /* Login Form Container */
-    .form-all {
-        background: #ffffff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        width: 380px;
-        text-align: center;
-    }
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-    /* Error Message */
-    #error-message {
-        display: none;
-        color: red;
-        font-size: 14px;
-        margin-bottom: 10px;
-    }
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
 
-    /* Input Fields */
-    input {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
+{{> theme_boost/head }}
 
-    input:focus {
-        border-color: #0056b3;
-        outline: none;
-        box-shadow: 0 0 5px rgba(0, 86, 179, 0.2);
-    }
+ <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
 
-    /* Login Button */
-    #loginbtn {
-        width: 100%;
-        padding: 12px;
-        background-color: #0056b3;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background 0.3s ease;
-    }
+        .login-left {
+            flex: 1;
+            background: #f0f0f0; /* Placeholder for Background Image */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    #loginbtn:hover {
-        background-color:   #ff6600;
-    }
+        .login-right {
+            flex: 1;
+            padding: 50px;
+        }
 
-    /* Additional Links */
-    .input-head, .donthaveandacc {
-        margin-top: 15px;
-        font-size: 14px;
-    }
+        .login-right h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
 
-    .forg {
-        color: #003d82;
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
+        .input-group {
+            width: 100%;
+            margin-bottom: 15px;
+            position: relative;
+        }
 
-    .forg:hover {
-        color: #ff6600;
-    }
+        .input-group input {
+            width: 100%;
+            padding: 12px 40px 12px 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
 
-    .dont {
-        color: #333;
-        margin-right: 5px;
-    }
+        .input-group i {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #777;
+        }
 
-    .dont3 {
-        color: #ff6600;
-        font-weight: bold;
-        text-decoration: none;
-        transition: color 0.3s ease;
-    }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
 
-    .dont3:hover {
-        color: #cc5500;
-    }
-</style>
+        .remember-me input {
+            margin-right: 8px;
+        }
+        .remember-me label{
+            margin-bottom: 0rem;
+        }
 
-<div class="form-all">
-    <!-- Error Message Box -->
-    <div id="error-message"></div>
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
 
-    <!-- Login Form -->
-    <form action="{{loginurl}}" method="post" id="login">
-        <h2>LOGIN YOURSELF</h2>
-        <input type="hidden" name="logintoken" value="{{logintoken}}">
+        .login-btn:hover {
+            background: #0056b3;
+        }
 
-        <input type="text" name="username" placeholder="Enter your email" id="input-email" required>
+        .signup-link {
+            margin-top: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
 
-        <input type="password" name="password" placeholder="Enter your password" id="input-pwd" required>
+        .signup-link a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
 
-        <button type="submit" id="loginbtn">LOGIN</button>
-        <!-- Loader -->
-        <div id="loader" style="display: none; margin-top: 15px;">
-            <div class="spinner"></div>
-            <p>Logging in, please wait...</p>
+        .social-login {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .social-login a {
+            display: flex;
+            margin: 0 5px;
+            padding: 10px;
+            border-radius: 50%;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .social-login-links{
+            justify-content: center;
+            display: flex;
+            margin-top: 1rem;
+        }
+        .login-container {
+            padding: 1rem;
+        }
+        .login-wrapper{    justify-content: end;
+    display: flex
+;}
+        .facebook { background: #3b5998; }
+        .twitter { background: #1da1f2; }
+        .google { background: #db4437; }
+
+          .error-message {
+            color: red;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: {{^error}}none{{/error}};
+            text-align: center;
+        }
+
+    </style>
+<body>
+    <div class="login-container1">
+        <div class="login-right">
+            <h2 class="text-center">Log In</h2>
+           {{#error}}
+                <div class="error-message">{{error}}</div>
+            {{/error}}
+
+            <form action="{{loginurl}}" method="post">
+                <input type="hidden" name="logintoken" value="{{logintoken}}">
+                <div class="input-group">
+                    <input type="text" name="username" placeholder="Your Name" required>
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="input-group">
+                    <input type="password" name="password" placeholder="Password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+                <div class="remember-me">
+                    <input type="checkbox" id="remember">
+                    <label  for="remember">Remember me</label>
+                </div>
+                <button type="submit" class="login-btn">Log In</button>
+            </form>
+            <div class="signup-link">
+                <a href="../custom_signup.php">Create an account</a>
+            </div>
+            <div class="social-login">
+                <span>Or login with</span>
+                <br>
+             <div class="social-login-links">
+                <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="twitter"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="google"><i class="fab fa-google"></i></a></div>
+            </div>
         </div>
-
-    </form>
-</div>
-
-<!-- Additional Links -->
-<div class="input-head">
-    <a class="forg" href="{{forgotpasswordurl}}" target="_blank">Forgot Password?</a>
-</div>
-<div class="donthaveandacc">
-    <span class="dont">Don't have an account?</span>
-    <a class="dont3" href="../custom_signup.php" target="_blank">Create new account</a>
-</div>
+    </div>
+</body>
 
 <script>
-document.getElementById('loginbtn').addEventListener('click', function (event) {
-    event.preventDefault(); // Prevent default form submission
+document.addEventListener("DOMContentLoaded", function () {
+    const loginForm = document.querySelector("form");
+    const loginBtn = document.getElementById("loginbtn");
+    const loader = document.getElementById("loader");
 
-    const usernameInput = document.getElementById('input-email');
-    const passwordInput = document.getElementById('input-pwd');
-    const errorMessage = document.getElementById('error-message');
-    const loader = document.getElementById('loader');
-    const loginBtn = document.getElementById('loginbtn');
-
-    const username = usernameInput.value.trim();
-    const password = passwordInput.value.trim();
-
-    // Reset previous error messages
-    errorMessage.textContent = "";
-    errorMessage.style.display = "none";
-
-    // Re-enable the login button in case it was disabled before
-    loginBtn.disabled = false;
-
-    if (!username && !password) {
-        errorMessage.textContent = "Please fill out all fields.";
-        errorMessage.style.display = "block";
-        return;
-    } else if (!username) {
-        errorMessage.textContent = "Username cannot be empty.";
-        errorMessage.style.display = "block";
-        return;
-    } else if (!password) {
-        errorMessage.textContent = "Password cannot be empty.";
-        errorMessage.style.display = "block";
-        return;
-    }
-
-    // If inputs are filled, start login process
-    errorMessage.style.display = "none";
-    loader.style.display = "block"; // Show loader
-    loginBtn.disabled = true; // Disable button to prevent multiple submissions
-
-    // Submit form and handle server-side response
-    fetch(document.getElementById('login').action, {
-        method: "POST",
-        body: new FormData(document.getElementById('login'))
-    })
-    .then(response => response.text())
-    .then(html => {
-        loader.style.display = "none"; // Hide loader
-
-        if (html.toLowerCase().includes("invalid login") || html.toLowerCase().includes("incorrect username or password")) {
-            errorMessage.textContent = "Incorrect username or password!";
-            errorMessage.style.display = "block";
-            loginBtn.disabled = false; // Re-enable button for next attempt
-
-            // ✅ Properly reset input fields
-            usernameInput.value = "";
-            passwordInput.value = "";
-
-            // Focus on the username field for a better UX
-            usernameInput.focus();
-        } else {
-            // ✅ Correct login should now proceed
-            errorMessage.style.display = "none";
-            window.location.href = "/moodle"; // Redirect on successful login
-        }
-    })
-    .catch(error => {
-        console.error("Login error:", error);
-        loader.style.display = "none"; // Hide loader on error
-        loginBtn.disabled = false; // Re-enable button
-        errorMessage.textContent = "An error occurred. Please try again.";
-        errorMessage.style.display = "block";
+    loginForm.addEventListener("submit", function () {
+        loader.style.display = "block"; // Show loader
+        loginBtn.disabled = true; // Disable button to prevent multiple clicks
     });
 });
 </script>
+
+
