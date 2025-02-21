@@ -58,7 +58,9 @@ class course_edit_form extends moodleform {
         $mform->setType('returnurl', PARAM_LOCALURL);
         $mform->setConstant('returnurl', $returnurl);
 
-        $mform->addElement('text','fullname', get_string('fullnamecourse'),'maxlength="254" size="50"');
+     $mform->addElement('text','fullname', get_string('fullnamecourse'),'maxlength="254" size="50" id="id_fullname"');
+     
+    //  $mform->addElement('text','fullname', get_string('fullnamecourse'),'maxlength="254" size="50"'); //////// old wala hai  
         $mform->addHelpButton('fullname', 'fullnamecourse');
         $mform->addRule('fullname', get_string('missingfullname'), 'required', null, 'client');
         $mform->setType('fullname', PARAM_TEXT);
@@ -203,7 +205,16 @@ class course_edit_form extends moodleform {
         $mform->addElement('header', 'descriptionhdr', get_string('description'));
         $mform->setExpanded('descriptionhdr');
 
-        $mform->addElement('editor','summary_editor', get_string('coursesummary'), null, $editoroptions);
+        // $mform->addElement('editor','summary_editor', get_string('coursesummary'), null, $editoroptions);////////////////////ye old waha hai or iske nche 2 line new add ki hai
+        $mform->addElement('editor', 'summary_editor', get_string('coursesummary'), null, $editoroptions);
+        $mform->setType('summary_editor', PARAM_RAW);
+        
+        // Ensure summary is empty for a new course
+        if (empty($course->id)) { 
+            $mform->setDefault('summary_editor', ['text' => '']); // Clears summary field
+        }
+        
+
         $mform->addHelpButton('summary_editor', 'coursesummary');
         $mform->setType('summary_editor', PARAM_RAW);
         $summaryfields = 'summary_editor';
@@ -580,3 +591,55 @@ class course_edit_form extends moodleform {
         return $this->context;
     }
 }
+$PAGE->requires->js_init_code("document.addEventListener('DOMContentLoaded', function () {
+    const titleField = document.getElementById('id_fullname'); 
+    const summaryField = document.getElementById('id_summary_editor'); 
+
+    if (!titleField || !summaryField) return;
+
+    // Check if it's a new course by checking the title field
+    titleField.addEventListener('focus', function () {
+        if (!titleField.value.trim()) { 
+            if (typeof tinymce !== 'undefined') {
+                tinymce.get('id_summary_editor').setContent('');
+            } else {
+                summaryField.value = '';
+            }
+        }
+    });
+
+    titleField.addEventListener('blur', function () {
+        let title = titleField.value.trim();
+        if (title.length > 3) {
+            fetchSummary(title);
+        }
+    });
+
+    function fetchSummary(title) {
+        fetch(M.cfg.wwwroot + '/local/ai_blog/gemini_summary.php?title=' + encodeURIComponent(title))
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server error: ' + response.status);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.error) {
+                    console.error('API Error:', data.error);
+                    alert('Error: ' + data.error);
+                } else {
+                    if (typeof tinymce !== 'undefined') {
+                        tinymce.get('id_summary_editor').setContent(data.summary);
+                    } else {
+                        summaryField.value = data.summary;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching summary:', error);
+                alert('Failed to generate summary. Check console for details.');
+            });
+    }
+});
+
+");
