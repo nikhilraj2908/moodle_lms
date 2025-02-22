@@ -118,6 +118,7 @@ if (isloggedin() && !isguestuser()) {
 } else {
     $templatecontext['isloggedin'] = false;
 }
+$templatecontext['sitefeatures'] = (new \theme_academi\academi_blocks())->sitefeatures();
 
 $templatecontext += $sliderconfig;
 $templatecontext += [
