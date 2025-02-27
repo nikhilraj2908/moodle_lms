@@ -36697,7 +36697,6 @@ body {
 .stickyfooter .btn {
   font-size: calc(0.9375rem * 1.10);
 }
-
 /* Breakpoints fixes. */
 @media (min-width: 576px) {
   #page-wrapper {

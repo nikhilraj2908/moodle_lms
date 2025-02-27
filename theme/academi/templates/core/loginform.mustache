@@ -25,7 +25,7 @@
             box-sizing: border-box;
             font-family: Arial, sans-serif;
         }
-
+   
         .login-left {
             flex: 1;
             background: #f0f0f0; /* Placeholder for Background Image */
@@ -149,13 +149,30 @@
             display: {{^error}}none{{/error}};
             text-align: center;
         }
+        .remember-me-forgot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .forgot-password a {
+        font-size: 14px;
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
 
     </style>
 <body>
     <div class="login-container1">
         <div class="login-right">
             <h2 class="text-center">Log In</h2>
-           {{#error}}
+            {{#error}}
                 <div class="error-message">{{error}}</div>
             {{/error}}
 
@@ -169,9 +186,14 @@
                     <input type="password" name="password" placeholder="Password" required>
                     <i class="fas fa-lock"></i>
                 </div>
-                <div class="remember-me">
-                    <input type="checkbox" id="remember">
-                    <label  for="remember">Remember me</label>
+                <div class="remember-me-forgot">
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <div class="forgot-password">
+                        <a href="{{forgotpasswordurl}}">Forgot Password?</a>
+                    </div>
                 </div>
                 <button type="submit" class="login-btn">Log In</button>
             </form>
@@ -181,15 +203,15 @@
             <div class="social-login">
                 <span>Or login with</span>
                 <br>
-             <div class="social-login-links">
-                <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="google"><i class="fab fa-google"></i></a></div>
+                <div class="social-login-links">
+                    <a href="#" class="facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="google"><i class="fab fa-google"></i></a>
+                </div>
             </div>
         </div>
     </div>
 </body>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const loginForm = document.querySelector("form");
