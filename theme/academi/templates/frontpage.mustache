@@ -152,7 +152,7 @@
 </svg>
 
 
-         <div class="progress-dashboard-container">
+<div class="progress-dashboard-container">
          <div class="user-info">
     {{{userpicture}}}
     <div class="user-name">
@@ -175,7 +175,7 @@
     <!-- Curriculum -->
     <div class="card-progress">
         <h3>Curriculum</h3>
-        <p><b>0</b> Overdue / <b>{{completedCourses}}</b> Completed / <b>{{totalCourses}}</b> Assigned</p>
+        <p><b>{{totalOverdue}}</b> Overdue / <b>{{completedCourses}}</b> Completed / <b>{{totalCourses}}</b> Assigned</p>
         <div class="progress-container">
             <canvas id="curriculumChart" data-progress="{{curriculumPercentage}}"></canvas>
             <div class="progress-text-new" id="curriculumText">{{curriculumPercentage}}%</div>
@@ -185,7 +185,7 @@
     <!-- Points Earned (Replaced Progress Circle with Animation) -->
     <div class="card-progress">
         <h3>Total Points Earned</h3>
-        <div class="points-display text-danger"><i class=" fas fa-star"></i> <b class="text-danger">{{totalPoints}}</b> Points</div>
+        <div class="points-display text-danger"><i class=" fas fa-star"></i> <b class="text-danger">{{totalPoints}}/{{totalPossiblePoints}}</b> Points</div>
 
         <div class="container-svg">
             <svg class="svg-icon" height="100" viewBox="0 0 100 100" width="100" xmlns="http://www.w3.org/2000/svg">

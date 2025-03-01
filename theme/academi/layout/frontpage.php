@@ -13,7 +13,7 @@ $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 // Jumbotron class.
 $jumbotronclass = (!empty(theme_academi_get_setting('jumbotronstatus'))) ? 'jumbotron-element' : '';
 
-// Default Course Image (Ensure this file exists inside /theme/academi/pix/)
+// Default Course Image
 $default_image_url = $CFG->wwwroot . '/theme/academi/pix/defaultcourse.jpg';
 
 // User Dashboard Data
@@ -22,44 +22,85 @@ global $DB, $USER, $OUTPUT;
 
 if (isloggedin() && !isguestuser()) {
     $userid = $USER->id;
-    $username = fullname($USER);
+    // We can use the username from the current user
+    // If you specifically want 'nikhilraj', replace $USER->username with 'nikhilraj'
+    $username = $USER->username; 
+    $displayname = fullname($USER);
     $userpicture = $OUTPUT->user_picture($USER, ['size' => 100]);
 
-    // Fetch user progress, assigned courses, completed courses, and points
+    // -- NEW QUERY WITH CTE -----------------------------------------------
+    // Using the logged-in user's username as parameter:
     $userData = $DB->get_record_sql("
+        WITH UserID AS (
+            SELECT id AS userid FROM mdl_user WHERE username = ?
+        ),
+        TotalCourses AS (
+            SELECT COUNT(c.id) AS total_assigned_courses
+            FROM mdl_course c
+            JOIN mdl_enrol e ON c.id = e.courseid
+            JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
+            WHERE ue.userid = (SELECT userid FROM UserID)
+        ),
+        CompletedCourses AS (
+            SELECT COUNT(DISTINCT cm.course) AS total_completed_courses
+            FROM mdl_course_modules_completion cmc
+            JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
+            WHERE cmc.userid = (SELECT userid FROM UserID) 
+              AND cmc.completionstate = 1
+        ),
+        TotalPoints AS (
+            SELECT COALESCE(SUM(g.finalgrade), 0) AS total_points_earned
+            FROM mdl_grade_grades g
+            WHERE g.userid = (SELECT userid FROM UserID)
+        ),
+        MaxPoints AS (
+            SELECT COALESCE(SUM(g.rawgrademax), 0) AS max_total_points
+            FROM mdl_grade_grades g
+            WHERE g.userid = (SELECT userid FROM UserID)
+        )
         SELECT 
-            COUNT(DISTINCT ue.id) AS total_assigned_courses,
-            COUNT(DISTINCT cc.id) AS completed_courses,
-            (COUNT(DISTINCT cc.id) / COUNT(DISTINCT ue.id)) * 100 AS progress_percentage,
-            SUM(g.finalgrade) AS total_points
-        FROM mdl_user u
-        LEFT JOIN mdl_user_enrolments ue ON u.id = ue.userid
-        LEFT JOIN mdl_enrol e ON ue.enrolid = e.id
-        LEFT JOIN mdl_course c ON e.courseid = c.id
-        LEFT JOIN mdl_course_completions cc ON u.id = cc.userid AND cc.timecompleted IS NOT NULL
-        LEFT JOIN mdl_grade_grades g ON u.id = g.userid
-        WHERE u.id = ?
-    ", [$userid]);
+            (SELECT total_assigned_courses FROM TotalCourses) AS total_courses_assigned,
+            (SELECT total_completed_courses FROM CompletedCourses) AS total_courses_completed,
+            ((SELECT total_assigned_courses FROM TotalCourses) 
+                - (SELECT total_completed_courses FROM CompletedCourses)) AS total_courses_overdue,
+            (SELECT total_points_earned FROM TotalPoints) AS total_points_earned,
+            (SELECT max_total_points FROM MaxPoints) AS total_possible_points
+        FROM dual
+    ", [$username]);
+    // ---------------------------------------------------------------------
 
-    // Assign fetched data to variables
-    $totalCourses = $userData->total_assigned_courses ?? 0;
-    $completedCourses = $userData->completed_courses ?? 0;
-    $progressPercentage = round($userData->progress_percentage ?? 0, 2);
-    $totalPoints = round($userData->total_points ?? 0, 2);
-    $formattedUsername = ucfirst(strtolower($username));
-
-    $templatecontext += [
-        'isloggedin' => true,
-        'username' => $formattedUsername,
-        'userpicture' => $userpicture,
-        'completedCourses' => $completedCourses,
-        'totalCourses' => $totalCourses,
-        'totalPoints' => $totalPoints,
-        'learningPathPercentage' => ($totalCourses > 0) ? round(($completedCourses / $totalCourses) * 100, 2) : 0,
-        'curriculumPercentage' => ($totalCourses > 0) ? round(($completedCourses / $totalCourses) * 100, 2) : 0
-    ];
-
-    // Fetch the courses the user is enrolled in with all details (including image, start date, end date, category)
+    // Map the returned columns to local PHP variables.
+    // (Use null coalescing to handle possible NULL values.)
+     // Map the returned columns to local PHP variables.
+     $totalCourses = $userData->total_courses_assigned ?? 0;
+     $completedCourses = $userData->total_courses_completed ?? 0;
+     $totalOverdue = $userData->total_courses_overdue ?? 0;
+     $totalPoints = $userData->total_points_earned ?? 0;
+     $totalPossiblePoints = $userData->total_possible_points ?? 0;
+ 
+     // Format the points to remove trailing zeros and decimal if whole number
+     $formattedTotalPoints = rtrim(rtrim(number_format($totalPoints, 2, '.', ''), '0'), '.');
+     $formattedTotalPossiblePoints = rtrim(rtrim(number_format($totalPossiblePoints, 2, '.', ''), '0'), '.');
+ 
+     $learningPathPercentage = ($totalCourses > 0)
+         ? round(($completedCourses / $totalCourses) * 100, 2)
+         : 0;
+ 
+     // Prepare data for the Mustache template context
+     $formattedUsername = ucfirst(strtolower($displayname));
+     $templatecontext += [
+         'isloggedin' => true,
+         'username' => $formattedUsername,
+         'userpicture' => $userpicture,
+         'completedCourses' => $completedCourses,
+         'totalCourses' => $totalCourses,
+         'totalPoints' => $formattedTotalPoints, // Use formatted value
+         'learningPathPercentage' => $learningPathPercentage,
+         'curriculumPercentage' => $learningPathPercentage,
+         'totalPossiblePoints' => $formattedTotalPossiblePoints, // Use formatted value
+         'totalOverdue' => $totalOverdue,
+     ];
+     
     $courses = $DB->get_records_sql("
         SELECT 
             c.id AS course_id,
@@ -92,18 +133,22 @@ if (isloggedin() && !isguestuser()) {
     $courses_data = [];
     foreach ($courses as $course) {
         // Check if course image exists; otherwise, use the default image
-        $course_image_url = (!empty($course->course_image_filename)) 
-            ? $CFG->wwwroot . $course->course_image_url 
+        $course_image_url = (!empty($course->course_image_filename))
+            ? $CFG->wwwroot . $course->course_image_url
             : $default_image_url;
 
-        $startdate = ($course->course_startdate) ? date('Y-m-d', $course->course_startdate) : 'N/A';
-        $enddate = ($course->course_enddate) ? date('Y-m-d', $course->course_enddate) : 'N/A';
+        $startdate = ($course->course_startdate) 
+            ? date('Y-m-d', $course->course_startdate) 
+            : 'N/A';
+        $enddate = ($course->course_enddate) 
+            ? date('Y-m-d', $course->course_enddate) 
+            : 'N/A';
 
         $courses_data[] = [
             'course_id' => $course->course_id,
             'course_name' => $course->course_name,
             'course_shortname' => $course->course_shortname,
-            'course_summary' => strip_tags($course->course_summary), // Removing HTML tags from summary
+            'course_summary' => strip_tags($course->course_summary),
             'course_image_url' => $course_image_url,
             'course_url' => new moodle_url('/course/view.php', ['id' => $course->course_id]),
             'course_startdate' => $startdate,
@@ -111,15 +156,13 @@ if (isloggedin() && !isguestuser()) {
             'category_name' => $course->category_name,
         ];
     }
-
-    // Add courses data to the template context
     $templatecontext['courses'] = $courses_data;
 
 } else {
     $templatecontext['isloggedin'] = false;
 }
-$templatecontext['sitefeatures'] = (new \theme_academi\academi_blocks())->sitefeatures();
 
+$templatecontext['sitefeatures'] = (new \theme_academi\academi_blocks())->sitefeatures();
 $templatecontext += $sliderconfig;
 $templatecontext += [
     'bodyattributes' => $bodyattributes,
@@ -128,4 +171,3 @@ $templatecontext += [
 
 // Render the template with the context data
 echo $OUTPUT->render_from_template('theme_academi/frontpage', $templatecontext);
-?>

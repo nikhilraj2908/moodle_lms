@@ -17,15 +17,6 @@
 /**
  * My Moodle -- a user's personal dashboard
  *
- * - each user can currently have their own page (cloned from system and then customised)
- * - only the user can see their own dashboard
- * - users can add any blocks they want
- * - the administrators can define a default site dashboard for users who have
- *   not created their own dashboard
- *
- * This script implements the user's view of the dashboard, and allows editing
- * of the dashboard.
- *
  * @package    moodlecore
  * @subpackage my
  * @copyright  2010 Remote-Learner.net
@@ -36,10 +27,6 @@
 
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->dirroot . '/my/lib.php');
-
-
-
-
 
 redirect_if_major_upgrade_required();
 
@@ -55,8 +42,6 @@ if ($hassiteconfig && moodle_needs_upgrading()) {
 }
 
 $strmymoodle = get_string('myhome');
-
-
 
 if (empty($CFG->enabledashboard)) {
     // Dashboard is disabled, so the /my page shouldn't be displayed.
@@ -188,7 +173,100 @@ if (core_userfeedback::should_display_reminder()) {
     core_userfeedback::print_reminder_block();
 }
 
-echo $OUTPUT->addblockbutton('content');
+if (has_capability('moodle/site:manageblocks', context_system::instance())) {
+    echo $OUTPUT->addblockbutton('content');
+}
+
+// Prepare Dashboard Data for Mustache Template
+$templatecontext = [
+    'username' => fullname($USER),
+    'completedCourses' => 0, // Initialize
+    'totalCourses' => 0, // Initialize
+    'learningPathPercentage' => 0, // Initialize
+    'curriculumPercentage' => 0, // Initialize
+    'totalPoints' => 0, // Initialize
+    'courses' => []
+];
+
+// Fetch User Progress Data
+if (isloggedin() && !isguestuser()) {
+    global $DB;
+
+    $imageurl = $OUTPUT->image_url('Asset1', 'theme_academi');
+
+
+    $userid = $USER->id;
+    $username = $USER->username;
+    $displayname = fullname($USER);
+    $userpicture = $OUTPUT->user_picture($USER, ['size' => 70]);
+
+    // -- NEW QUERY WITH CTE -----------------------------------------------
+    $userData = $DB->get_record_sql("
+        WITH UserID AS (
+            SELECT id AS userid FROM mdl_user WHERE username = ?
+        ),
+        TotalCourses AS (
+            SELECT COUNT(c.id) AS total_assigned_courses
+            FROM mdl_course c
+            JOIN mdl_enrol e ON c.id = e.courseid
+            JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
+            WHERE ue.userid = (SELECT userid FROM UserID)
+        ),
+        CompletedCourses AS (
+            SELECT COUNT(DISTINCT cm.course) AS total_completed_courses
+            FROM mdl_course_modules_completion cmc
+            JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
+            WHERE cmc.userid = (SELECT userid FROM UserID) 
+                AND cmc.completionstate = 1
+        ),
+        TotalPoints AS (
+            SELECT COALESCE(SUM(g.finalgrade), 0) AS total_points_earned
+            FROM mdl_grade_grades g
+            WHERE g.userid = (SELECT userid FROM UserID)
+        ),
+        MaxPoints AS (
+            SELECT COALESCE(SUM(g.rawgrademax), 0) AS max_total_points
+            FROM mdl_grade_grades g
+            WHERE g.userid = (SELECT userid FROM UserID)
+        )
+        SELECT 
+            (SELECT total_assigned_courses FROM TotalCourses) AS total_courses_assigned,
+            (SELECT total_completed_courses FROM CompletedCourses) AS total_courses_completed,
+            ((SELECT total_assigned_courses FROM TotalCourses) 
+                - (SELECT total_completed_courses FROM CompletedCourses)) AS total_courses_overdue,
+            (SELECT total_points_earned FROM TotalPoints) AS total_points_earned,
+            (SELECT max_total_points FROM MaxPoints) AS total_possible_points
+        FROM dual
+    ", [$username]);
+    // ---------------------------------------------------------------------
+
+    $totalCourses = $userData->total_courses_assigned ?? 0;
+    $completedCourses = $userData->total_courses_completed ?? 0;
+    $totalOverdue = $userData->total_courses_overdue ?? 0;
+    $totalPoints = $userData->total_points_earned ?? 0;
+    $totalPossiblePoints = $userData->total_possible_points ?? 0;
+
+    $formattedTotalPoints = rtrim(rtrim(number_format($totalPoints, 2, '.', ''), '0'), '.');
+    $formattedTotalPossiblePoints = rtrim(rtrim(number_format($totalPossiblePoints, 2, '.', ''), '0'), '.');
+
+    $learningPathPercentage = ($totalCourses > 0)
+        ? round(($completedCourses / $totalCourses) * 100, 2)
+        : 0;
+
+    $templatecontext['completedCourses'] = $completedCourses;
+    $templatecontext['totalCourses'] = $totalCourses;
+    $templatecontext['learningPathPercentage'] = $learningPathPercentage;
+    $templatecontext['curriculumPercentage'] = $learningPathPercentage;
+    $templatecontext['totalPoints'] = $formattedTotalPoints;
+    $templatecontext['totalPossiblePoints'] = $formattedTotalPossiblePoints;
+    $templatecontext['totalOverdue'] = $totalOverdue;
+    $templatecontext['userpicture'] = $userpicture;
+    $templatecontext['asset1_image_url'] = $imageurl;
+
+}
+
+// Render Dashboard Mustache Template
+echo $OUTPUT->render_from_template('core/dashboard', $templatecontext);
 
 echo $OUTPUT->custom_block_region('content');
 
