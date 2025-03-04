@@ -21,6 +21,7 @@ require_login();
 global $DB, $USER, $OUTPUT;
 
 if (isloggedin() && !isguestuser()) {
+
     $userid = $USER->id;
     // We can use the username from the current user
     // If you specifically want 'nikhilraj', replace $USER->username with 'nikhilraj'
@@ -157,7 +158,35 @@ if (isloggedin() && !isguestuser()) {
         ];
     }
     $templatecontext['courses'] = $courses_data;
+    
+    $templatecontext['alert_gif'] = $OUTPUT->image_url('alert', 'theme_academi')->out(false);
 
+
+    $is_admin = is_siteadmin($USER->id);
+    $showpopup = false;
+    $popupmessage = "";
+    
+    if ($is_admin) {
+        // ✅ Fetch last uploaded course
+        $last_course = $DB->get_record_sql("SELECT id, fullname, timecreated FROM {course} ORDER BY timecreated DESC LIMIT 1");
+    
+        if ($last_course) {
+            $last_upload_time = $last_course->timecreated;
+            $current_time = time();
+            $one_week = 7 * 24 * 60 * 60; // 1 week in seconds
+    
+            if (($current_time - $last_upload_time) >= $one_week) {
+                $showpopup = true;
+                $popupmessage = "It's been more than a week since a course was last uploaded!";
+            }
+        }
+    }
+    
+    // ✅ Pass the popup variables to Mustache
+    $templatecontext['bodyattributes'] = $bodyattributes;
+    $templatecontext['jumbotronclass'] = $jumbotronclass;
+    $templatecontext['showpopup'] = $showpopup;
+    $templatecontext['popupmessage'] = $popupmessage;
 } else {
     $templatecontext['isloggedin'] = false;
 }

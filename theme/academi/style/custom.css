@@ -418,3 +418,53 @@ body#page-login-forgot_password {
 #page-login-forgot_password .card {
     background: white !important; /* Optional: Keep the form white for better visibility */
 }
+/* Popup Overlay */
+.popup-overlay {
+    display: flex; /* Hidden initially */
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+}
+
+/* Popup Box */
+.popup-content {
+    background: white;
+    padding: 20px;
+    max-width: 400px;
+    text-align: center;
+    border-radius: 10px;
+    position: relative;
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Image */
+.popup-image {
+    width: 100px;
+    margin-bottom: 10px;
+}
+
+/* "Got It" Button */
+.got-it-btn {
+    background: #204070;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}

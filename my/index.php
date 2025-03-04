@@ -89,8 +89,10 @@ $PAGE->add_body_class('limitedwidth');
 $PAGE->set_pagetype('my-index');
 $PAGE->blocks->add_region('content');
 $PAGE->set_subpage($currentpage->id);
-$PAGE->set_title($pagetitle);
-$PAGE->set_heading($pagetitle);
+
+//////////////////////////////dashboard heading hatane k liye comnt kr diya///////////////////////
+// $PAGE->set_title($pagetitle);
+// $PAGE->set_heading($pagetitle);
 
 if (!isguestuser()) {   // Skip default home page for guests
     if (get_home_page() != HOMEPAGE_MY) {
@@ -194,6 +196,9 @@ if (isloggedin() && !isguestuser()) {
 
     $imageurl = $OUTPUT->image_url('Asset1', 'theme_academi');
 
+    $courseenrolledgif = $OUTPUT->image_url('graduate', 'theme_academi')->out();
+    $awardgif = $OUTPUT->image_url('award', 'theme_academi')->out();
+
 
     $userid = $USER->id;
     $username = $USER->username;
@@ -262,6 +267,70 @@ if (isloggedin() && !isguestuser()) {
     $templatecontext['totalOverdue'] = $totalOverdue;
     $templatecontext['userpicture'] = $userpicture;
     $templatecontext['asset1_image_url'] = $imageurl;
+    $templatecontext['course_enrolled_url'] = $courseenrolledgif;
+    $templatecontext['course_award_url'] = $awardgif;
+
+
+
+    $sql = "
+    WITH UserID AS (
+        SELECT id AS userid FROM mdl_user WHERE username = ?
+    ),
+    CompletedCourses AS (
+        SELECT
+            c.id AS course_id,
+            c.fullname AS course_name,
+            SUM(g.finalgrade) AS earned_points, -- Sum of earned points for the course
+            SUM(g.rawgrademax) AS total_points_assigned -- Sum of max possible points
+        FROM mdl_course c
+        JOIN mdl_enrol e ON c.id = e.courseid
+        JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
+        JOIN mdl_grade_items gi ON c.id = gi.courseid
+        JOIN mdl_grade_grades g ON gi.id = g.itemid AND g.userid = ue.userid
+        WHERE ue.userid = (SELECT userid FROM UserID)
+        GROUP BY c.id, c.fullname
+    )
+    SELECT 
+        course_id, 
+        course_name,
+        earned_points, 
+        total_points_assigned,
+        ROUND((earned_points / NULLIF(total_points_assigned, 0)) * 100, 0) AS percentage_points_earned -- Round to integer
+    FROM CompletedCourses
+    ORDER BY earned_points DESC;
+    ";
+    
+    $userCourses = $DB->get_records_sql($sql, [$USER->username]);
+    $courses_data = [];
+    foreach ($userCourses as $course) {
+        // Ensure values are not NULL and convert to integers
+        $earned_points = intval($course->earned_points ?? 0);
+        $total_points = intval($course->total_points_assigned ?? 1); // Avoid division by zero
+        $percentage = intval(round(($earned_points / $total_points) * 100, 0)); // Round to integer
+    
+        // Assign colors based on percentage
+        if ($percentage >= 70) {
+            $bar_color = "#204070"; // Dark Blue
+        } elseif ($percentage >= 40) {
+            $bar_color = "#3C6894"; // Light Blue
+        } else {
+            $bar_color = "#808080"; // Gray
+        }
+    
+        // Store data for Mustache template
+        $courses_data[] = [
+            'course_name' => $course->course_name,
+            'earned_points' => $earned_points,
+            'total_points' => $total_points,
+            'percentage' => $percentage,
+            'bar_color' => $bar_color,
+            'points_display' => $earned_points . '/' . $total_points // Format: earned_points/total_points
+        ];
+    }
+    
+    // Assign data to Mustache context
+    $templatecontext['courses'] = $courses_data;
+
 
 }
 

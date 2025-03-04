@@ -264,9 +264,30 @@
         </div>
         {{{ output.standard_after_main_region_html }}}
     </div>
-    
+    {{#showpopup}}
+        <div id="customPopup" class="popup-overlay">
+            <div class="popup-content">
+                <button class="btn-close" onclick="closePopup()">×</button>
+                <img src="{{alert_gif}}" alt="Alert Image" class="popup-image">
+                <h3>Important Notice:</h3>
+                <p>{{popupmessage}}</p>
+                <button class="got-it-btn" onclick="closePopup()">Got It</button>
+            </div>
+        </div>
+    {{/showpopup}}
+
 </body>
 <script>
+  function closePopup() {
+        document.getElementById("customPopup").style.display = "none";
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var popup = document.getElementById("customPopup");
+        if (popup) {
+            popup.style.display = "flex";
+        }
+    });
     document.addEventListener("DOMContentLoaded", function() {
         function createGaugeChart(canvasId, textId, value) {
             let canvas = document.getElementById(canvasId);

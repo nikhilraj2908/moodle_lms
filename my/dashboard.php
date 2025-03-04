@@ -13,9 +13,12 @@ $userpicture = $OUTPUT->user_picture($USER, ['size' => 100]);
 
 $imageurl = $OUTPUT->pix_url('Asset1', 'theme_academi');
 $templatecontext['asset1_image_url'] = $imageurl;
+
+$courseenrolledgif = $OUTPUT->image_url('graduate', 'theme_academi')->out();;
+$templatecontext['course_enrolled_url'] = $courseenrolledgif;
+
 // Use the provided CTE query to fetch user progress & points
 
-$imageurl = $OUTPUT->pix_url('Asset1', 'theme_academi');
     
 $sql = "
 WITH UserID AS (
@@ -76,7 +79,8 @@ $templatecontext = [
     'totalPoints'           => $totalPoints,
     'maxTotalPoints'        => $maxTotalPoints,
     'learningPathPercentage'=> $progressPercentage,
-    'asset1_image_url'=>$imageurl
+    'asset1_image_url'=>$imageurl,
+    'course_enrolled_url'=>$courseenrolledgif
 ];
 
 

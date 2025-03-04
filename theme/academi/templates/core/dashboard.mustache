@@ -6,7 +6,10 @@
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-      
+      .main-progress-1{
+        display:grid;
+        grid-template-columns:4fr 4fr 4fr;
+      }
         .dashboard-header {
             background-color: #0A2A4A;
             color: white;
@@ -20,13 +23,16 @@
             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
             text-align: center;
+                padding: 10px;
+            margin-right:10px;
+            height:100%;
         }
         .user-stats img {
-            width: 100%;
-        }
+            width: 85%;
+            }
         .chart-placeholder {
-            width: 100%;
-            height: 100%;
+            width: 60%;
+            height: 80%;
             margin: auto;
         }
         .learning-path-circles {
@@ -48,8 +54,93 @@
             background-color: lightblue;
             border-radius: 5px;
         }
+        .img-heading, .coursecount {
+            color: #204070;
+          
+        }
+        .img-whole_head{
+              position:absolute;
+            top: 0%;
+            text-align:center;
+        }
+        .progress-carddashboard{
+            height:220px;
+        }
+         .bullet {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+         .excellent { background-color: #204070; }
+        .good { background-color:rgb(60, 104, 148); }
+        .keep-going { background-color: gray; }
+        .img-details{
+            text-align:left;
+        }
+        .card-progress p {
+    font-size: 16px; /* Increased font size for better readability */
+    color: #666;
+    margin-bottom: 15px;
+
+}
+.progress-container {
+    position: relative;
+    width: 120px;
+    margin: 2px;
+    display:flex;
+    justify-content:center;
+}
+
+canvas {
+    width: 90px !important;
+    height: 90px !important;
+}
+
+.progress-text-new {
+    position: absolute;
+    top: 37%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+.progress {
+    border-radius: 5px;
+    overflow: hidden; /* Prevents overflow issues */
+    position: relative;
+    width: 100%; /* Ensure all bars take full width */
+}
+
+.progress .bar {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.progress-text {
+    font-size: 12px;
+    color: black;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.points-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Ensures consistent spacing */
+}
+
     </style>
 </head>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <body>
     <div class="dashboard-header">
         {{{userpicture}}}
@@ -57,44 +148,143 @@
     </div>
 
     <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="dashboard-card user-stats">
-                    
-                    <div class="chart-placeholder">
-                        <img src="{{asset1_image_url}}" alt="User Stats Chart">
-                    </div>
-                    <p><strong>Excellent</strong> | Good | Need to Improve</p>
+        <div class="main-progress-1">
+            <div class="w-100 me-2  progress-carddashboard">   
+                <div class="dashboard-card user">
+                        <div class=" d-flex justify-content-center">
+                              <h3 >User <span class="img-heading">Stats</span></h3>
+                        </div>
+                        <div class="d-flex img-details">
+                            <div class="chart-placeholder user-stats ">
+                                <img src="{{asset1_image_url}}" alt="User Stats Chart">
+                            </div>
+                            <div class="d-block align-content-center">
+                                <div><span class="bullet excellent"></span>Excellent</div>
+                                <div><span class="bullet good"></span>Good</div>
+                                <div><span class="bullet keep-going"></span>Keep Going</div>
+                            </div>
+                        </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class=" w-100 me-2 progress-carddashboard">
                 <div class="dashboard-card">
-                    <h5>Course Enrolled</h5>
-                    <h2>{{totalCourses}}</h2>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="dashboard-card">
-                    <h5>Learning Path</h5>
-                    <div class="learning-path-circles">
-                        <div class="circle">✔</div>
-                        <div class="circle">✖</div>
+                   <div class="d-flex justify-content-between" style="border-bottom: 3px dotted black; padding-bottom: 15px;">
+                   <span>
+                            <h3 class="text-left">Course <br><span class="img-heading">Enrolled</span> </h3>
+
+                   </span>
+                   <span >
+                           <img src={{course_enrolled_url}} alt="User enrollments" width="80">
+                   </span>
+                   
                     </div>
-                    <p>Completed | Overdue</p>
+                    <h2 class="coursecount text-left" >{{totalCourses}}</h2>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="dashboard-card">
-                    <h5>Total Earned Points</h5>
-                    <div class="points-bars">
-                        <div class="mb-2">July <div class="bar" style="width: {{totalPoints}}%;"></div></div>
-                        <div class="mb-2">June <div class="bar" style="width: {{totalPoints}}%;"></div></div>
-                        <div class="mb-2">May <div class="bar" style="width: {{totalPoints}}%;"></div></div>
-                        <div class="mb-2">April <div class="bar" style="width: {{totalPoints}}%;"></div></div>
-                    </div>
-                </div>
-            </div>
+           <div class="dashboard-card card-progresss">
+    <h3>Learning <span class="img-heading">Path</span></h3>
+
+    <div class="d-flex justify-content-center ">
+        <!-- Completed -->
+        <div class="progress-container">
+            <canvas id="learningPathChart" data-progress="{{learningPathPercentage}}"></canvas>
+            <div class="progress-text-new" id="learningPathText">{{learningPathPercentage}}%</div>
+        </div>
+        
+        <!-- Overdue -->
+        <div class="progress-container">
+            <canvas id="curriculumChart" data-progress="{{overduePercentage}}"></canvas>
+            <div class="progress-text-new" id="curriculumText">{{overduePercentage}}%</div>
         </div>
     </div>
+    <h5>{{completedCourses}} Completed / {{totalOverdue}} Overdue</h5>
+</div>
+
+            
+        </div>
+     <div class="w-100 mt-5">
+    <div class="dashboard-card ">
+        <h3>Total <span class="img-heading">Earned Points</span></h3>
+        <div class="d-flex justify-content-around align-items-center">
+            <div class="points-bars w-75">
+            {{#courses}}
+            <div class="d-flex align-items-center mb-2">
+                <div class="progress me-2" style="height: 15px; background: lightgray; border-radius: 5px; position: relative; width: 25rem;">
+                    <div class="bar" style="width: {{percentage}}%; background-color: {{bar_color}}; height: 15px; border-radius: 5px; position: relative;">
+                        <span class="progress-text">{{percentage}}%</span>
+                    </div>
+                </div>
+                <div class="ms-2" style="min-width: 80px; text-align: right;">
+                    <b>{{points_display}}</b>
+                </div>
+                <div class="ms-2" style="text-align: left;">
+                    {{course_name}}
+                </div>
+            </div>
+
+            {{/courses}}
+        </div>
+        <div>
+            <div>
+                <img src={{course_award_url}} width="120">
+            </div>
+            <div>
+                <h4><span  class="img-heading">{{totalPoints}}</span>/{{totalPossiblePoints}}</h4>
+            </div>
+
+        </div>
+        </div>
+    </div>
+</div>
+    </div>
 </body>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    function createGaugeChart(canvasId, textId, progressValue, color) {
+        let canvas = document.getElementById(canvasId);
+        if (!canvas) return; // Prevent errors if canvas doesn't exist
+
+        let ctx = canvas.getContext("2d");
+
+        new Chart(ctx, {
+            type: "doughnut",
+            data: {
+                datasets: [{
+                    data: [progressValue, 100 - progressValue],
+                    backgroundColor: [color, "lightgray"], // Dynamic color
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: "70%",
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                }
+            }
+        });
+
+        document.getElementById(textId).innerText = progressValue.toFixed(2) + "%";
+    }
+
+    // Fetch values dynamically from Mustache variables
+    var totalCourses = parseFloat("{{totalCourses}}") || 0;
+    var completedCourses = parseFloat("{{completedCourses}}") || 0;
+    var overdueCourses = parseFloat("{{totalOverdue}}") || 0;
+
+    // Calculate percentages ensuring total is 100%
+    var completedPercentage = (totalCourses > 0) ? (completedCourses / totalCourses) * 100 : 0;
+    var overduePercentage = 100 - completedPercentage; // Ensuring the total is always 100%
+
+    // Initialize both charts with correct colors
+    createGaugeChart("learningPathChart", "learningPathText", completedPercentage, "#204070"); // Dark Blue for Completed
+    createGaugeChart("curriculumChart", "curriculumText", overduePercentage, "#808080"); // Gray for Overdue
+});
+</script>
+
+
+
+
 </html>
