@@ -177,7 +177,7 @@ if (isloggedin() && !isguestuser()) {
     
             if (($current_time - $last_upload_time) >= $one_week) {
                 $showpopup = true;
-                $popupmessage = "It's been more than a week since a course was last uploaded!";
+                $popupmessage = "It's been more than a week since a course was last uploaded! Please upload a new course.";
             }
         }
     }

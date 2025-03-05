@@ -418,9 +418,9 @@ body#page-login-forgot_password {
 #page-login-forgot_password .card {
     background: white !important; /* Optional: Keep the form white for better visibility */
 }
-/* Popup Overlay */
+/* Popup Overlay *//* ✅ Initially hidden */
 .popup-overlay {
-    display: flex; /* Hidden initially */
+    display: none; /* Hidden initially */
     justify-content: center;
     align-items: center;
     position: fixed;
@@ -430,9 +430,11 @@ body#page-login-forgot_password {
     height: 100%;
     background: rgba(0, 0, 0, 0.6);
     z-index: 1000;
+    opacity: 0;
+    animation: fadeIn 0.3s ease-out forwards;
 }
 
-/* Popup Box */
+/* ✅ Popup Box Animation */
 .popup-content {
     background: white;
     padding: 20px;
@@ -440,9 +442,11 @@ body#page-login-forgot_password {
     text-align: center;
     border-radius: 10px;
     position: relative;
+    transform: scale(0.7);
+    animation: scaleUp 0.3s ease-out forwards;
 }
 
-/* Close Button */
+/* ✅ Close Button */
 .close-btn {
     position: absolute;
     top: 10px;
@@ -453,13 +457,13 @@ body#page-login-forgot_password {
     cursor: pointer;
 }
 
-/* Image */
+/* ✅ Image */
 .popup-image {
     width: 100px;
     margin-bottom: 10px;
 }
 
-/* "Got It" Button */
+/* ✅ "Got It" Button */
 .got-it-btn {
     background: #204070;
     color: white;
@@ -467,4 +471,43 @@ body#page-login-forgot_password {
     border: none;
     cursor: pointer;
     border-radius: 5px;
+    transition: 0.3s ease-in-out;
 }
+
+.got-it-btn:hover {
+    background: #3060A0;
+    transform: scale(1.05);
+}
+
+/* ✅ Fade-in Effect */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* ✅ Scale-up Effect */
+@keyframes scaleUp {
+    from {
+        transform: scale(0.7);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+/* ✅ Fade-out Effect */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+}
+

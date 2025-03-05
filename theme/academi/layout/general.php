@@ -32,7 +32,7 @@ if ($last_course) {
     $one_week = 7 * 24 * 60 * 60; // 1 week in seconds
 
     if ($time_difference >= $one_week) {
-        $message = "It's been more than a week since a course was last uploaded!";
+        $message = "It's been more than a week since a course was last uploaded! Please upload a new course.";
     }
 }
 

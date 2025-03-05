@@ -99,7 +99,7 @@ if ($is_admin) {
 
         if (($current_time - $last_upload_time) >= $one_week) {
             $showpopup = true;
-            $popupmessage = "It's been more than a week since a course was last uploaded!";
+            $popupmessage = "It's been more than a week since a course was last uploaded! Please upload a new course.";
         }
     }
 }
@@ -121,7 +121,8 @@ echo $OUTPUT->custom_block_region('content');
             <img src="<?php echo $alert_gif; ?>" alt="Alert Image" class="popup-image">
             <h3>Important Notice:</h3>
             <p><?php echo htmlspecialchars($popupmessage, ENT_QUOTES, 'UTF-8'); ?></p>
-            <button class="got-it-btn" onclick="closePopup()">Got It</button>
+            
+            <button class=" create-course-btn" onclick="redirectToCreateCourse()">Create Course</button>
         </div>
     </div>
 <?php } ?>
@@ -130,7 +131,9 @@ echo $OUTPUT->custom_block_region('content');
     function closePopup() {
         document.getElementById("customPopup").style.display = "none";
     }
-
+    function redirectToCreateCourse() {
+    window.location.href = window.location.origin + "/moodle/course/edit.php";
+}
     document.addEventListener("DOMContentLoaded", function () {
         var showPopup = <?php echo json_encode($showpopup); ?>;
         if (showPopup) {
