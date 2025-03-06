@@ -11,7 +11,7 @@
         grid-template-columns:4fr 4fr 4fr;
       }
         .dashboard-header {
-            background-color: #0A2A4A;
+            background-color: #204070;
             color: white;
             padding: 20px;
             display: flex;
@@ -135,6 +135,33 @@ canvas {
     display: flex;
     flex-direction: column;
     gap: 10px; /* Ensures consistent spacing */
+}#page.drawers .main-inner {
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
+    border-radius: .5rem;
+    background-color: transparent;
+    /* padding: 1.5rem .5rem; */
+    margin-top: .5rem;
+    margin-bottom: 3rem;
+    flex: 1 0 auto;
+}
+.pagelayout-mydashboard #region-main {
+    padding: 1px 0px; 
+}
+#user-notifications {
+    display: none;
+    overflow: hidden;
+}
+#page #page-header {
+    max-width: none;
+    display: none;
+    margin-bottom: 15px;
+    padding-top: 0;
+}@media (min-width: 768px) {
+    #page.drawers .main-inner {
+        padding: .1rem .1rem;
+    }
 }
 
     </style>
@@ -203,10 +230,10 @@ canvas {
             
         </div>
      <div class="w-100 mt-5">
-    <div class="dashboard-card ">
+    <div class="dashboard-card  ">
         <h3>Total <span class="img-heading">Earned Points</span></h3>
         <div class="d-flex justify-content-around align-items-center">
-            <div class="points-bars w-75">
+            <div class="points-bars w-75" style="max-height: 150px; overflow-y: auto;">
             {{#courses}}
             <div class="d-flex align-items-center mb-2">
                 <div class="progress me-2" style="height: 15px; background: lightgray; border-radius: 5px; position: relative; width: 25rem;">

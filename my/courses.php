@@ -1,27 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
-//
-// Moodle is free software: you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation, either version 3 of the License, or
-// (at your option) any later version.
-//
-// Moodle is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
-/**
- * My Courses Page.
- *
- * @package    core
- * @subpackage my
- * @copyright  2021 Mathew May
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+// Moodle My Courses Page
 
 require_once(__DIR__ . '/../config.php');
 require_once($CFG->dirroot . '/my/lib.php');
@@ -42,7 +20,7 @@ if (!$currentpage = my_get_page(null, MY_PAGE_PUBLIC, MY_PAGE_COURSES)) {
     throw new Exception('mymoodlesetup');
 }
 
-// Start setting up the page.
+// Page setup
 $PAGE->set_context($context);
 $PAGE->set_url('/my/courses.php');
 $PAGE->add_body_classes(['limitedwidth', 'page-mycourses']);
@@ -52,14 +30,15 @@ $PAGE->blocks->add_region('content');
 $PAGE->set_subpage($currentpage->id);
 $PAGE->set_title(get_string('mycourses'));
 $PAGE->set_heading(get_string('mycourses'));
+
 // ✅ Define alert GIF URL
 $alert_gif = $OUTPUT->image_url('alert', 'theme_academi')->out(false);
 
-// No blocks can be edited on this page
+// No blocks can be edited
 $PAGE->force_lock_all_blocks();
 $PAGE->theme->addblockposition = BLOCK_ADDBLOCK_POSITION_CUSTOM;
 
-// Add course management if the user has the capabilities for it.
+// Course management menu
 $coursecat = core_course_category::user_top();
 $coursemanagemenu = [];
 
@@ -82,12 +61,12 @@ if (!empty($coursemanagemenu)) {
     $PAGE->add_header_action($OUTPUT->render_from_template('my/dropdown', $coursemanagemenu));
 }
 
-// ✅ Check if the user is an admin and fetch last uploaded course
 global $DB, $USER;
 
+// ✅ Admin: Check last uploaded course
 $is_admin = is_siteadmin($USER->id);
-$showpopup = false;
-$popupmessage = "";
+$showpopup_admin = false;
+$popupmessage_admin = "";
 
 if ($is_admin) {
     $last_course = $DB->get_record_sql("SELECT id, fullname, timecreated FROM {course} ORDER BY timecreated DESC LIMIT 1");
@@ -98,9 +77,34 @@ if ($is_admin) {
         $one_week = 7 * 24 * 60 * 60; // 1 week in seconds
 
         if (($current_time - $last_upload_time) >= $one_week) {
-            $showpopup = true;
-            $popupmessage = "It's been more than a week since a course was last uploaded! Please upload a new course.";
+            $showpopup_admin = true;
+            $popupmessage_admin = "It's been more than a week since a course was last uploaded! Please upload a new course.";
         }
+    }
+}
+
+// ✅ Regular Users: Check inactivity (Admins are excluded)
+$showpopup_user = false;
+$popupmessage_user = "";
+
+if (!$is_admin) { // Condition ensures only users (not admins) get this popup
+    $last_activity = $DB->get_field_sql("
+        SELECT MAX(timeaccess) 
+        FROM {user_lastaccess} 
+        WHERE userid = ?", [$USER->id]);
+
+    $current_time = time();
+    $one_hour = 60 * 60; // 1 hour in seconds
+
+    if ($last_activity) {
+        if (($current_time - $last_activity) >= $one_hour) {
+            $showpopup_user = true;
+            $popupmessage_user = "You have been inactive for over an hour! Continue your learning journey now.";
+        }
+    } else {
+        // If no activity found, show the popup
+        $showpopup_user = true;
+        $popupmessage_user = "You haven't started any course activity yet. Explore and start learning!";
     }
 }
 
@@ -113,31 +117,51 @@ if (core_userfeedback::should_display_reminder()) {
 echo $OUTPUT->custom_block_region('content');
 ?>
 
-<!-- ✅ Popup HTML -->
-<?php if ($showpopup) { ?>
-    <div id="customPopup" class="popup-overlay" style="display: none;">
+<!-- ✅ Admin Popup -->
+<?php if ($showpopup_admin) { ?>
+    <div id="adminPopup" class="popup-overlay" style="display: none;">
         <div class="popup-content">
-            <button class="btn-close" onclick="closePopup()">×</button>
+            <button class="btn-close" onclick="closePopup('adminPopup')">×</button>
             <img src="<?php echo $alert_gif; ?>" alt="Alert Image" class="popup-image">
             <h3>Important Notice:</h3>
-            <p><?php echo htmlspecialchars($popupmessage, ENT_QUOTES, 'UTF-8'); ?></p>
-            
-            <button class=" create-course-btn" onclick="redirectToCreateCourse()">Create Course</button>
+            <p><?php echo htmlspecialchars($popupmessage_admin, ENT_QUOTES, 'UTF-8'); ?></p>
+            <button class="create-course-btn" onclick="redirectToCreateCourse()">Create Course</button>
+        </div>
+    </div>
+<?php } ?>
+
+<!-- ✅ User Inactivity Popup (ONLY FOR NON-ADMINS) -->
+<?php if ($showpopup_user) { ?>
+    <div id="userPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-content">
+            <button class="btn-close" onclick="closePopup('userPopup')">×</button>
+            <img src="<?php echo $alert_gif; ?>" alt="Alert Image" class="popup-image">
+            <h3>Hey there!</h3>
+            <p><?php echo htmlspecialchars($popupmessage_user, ENT_QUOTES, 'UTF-8'); ?></p>
+            <button class="btn-continue" onclick="redirectToCourses()">Go to Courses</button>
         </div>
     </div>
 <?php } ?>
 
 <script>
-    function closePopup() {
-        document.getElementById("customPopup").style.display = "none";
+    function closePopup(popupId) {
+        document.getElementById(popupId).style.display = "none";
     }
+
     function redirectToCreateCourse() {
-    window.location.href = window.location.origin + "/moodle/course/edit.php";
-}
+        window.location.href = "<?php echo $CFG->wwwroot; ?>/course/edit.php";
+    }
+
+    function redirectToCourses() {
+        window.location.href = "<?php echo $CFG->wwwroot; ?>/course";
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
-        var showPopup = <?php echo json_encode($showpopup); ?>;
-        if (showPopup) {
-            document.getElementById("customPopup").style.display = "flex";
+        if (<?php echo json_encode($showpopup_admin); ?>) {
+            document.getElementById("adminPopup").style.display = "flex";
+        }
+        if (<?php echo json_encode($showpopup_user); ?>) {
+            document.getElementById("userPopup").style.display = "flex";
         }
     });
 </script>
