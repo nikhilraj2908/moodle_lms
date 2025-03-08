@@ -1,0 +1,60 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<div class="block07design1 container">
+    {{#block07}}
+    <div class="card mb-3 h-100"  >
+        <div class="row no-gutters">
+            <div class="col-lg-4 "> 
+                <div class="single-course" style="background-image: url({{imgurl}});">
+                {{#block07priceshow}}
+                    <div class="enrol">
+                        {{cost}} {{currency}}
+                    </div>
+                {{/block07priceshow}}
+                </div>
+            </div>
+            <div class="col-lg-8 " >
+                <div class="card-body">
+                    <div class="d-inline-flex" data-toggle="tooltip" data-placement="top" title="Teacher">
+                        <div class="h6 hytext"> {{{ userpicture }}} {{{teachername}}}</div>
+                    </div>
+                    <h5 class="card-title post-heading">
+                        <a href="{{courselink}}" class="text-decoration-none">
+                            {{#block07shortname}}{{shortname}}{{/block07shortname}}
+                            {{#block07fullname}}{{fullname}}{{/block07fullname}}
+                        </a>
+                    </h5>
+                    <div class="card-text">{{#shortentext}} 200, {{{summary}}} {{/shortentext}}</div>
+                    <span class="">&nbsp;</span>
+                    <div class="card-text hytext" style="position:absolute; bottom:10px; width:95%; font-size: 13px; font-weight: 500;">
+                        <span data-toggle="tooltip" data-placement="top" title="{{#str}}block07tooltipcategory, theme_almondb {{/str}}">
+                            <i class="fa fa-plus-square" aria-hidden="true"></i>
+                            <a href="{{categorylink}}" class="text-decoration-none"> {{categoryName}} </a>
+                        </span>
+                        <span class="pl-2 pr-2" data-toggle="tooltip" data-placement="top" title="{{#str}}block07tooltipenrolled, theme_almondb {{/str}}">
+                            <i class="fa fa-users" aria-hidden="true">  {{studentscount}}</i>
+                        </span>
+                        <span class="float-right d-none d-sm-block" data-toggle="tooltip" data-placement="top" title="{{#str}}block07tooltiplastdate, theme_almondb {{/str}}">
+                            <i class="fa fa-calendar" aria-hidden="true"></i> {{update}}
+                        </span>
+                    </div>    
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/block07}}
+</div>

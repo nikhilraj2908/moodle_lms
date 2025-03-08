@@ -1,0 +1,59 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<div class="block08design3 blockbgwhite ">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12" >
+          <div class="section-title-fp hytext text-center blockbgwhite-b">
+              <h4>{{block08header}}</h4>
+          </div>
+          <div class="item-content text-center pt-2 pb-2 blockbgwhite-b">    
+                {{{block08caption}}}
+          </div>
+      </div>
+    </div>
+    <div class="row " >
+      {{#block08}}
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+        <div class="card h-100">
+          <a href="{{userURL}}">
+            <img src="{{userpictureURL}}" class="card-img-top" alt="...">
+          </a>  
+          <div class="card-body">
+            <h6 class="card-title hytext">{{teachername}}</h6>
+            {{#shortentext}} 100, {{{description}}} {{/shortentext}}
+          </div>
+          {{#block08total}}
+          <div class="card-title hytext">
+            <span class="pl-3" style="font-weight: 600;" 
+                  data-toggle="tooltip" data-placement="top"
+                  title="{{#str}}block08tooltipstudents, theme_almondb {{/str}}">
+              <i class="fa fa-user card-title" aria-hidden="true"> </i> {{studentscount}}+ 
+            </span>
+            <span class="float-right pr-3" style="font-weight: 600;" 
+                  data-toggle="tooltip" data-placement="top" 
+                  title="{{#str}}block08tooltipcourse, theme_almondb {{/str}}">
+              <i class="fa fa-graduation-cap" aria-hidden="true"> </i> {{coursecount}}+
+            </span>  
+          </div>
+          {{/block08total}}
+        </div>
+      </div>
+      {{/block08}}
+    </div>
+  </div>  
+</div>

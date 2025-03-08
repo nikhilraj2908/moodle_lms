@@ -1,0 +1,76 @@
+#slider4 h1,
+#slider4 h2,
+.font-weight-bold {
+    font-weight: 700 !important;
+}
+
+#slider4 h3,
+#slider4 h4,
+.font-weight-semi-bold {
+    font-weight: 600 !important;
+}
+
+#slider4 h5,
+#slider4 h6,
+.font-weight-medium {
+    font-weight: 500 !important;
+}
+
+
+#slider4 .carousel-caption {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: left;
+    background: rgba(0, 0, 0, .5);
+    max-width: unset;
+    z-index: 1;
+}
+
+#slider4 .carousel-indicators {
+    width: 60px;
+    top: 0;
+    right: calc(100% - 60px);
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#slider4 .carousel-indicators li {
+    width: 25px;
+    height: 25px;
+    margin: 5px 0;
+    background: $dark;
+    border: 5px solid $light;
+    border-radius: 25px;
+}
+
+#slider4 .carousel-indicators .active {
+    background: $hythemecolor;
+}
+
+@media (max-width: 991.98px) {
+    #slider4 .carousel-indicators {
+        width: 45px;
+        right: calc(100% - 45px);
+    }
+
+    #slider4 .carousel-indicators li {
+        width: 15px;
+        height: 15px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    #slider4 .carousel-caption h5 {
+        font-size: 16px;
+    }
+
+    #slider4 .carousel-caption h1 {
+        font-size: 30px;
+        font-weight: 700 !important;
+    }
+}

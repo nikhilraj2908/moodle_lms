@@ -1,0 +1,85 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<div class="block09 block09design3 blockbgwhite">
+  <div class="container">
+      <div id="block09design3-slider" class="splide" >
+          <div class="splide__track" >
+              <ul class="splide__list " >
+                {{#block09}}
+                {{#block09background}}
+                    <li class="splide__slide ">
+                        <div class="card text-center">
+                          <div class="card-body {{^bgcolor}}single-box{{/bgcolor}} {{#bgcolor}}single-box-color{{/bgcolor}}" 
+                                    {{#imgurl}}  style= "background-image: url({{{imgurl}}});"{{/imgurl}}
+                                    {{#bgcolor}} style= "background-color:{{bgcolor}};"{{/bgcolor}}
+                                    >
+                            <div class="{{^bgcolor}}single-box-alt{{/bgcolor}}{{#bgcolor}}single-box-alt-color{{/bgcolor}}"
+                                        style="background-color: {{sitecolor}} ;">
+                              <a class="text-decoration-none text-white" href="{{catagoryURL}}">
+                                <h6 class="card-title">{{#shortentext}} 37, {{catagoryname}} {{/shortentext}}</h6>
+                              </a>
+                              <p class="card-text text-white">{{#str}} over, theme_almondb {{/str}} {{coursecount}} {{#str}}courses, moodle {{/str}}</p>
+                            </div>  
+                          </div>
+                        </div>
+                    </li>
+                {{/block09background}}   
+                {{^block09background}}
+                <li class="splide__slide ">
+                  <div class="">
+                      <div class="card text-center">
+                          <div class="card-body">
+                            <a class="text-decoration-none hytext" href="{{catagoryURL}}">
+                              <h6 class="card-title">{{#shortentext}} 37, {{catagoryname}} {{/shortentext}}</h6>
+                              <p class="card-text">{{#str}} over, theme_almondb {{/str}} {{coursecount}} {{#str}}courses, moodle {{/str}}</p>
+                            </a>
+                          </div>
+                      </div>
+                  </div>
+                </li>  
+                {{/block09background}}
+                {{/block09}}    
+              </ul>
+          </div>
+      </div>
+  </div>
+</div>   
+<script>
+document.addEventListener( 'DOMContentLoaded', function () {
+  new Splide( '#block09design3-slider', {
+        type    : 'loop',
+        autoplay: true,
+        gap: '1rem',
+        perPage: 4,
+        perMove: 1,
+        pagination: false,
+        direction: document.dir,
+        breakpoints: {
+            1200:{ 
+              perPage: 3,
+            },
+            980:{
+                perPage: 2,
+            },
+            700: {
+                perPage: 1,
+                pagination: false,
+        },
+      }
+  } ).mount();
+} );
+</script>

@@ -1,0 +1,32 @@
+/* Login Scss */
+
+.justify-content-center {
+    justify-content: center !important;
+}
+
+.justify-content-left {
+    justify-content: left !important;
+}
+
+.justify-content-right {
+    justify-content: right !important;
+}
+/* External Login */
+.login-identityproviders {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-content: stretch;
+    align-items: baseline;
+}
+.login-container h2.login-heading {
+    width: 100%;
+}
+.login-identityproviders a.login-identityprovider-btn {
+    width: 48%;
+    margin-right: 2%;
+}
+/* Help(?) button */
+.login-background .btn-footer-popover {
+    right: 3rem;
+    bottom: 1rem;
+}

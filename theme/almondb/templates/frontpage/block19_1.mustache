@@ -1,0 +1,41 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<div class="block19design1 hy-pt-40 hy-pb-40">
+    {{#block19headerenabled}}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12" >
+                <div class="section-title-fp hytext text-center hy-pb-40">
+                    <h4>{{{block19header}}}</h4>
+                </div>    
+                <div class="item-content text-center hy-pt-5">    
+                    {{{block19caption}}}
+                </div>
+            </div>
+        </div>
+    </div>    
+    {{/block19headerenabled}}
+    <div class="container">
+        <div class="row align-items-center">
+        {{#block19}}
+            <div class="text-center col-xs col-sm col-sm-4 col-md hy-pt-10 hy-pb-10">
+                <a href="{{{link}}}"><img src="{{{image19}}}" style="width:100%;" alt=""></a>
+            </div>
+        {{/block19}}    
+        </div>
+    </div>
+</div>

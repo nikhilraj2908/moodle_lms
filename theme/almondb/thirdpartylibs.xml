@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<libraries>
+  <library>
+    <location>js/splide.min.js</location>
+    <name>Splide.js</name>
+    <license>MIT</license>
+    <version>2.4.20</version>
+    <licenseversion>2020</licenseversion>
+  </library>
+</libraries>

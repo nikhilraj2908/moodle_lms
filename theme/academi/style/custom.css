@@ -287,21 +287,17 @@ body {
 
 /* Section Title */
 .custom-section-title {
-    background-color: rgba(204,231,234,255);
-    width: 100%;
-
-    font-size: 30px;
     font-weight: bold;
-    color: #2b1202;
-    margin-bottom: 20px;
-    text-align: center;
-    padding: 10px;
-    border-radius: 10px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #1f0074, #02049e, #ffbb00, #0026ff);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientText 5s ease-in-out infinite;
+      
 }
 
-.custom-section-title span {
-    color: rgba(13,1,104,255);
-}
+
 
 /* Course Grid - Horizontal Layout */
 .custom-course-grid {
@@ -311,95 +307,6 @@ body {
     margin: 5% 12% 0% 12%;
 }
 
-/* Course Card - Horizontal */
-/* Default styling for the course card */
-.custom-course-card {
-    position: relative;
-    height: 300px; /* Ensuring all cards are the same height */
-    overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2); /* Always show shadow */
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    text-align: center;
-}
-
-/* Image inside the card (as background) */
-/* Ensure the image is properly displayed */
-.custom-course-card-image {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0; /* Ensure image is not behind the content */
-}
-
-/* Ensure image is visible */
-.custom-course-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Makes sure image covers the whole background */
-    display: block;
-    transition: transform 0.6s ease-in-out; 
-}
-
-
-/* Ensure text is always visible over the image */
-.custom-course-content {
-    align-content: center;
-    height: 100%;
-    position: relative;
-    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
-    color: white;
-    padding: 20px;
-    border-radius: 0 0 10px 10px;
-}
-
-/* Title */
-.custom-course-title {
-    font-size: 30px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: white;
-}
-
-/* Description */
-.custom-course-description {
-    font-size: 14px;
-    margin-bottom: 15px;
-}
-
-/* Button */
-.custom-view-more {
-    display: inline-block;
-    padding: 10px 20px;
-    background: transparent;
-    border: 2px solid white;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
-    border-radius: 5px;
-}
-
-/* Button hover effect */
-.custom-view-more:hover {
-    background: white;
-    color: black;
-}
-
-/* On hover, make image zoom in */
-.custom-course-card:hover .custom-course-card-image img {
-    transform: scale(1.1);
-}
-
-.custom-load-more{
-    text-align: center;
-}
 .main-inner{
     background-image: url("../pix/bgmainfrontpage.jpg");
     background-repeat: no-repeat;
@@ -510,4 +417,188 @@ body#page-login-forgot_password {
         transform: scale(0.7);
     }
 }
+/* Course Card - Horizontal */
+.custom-course-card {
+    position: relative;
+    height: 300px; /* Ensuring all cards are the same height */
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2); /* Always show shadow */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-align: center;
+}
 
+/* Image inside the card (as background) */
+.custom-course-card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0; /* Ensure image is not behind the content */
+}
+
+/* Ensure image is visible */
+.custom-course-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Makes sure image covers the whole background */
+    display: block;
+    transition: transform 0.6s ease-in-out;
+}
+
+/* Ensure text is always visible over the image */
+.custom-course-content {
+    align-content: center;
+    height: 100%;
+    position: relative;
+    background: rgba(0, 0, 0, 0.6); /* Semi-transparent black background */
+    color: white;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.3s ease-in-out; /* Smooth fade-in */
+}
+
+/* Title */
+.custom-course-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white;
+    z-index: 1; /* Ensure title is always visible */
+}
+
+/* Description */
+.custom-course-description {
+    font-size: 14px;
+    margin-bottom: 15px;
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.3s ease-in-out; /* Smooth fade-in */
+}
+
+/* Button */
+.custom-view-more {
+    display: inline-block;
+    padding: 10px 20px;
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    border-radius: 5px;
+    opacity: 0; /* Initially hidden */
+    transition: opacity 0.3s ease-in-out; /* Smooth fade-in */
+}
+
+/* Button hover effect */
+.custom-view-more:hover {
+    background: white;
+    color: black;
+}
+
+/* On hover, make image zoom in and show title, description, and button */
+.custom-course-card:hover .custom-course-content {
+    opacity: 1; /* Make the content visible */
+}
+
+.custom-course-card:hover .custom-course-description {
+    opacity: 1; /* Show the description */
+}
+
+.custom-course-card:hover .custom-view-more {
+    opacity: 1; /* Show the button */
+}
+
+/* On hover, make image zoom in */
+.custom-course-card:hover .custom-course-card-image img {
+    transform: scale(1.1);
+}
+
+.custom-load-more {
+    text-align: center;
+}
+/* .custom-course-card {
+    position: relative;
+    height: 300px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    text-align: center;
+}
+
+.custom-course-card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0; 
+}
+
+.custom-course-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.6s ease-in-out; 
+}
+
+
+.custom-course-content {
+    align-content: center;
+    height: 100%;
+    position: relative;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+}
+
+.custom-course-title {
+    font-size: 30px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.custom-course-description {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+.custom-view-more {
+    display: inline-block;
+    padding: 10px 20px;
+    background: transparent;
+    border: 2px solid white;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    border-radius: 5px;
+}
+
+
+.custom-view-more:hover {
+    background: white;
+    color: black;
+}
+
+.custom-course-card:hover .custom-course-card-image img {
+    transform: scale(1.1);
+}
+
+.custom-load-more{
+    text-align: center;
+}  */

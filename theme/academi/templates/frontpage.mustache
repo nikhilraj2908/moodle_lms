@@ -153,7 +153,7 @@
 
 
 <div class="custom-courses-container">
-    <h2 class="custom-section-title">📚 <span>My</span> Courses</h2>
+    <h2 class="d-flex justify-content-center" ><span class="icon-mycourse">📚</span> <span class="custom-section-title ps-3 ">  My Courses</span> </h2>
 
     <div class="custom-course-grid" id="courseGrid">
         {{#courses}}
@@ -172,9 +172,8 @@
     </div>
 </div>
 
-
 <div class="custom-load-more">
-    <button id="loadMoreBtn" >Load More</button>
+    <button id="loadMoreBtn">Load More</button>
 </div>
 
 
@@ -294,9 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
         createGaugeChart('curriculumChart', 'curriculumText');
     });
 
-
-
-    document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     const courses = document.querySelectorAll(".custom-course-card");
     const loadMoreBtn = document.getElementById("loadMoreBtn");
 
@@ -340,6 +337,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
 
 </script>
 

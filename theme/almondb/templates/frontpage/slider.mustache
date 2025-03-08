@@ -1,0 +1,139 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{#sliderenabled}}
+    <div style="margin-top:0px;"></div>
+    {{! slider 1}}
+    {{#slider1}}
+    <div id="carouselExampleCaptions" class="carousel slide " data-ride="carousel">
+        <ol class="carousel-indicators">
+            {{#slides}}
+                <li data-target="#carouselExampleCaptions" data-slide-to="{{{ key }}}" {{#active}}class="active"{{/active}}></li>
+            {{/slides}}
+        </ol>
+        <div class="carousel-inner">
+            {{#slides}}
+                <div class="carousel-item sldcontainer {{#active}}active{{/active}}">
+                    <img src="{{{image}}}" class="d-block w-100"  height="{{{slidershowheight}}}" alt="sld" >
+                    <div class="carousel-caption sldcontent">
+                        {{#title}}<h1 class="text-light">{{{ title }}}{{{ sliderdesign }}}</h1>{{/title}}
+                        {{#caption}}<p>{{{ caption }}}</p>{{/caption}}
+                        {{#button}}<p><a class="hybtn get-started-btn p-8" href="{{{buttonurl}}}">{{{ button }}}</a></p>{{/button}}
+                    </div>
+                </div>
+            {{/slides}}
+        
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleCaptions" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleCaptions"  data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    {{/slider1}}
+    {{! slider 2}}
+    {{#slider2}}
+    <div id="carouselExampleCaptions" class="carousel slide " data-ride="carousel">
+        <ol class="carousel-indicators">
+            {{#slides}}
+                <li data-target="#carouselExampleCaptions" data-slide-to="{{{ key }}}" {{#active}}class="active"{{/active}}></li>
+            {{/slides}}
+        </ol>
+        <div class="carousel-inner">
+            {{#slides}}
+                <div class="carousel-item {{#active}}active{{/active}}">
+                    <img src="{{{image}}}" class="d-block w-100" height="{{{slidershowheight}}}" alt="sld" style="filter: brightness(60%);" >
+                    <div {{#slideropacity}}class="carousel-content-image"{{/slideropacity}}>
+                        <div class="slider-inner carousel-caption">
+                            {{#title}}<h1 class="text-light">{{{ title }}}</h1>{{/title}}
+                            {{#caption}}<h5>{{{ caption }}}</h5>{{/caption}}
+                            {{#button}}<p><a class="hybtn get-started-btn p-8" href="{{{buttonurl}}}">{{{ button }}}</a></p>{{/button}}
+                        </div>
+                    </div>
+                </div>
+            {{/slides}}
+        
+        </div>
+        <a class="carousel-control-prev" href="#carouselExampleCaptions" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleCaptions"  data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    {{/slider2}}    
+    {{! slider 3}}
+    {{#slider3}}
+    <div id="carouselSlideCaptions" class="carousel slide" data-ride="carousel" data-interval="5000">
+        <ol class="carousel-indicators">
+            {{#slides}}
+                <li data-target="#carouselSlideCaptions" data-slide-to="{{{ key }}}" {{#active}}class="active"{{/active}}></li>
+            {{/slides}}
+        </ol>
+        <div class="carousel-inner">
+            {{#slides}}
+                <div class="carousel-item {{#active}}active{{/active}}">
+                    <img class="d-block w-100 animated fadeIn" src="{{{ image }}}" alt="sld">
+
+                    <div class="carousel-caption animated fadeInRightBig">
+                        {{#title}}<h2 class="title">{{{ title }}}</h2>{{/title}}
+
+                        {{#caption}}<div class="caption">{{{ caption }}}</div>{{/caption}}
+                    </div>
+                </div>
+            {{/slides}}
+        </div>
+    </div>
+    {{#js}}
+        require(['jquery', 'theme_boost/bootstrap/carousel'], function($, carousel) {
+            $('#carouselSlideCaptions').carousel({
+                interval: 2500,
+                pause: 'hover'
+            });
+        })
+    {{/js}}
+    {{/slider3}}
+    {{#slider4}}
+    <div id="slider4" class="container-fluid p-0">
+        <div id="header-carousel" class="carousel slide carousel-fade" data-ride="carousel">
+             <ol class="carousel-indicators">
+                {{#slides}}
+                    <li data-target="#header-carousel" data-slide-to="{{{ key }}}" {{#active}}class="active"{{/active}}></li>
+                {{/slides}}
+            </ol>
+            <div class="carousel-inner">
+                {{#slides}}
+                <div class="carousel-item {{#active}}active{{/active}}" style="min-height: 300px;">
+                    <img class="position-relative w-100" src="{{{ image }}}" alt="slide-{{{ key }}}" style="min-height: 300px; object-fit: cover; height:{{{slidershowheight}}}px;">
+                    <div class="carousel-caption d-flex align-items-center justify-content-center">
+                        <div class="p-6" style="width: 100%; max-width: 900px;">
+                            {{#title}}<h5 class="text-uppercase mb-md-3">{{{ title }}}</h5>{{/title}}
+                            {{#caption}}<div class="h1 font-weight-bold display-3 mb-md-4">{{{ caption }}}</div>{{/caption}}
+                            {{#button}}<a href="{{{buttonurl}}}" class="hybtn py-md-2 px-md-4 font-weight-semi-bold mt-2">{{{ button }}}</a>{{/button}}
+                        </div>
+                    </div>
+                </div>
+                {{/slides}}
+            </div>
+        </div>
+    </div>
+    {{/slider4}}
+{{/sliderenabled}}

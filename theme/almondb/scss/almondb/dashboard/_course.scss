@@ -1,0 +1,338 @@
+/* Course SCSS */
+.course-content {
+    .course-section .course-section-header {
+        background-color: $hythemecolor-obs-1;
+        padding: 15px;
+        border-radius: 1rem;
+    }
+    h3 {
+        font-weight: 500;
+    }
+}
+.category .info h3 a,
+h4 a {
+    color: $hythemecolor;
+}
+.page-header-wrapper {
+    position: relative;
+    height: 300px;
+    margin-bottom: 20px;
+}
+.course-header-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+}
+.course-header-txt {
+    position: absolute;
+    display: inline-block;
+    top: 10%;
+    padding: 10px;
+    background-color: #e9ecef;
+    border-radius: 1rem;
+    opacity: 0.8;
+}
+.course-header-image {
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: top, center;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+}
+.course_category_tree {
+    .category.with_children.collapsed > .info > .categoryname::after {
+        color: $hythemecolor;
+        content: "\f0fe";
+    }
+    .category.with_children > .info > .categoryname::after {
+        color: $hythemecolor;
+        content: "\f146";
+    }
+    .category > .info > .categoryname::after {
+        color: $hythemecolor;
+        content: "\f146";
+        position: absolute;
+        right: 10px;
+        font-family: "Font Awesome 6 Free";
+        font-size: inherit;
+    }
+    .category:first-child > .info > .categoryname {
+        border: none;
+    }
+    .category > .info > .categoryname {
+        margin: 0;
+        padding: 8px 25px;
+        position: relative;
+        border-top: 1px solid #e9ecef;
+        background: none !important;
+        background-repeat: no-repeat;
+        color: $hythemecolor;
+        font-size: 1.12rem;
+        font-weight: 500;
+        line-height: 1.3;
+        background-position: center left;
+    }
+    a {
+        text-decoration: none;
+    }
+    h6 {
+        font-weight: 500;
+    }
+}
+.collapsible-actions .collapseexpand,
+.collapsible-actions a {
+    background-color: #fff;
+    border: 1px solid #e4e8f0;
+    box-shadow: 0 2px 1px 0 rgba(0, 0, 0, 0.05);
+    margin: 1rem 0;
+    padding: .5rem 1rem .5rem 1.8rem;
+    display: inline-flex;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 500;
+    color: #424242;
+    transition: all 350ms ease;
+    position: relative;
+}
+.coursebox {
+    padding: 0.9rem;
+    overflow: hidden;
+    .info {
+        display: initial;
+    }
+    .moreinfo .icon {
+        text-decoration: none;
+        margin-right: 0;
+    }
+    .content {
+        .summary {
+            float: left;
+            width: 90%;
+            padding: 5px;
+            margin-bottom: 30px;
+        }
+        .courseimage {
+            img {
+                max-width: 100%;
+                max-height: $course-category-img-height;
+                /* border-radius: 4px; */
+            }
+        }
+        .teachers {
+            position: relative;
+            margin-top: 15px !important;
+            width: 90%;
+            font-weight: 500;
+            display: inline-flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+    }
+    .moreinfo,
+    .enrolmenticons {
+        padding: 3px 0;
+        float: right;
+    }
+    &.even {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+}
+/* Teacher name and circle image */
+.chip {
+    display: inline-block;
+    padding: 0 12px;
+    margin: 0 0 -5px 10px;
+    height: 25px;
+    line-height: 25px;
+    border-radius: 25px 8px 8px 25px;
+    background-color: #f1f1f1;
+    img {
+        float: left;
+        margin: -10px 10px 0 -15px;
+        height: 35px;
+        width: 35px;
+        border-radius: 50%;
+        background-color: white;
+    }
+}
+
+.coursebox > .info > .coursename {
+    float: left;
+    padding-bottom: 10px;
+    font-weight: 500;
+    a {
+        background-image: url([[pix:moodle|i/next]]) !important;
+        background-repeat: no-repeat;
+        padding-left: 21px;
+        background-position: left 0.2em;
+    }
+}
+.single-course {
+    height: $course-category-img-height;
+    display: table;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-color: #ccc;
+    position: relative;
+}
+/* Single course page activity icon settings */
+img.activityicon {
+    height: 40px;
+    width: 40px;
+    vertical-align: middle;
+    padding: 5px;
+    border: 1px solid rgba($hythemecolor, 1);
+    border-radius: 3px;
+    background-color: $hythemecolor-obs-3;
+}
+
+.frontpage-course-list-all h6 {
+    font-weight: 500;
+}
+.course-card .card-img-top,
+.theme-card .card-img-top {
+    height: 9rem;
+    background-position: top center;
+    background-size: cover;
+}
+/* Small tablets and large phones font-size settings */
+/* Media max-width: 768px */
+@include media-breakpoint-down(sm) {
+    .course_category_tree .category > .info > .categoryname {
+        font-weight: 500;
+        font-size: 0.9rem;
+    }
+    .block.card {
+        border-radius: 0;
+    }
+}
+
+/* Theme edu365 course topic accordion. */
+.accordioneducard {
+    background-color: $hythemecolor-obs-3;
+    color: #444;
+    cursor: pointer;
+    margin-bottom: 4px;
+    padding: 15px;
+    padding-left: 30px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 5px;
+}
+.paneleducard {
+    padding: 0 18px;
+    display: none;
+    background-color: white;
+    h3 {
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        line-height: 1.2;
+        font-size: 18px;
+    }
+    a {
+        text-decoration: none;
+    }
+}
+.educardactive,
+.accordioneducard:hover {
+    background-color: $hythemecolor-obs-5;
+}
+.accordioneducard {
+    &:after {
+        font-family: "Font Awesome 6 Free";
+        content: "\f0fe";
+        color: $hythemecolor-obs-8;
+        font-weight: bold;
+        float: right;
+        margin-left: 5px;
+    }
+    a {
+        text-decoration: none;
+    }
+}
+.educardactive:after {
+    font-family: "Font Awesome 6 Free";
+    content: "\f146";
+}
+
+.course-summary .card {
+    margin-bottom: 4px;
+    .card-header {
+        font-size: 18px;
+        font-weight: 600;
+        padding-left: 30px;
+        background-color: $hythemecolor-obs-3;
+    }
+}
+/*  Theme left side bar course sections */
+.coursetopnav {
+    background-color: $hythemecolor-obs-3;
+    color: $hythemecolor;
+    font-weight: 500;
+    cursor: pointer;
+    &:hover {
+        background-color: $hythemecolor-obs-5;
+    }
+}
+.coursetopnavicon:after {
+    font-family: "Font Awesome 6 Free";
+    content: "\f0fe";
+    color: $hythemecolor;
+    font-weight: bold;
+    float: left;
+    margin-left: 5px;
+}
+.coursetopnavactive:after {
+    font-family: "Font Awesome 6 Free";
+    content: "\f146";
+}
+.coursetopnavicon1:after {
+    font-family: "Font Awesome 6 Free";
+    content: "\f0fe";
+    color: $hythemecolor;
+    font-weight: bold;
+    float: left;
+    margin-left: 5px;
+}
+.coursetopnavactive1:after {
+    font-family: "Font Awesome 6 Free";
+    content: "\f146";
+}
+.mycourse20 {
+    display: none;
+}
+.coursesection30 {
+    display: none;
+}
+
+/* Dashboard course category combo box */
+.categorypicker label {
+    display: none;
+}
+
+/* Frontpage course block currency */
+.enrol {
+    display: inline-block;
+    position: absolute;
+    margin-top: 10px;
+    padding: 0 12px;
+    right: 10px;
+    font-weight: 500;
+    height: 25px;
+    font-size: 14px;
+    line-height: 25px;
+    border-radius: 25px;
+    background-color: $hythemecolor;
+    color: white;
+}

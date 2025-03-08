@@ -1,0 +1,15 @@
+.moremenu {
+    .nav-link {
+        border-bottom: none !important;
+        &.active:focus,
+        &.active:hover {
+            background-color: transparent;
+            border-bottom-color: transparent;
+        }
+        &:hover,
+        &:focus {
+            border-color: transparent;
+            background-color: transparent;
+        }
+    }
+}

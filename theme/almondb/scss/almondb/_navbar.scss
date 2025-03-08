@@ -1,0 +1,274 @@
+/* Theme edu365 navbar */
+.navbar {
+    max-height: $navbar-height;
+    font-weight: $navbar-font-weight;
+    @include font-size($navbar-font-size);
+    .popover-region-container {
+        top: calc(#{$navbar-height} - (#{$spacer} / 2));
+    }
+    max-width: none;
+    margin: auto;
+}
+.nav-link:focus {
+    box-shadow: none;
+}
+#navheader.navbar-transparent {
+    background: transparent;
+    border-bottom: none;
+    .border-left {
+        border-left: none !important;
+    }
+    .divider {
+        width: 0;
+    }
+}
+
+#navheader.navbar-scrolled {
+    background: rgba($hynavbar, 0.9);
+    box-shadow: 0 2px 15px rgb(0 0 0 / 10%);
+    height: 100px;
+    animation-duration: 0.3s;
+    animation-fill-mode: both;
+    .divider {
+        width: 1px;
+    }
+}
+.hynavbar-nav {
+    display: flex;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+}
+.hydropdown {
+    position: relative;
+    right: 0;
+    .icon {
+        margin: 0;
+    }
+    .hydropbtn {
+        font-size: 16px;
+        border: none;
+        outline: none;
+        color: white;
+        padding: 14px 16px;
+        background-color: #f9f9f9;
+        font-family: inherit;
+        margin: 0;
+    }
+    &:hover .hydropdown-content {
+        display: block;
+    }
+}
+.hydropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #dee2e6;
+    min-width: 160px;
+    border-radius: 0.3rem;
+    box-shadow: 0 50px 100px rgb(50 50 93 / 10%), 0 15px 35px rgb(50 50 93 / 15%), 0 5px 15px rgb(0 0 0 / 10%);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    z-index: 99999;
+    a {
+        float: none;
+        //color: black;
+        padding: 0.25rem 1.5rem;
+        text-decoration: none;
+        display: block;
+        text-align: left;
+    }
+}
+.dashboard-header-area .hydropdown .hydropdown-content {
+    right: 0;
+}
+.navbar-light {
+    /* Header 4  */
+    .nav-link,
+    .langbutton,
+    .dropdown-toggle::after {
+        color: $navbar-light-color !important;
+    }
+    .nav-link.active {
+        background-color: transparent;
+        border-color: transparent;
+        border-bottom-color: transparent;
+        color: rgba(247, 195, 46) !important;
+        &:focus,
+        &:hover {
+            background-color: transparent;
+            border-bottom-color: transparent;
+        }
+    }
+    .nav-link:hover,
+    .nav-link:focus,
+    .langbutton:hover,
+    .langbutton:focus {
+        color: rgba(247, 195, 46) !important;
+        border-color: transparent;
+        background-color: transparent;
+    }
+    .btn-close .icon {
+        color: rgba(243, 123, 123, 0.8) !important;
+    }
+
+    /* Header 4 end */
+}
+.navbar-dark {
+    /* Header 4  */
+    .nav-link {
+        color: $navbar-dark-color !important;
+    }
+    .nav-link.active {
+        background-color: transparent;
+        border-color: transparent;
+        border-bottom-color: transparent;
+        color: rgba(247, 195, 46) !important;
+        &:focus,
+        &:hover {
+            background-color: transparent;
+            border-bottom-color: transparent;
+        }
+    }
+    .nav-link:hover,
+    .nav-link:focus,
+    .langbutton:hover,
+    .langbutton:focus {
+        color: rgba(247, 195, 46) !important;
+        border-color: transparent;
+        background-color: transparent;
+    }
+    .langbutton {
+        color: white;
+    }
+    .dropdown-toggle::after {
+        color: white;
+    }
+    .btn-close .icon {
+        color: rgba(243, 123, 123, 0.8) !important;
+    }
+    .simplesearchform .collapse.show,
+    .simplesearchform .collapsing {
+        background-color: $hynavbar;
+    }
+    /* Header 4 end */
+
+    button {
+        color: $navbar-dark-color;
+    }
+    .hydropdown-content a:hover {
+        background-color: $dropdown-link-hover-bg;
+    }
+    .dropdown-menu {
+        background-color: $hynavbar;
+    }
+    .dropdown-item {
+        color: $navbar-dark-color;
+    }
+    .usertext {
+        color: $navbar-dark-color;
+    }
+    .usertext:hover {
+        color: $navbar-dark-hover-color;
+    }
+    .hydropdown-content {
+        background-color: $hynavbar;
+    }
+    .hydropdown-content a {
+        color: $navbar-dark-color;
+    }
+    .usermenu .login a {
+        color: $navbar-dark-color;
+    }
+}
+#navbarhy {
+    background-color: #555;
+    z-index: 999;
+    .fixed-top {
+        position: relative;
+    }
+}
+.stickyhy {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    padding-top: 0;
+}
+#navnarhy_top {
+    height: 70px;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    opacity: .9;
+    z-index: 99999;
+    .logo img {
+        height: 45px;
+    }
+    ul {
+        align-items: center;
+        list-style-type: none;
+        margin: 0;
+        text-align: right;
+    }
+    a {
+        text-decoration: none;
+    }
+}
+#langheader3 {
+    .dropdown-menu {
+        right: 0;
+        left: auto;
+    }
+}
+.navbar.fixed-top .navbar-brand .logo {
+    max-height: 35px;
+}
+nav.navbar .logo img {
+    max-height: unset;
+}
+@include media-breakpoint-down(lg) {
+    #navnarhy_top .logo img {
+        height: 40px;
+    }
+    #navnarhy_top {
+        height: 60px;
+    }
+    .simplesearchform .collapse.show,
+    .simplesearchform .collapsing {
+        height: 60px;
+    }
+}
+@include media-breakpoint-down(sm) {
+    #navnarhy_top .logo img {
+        height: 30px;
+    }
+    #navnarhy_top {
+        height: 55px;
+    }
+    .simplesearchform .collapse.show,
+    .simplesearchform .collapsing {
+        height: 55px;
+    }
+    .course-header-bg #page-navbar {
+        display: none;
+    }
+}
+
+@include media-breakpoint-down(xs) {
+    #navnarhy_top .logo img {
+        height: 20px;
+    }
+    #navnarhy_top {
+        height: 45px;
+        justify-content: center;
+        ul {
+            display: none;
+        }
+    }
+    .simplesearchform .collapse.show,
+    .simplesearchform .collapsing {
+        height: 45px;
+    }
+}

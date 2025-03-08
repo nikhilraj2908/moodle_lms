@@ -1,0 +1,118 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{#block20enabled}}
+<section id="block20">
+    <footer class="footer-header-underline hy-pt-60 hy-pb-20 black-bg" {{#footerbackgroundcolor}} style="background-color: {{footerbackgroundcolor}};"{{/footerbackgroundcolor}} >
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-widget">
+                        <div class="footer-logo">
+                            {{#block20logosmall}}
+                            {{#output.get_compact_logo_url}}
+                                <img src="{{output.get_compact_logo_url}}" alt="{{sitename}}">
+                            {{/output.get_compact_logo_url}} 
+                            {{^output.get_compact_logo_url}}
+                                <div class="widget-title footer-site-name">
+                                    {{{block20col1header}}}
+                                </div>
+                            {{/output.get_compact_logo_url}}
+                            {{/block20logosmall}}
+
+                            {{#block20logologo}}
+                            {{#output.get_logo_url}}     
+                                <img src="{{output.get_logo_url}}" alt="{{sitename}}">
+                            {{/output.get_logo_url}} 
+                            {{^output.get_logo_url}}
+                                <div class="widget-title footer-site-name">
+                                    {{{block20col1header}}}
+                                </div> 
+                            {{/output.get_logo_url}} 
+                            {{/block20logologo}}
+
+                            {{^block20logosmall}}
+                            {{^block20logologo}}
+                            <div class="widget-title footer-site-name">
+                                {{{block20col1header}}}
+                            </div> 
+                            {{/block20logologo}} 
+                            {{/block20logosmall}}  
+                            <div class="footer-dec">
+                            <p>{{{block20col1caption}}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 ">
+                    <div class="footer-widget">
+                        <div class="widget-title footer-header-underline">
+                            <h6>{{{block20col4header}}}</h6>
+                        </div>
+                        <div class="address-line">
+                            {{{block20col4caption}}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-widget">
+                        <div class="widget-title footer-header-underline">
+                            <h6>{{{block20col2header}}}</h6>
+                        </div>
+                        <ul class="footer-menu">
+                            {{{block20col2links}}}
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="footer-widget">
+                        <div class="widget-title footer-header-underline">
+                            <h6>{{{block20col3header}}}</h6>
+                        </div>
+                        <ul class="footer-menu">
+                        {{{block20col3links}}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <div class="copyright-area black-bg">
+        <div class="container">
+            <div class="row ">
+                <div class="col-12 text-center hy-pt-10 social-links">
+                    {{{block20social}}}
+                </div>
+                <div class="col-12 text-center">
+                    <div class="copyright-area">
+                        <div class="small">
+                            {{{block20copyright}}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{#userlogin}}
+        <div class="setupbutton d-none d-sm-none d-md-none {{#block20moodle}}d-lg-block d-xl-block{{/block20moodle}}">
+            <a role="button" href="#" class="btn btn-danger" data-toggle="modal" data-target="#setup1Modal">
+                <i class="icon fa fa-cog fa-fw"></i>
+            </a>
+        </div> 
+        {{/userlogin}}
+        {{> theme_almondb/frontpage/theme}}
+    </div>
+</section>
+{{/block20enabled}}

@@ -1,0 +1,115 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<div class="block08design2 blockbgwhite ">
+  <div class="container">
+      <div class="row">
+          <div class="col-md-12" >
+              <div class="section-title-fp hytext text-center blockbgwhite-b">
+                  <h4>{{block08header}}</h4>
+              </div>
+              <div class="item-content text-center pt-2 pb-2">    
+                    {{{block08caption}}}
+              </div>
+          </div>
+      </div>
+  </div>
+  <div class="container">
+    <div id="block08design2-slider" class="splide" >
+        <div class="splide__track" >
+            <ul class="splide__list " >
+            {{#block08}}
+                <li class="splide__slide  hy__container ">
+                    <a href="{{userURL}}">
+                      <div class="hy__image">
+                        <img src="{{userpictureURL}}">
+                      </div>
+                    </a>
+                    {{#block08total}}
+                    <div class="hy__info hy-pt-15">
+                      <h6 class="text-center hytext">{{teachername}}</h6>
+                      <div class ="row hytext">
+                        <div class="col-6">
+                          {{^showdescription}}
+                          <span class="pl-2 pr-2" data-toggle="tooltip" data-placement="top" 
+                            title="{{#str}}block08tooltipstudents, theme_almondb {{/str}}">
+                          {{/showdescription}}  
+                            {{studentscount}}+Students 
+                          {{^showdescription}}  
+                          </span>
+                          {{/showdescription}}
+                        </div>
+                        <div class="col-6">
+                          {{^showdescription}}
+                            <span class="float-right pl-2 pr-2" data-toggle="tooltip" data-placement="top" 
+                              title="{{#str}}block08tooltipcourse, theme_almondb {{/str}}">
+                                {{coursecount}}+Courses
+                            </span>
+                          {{/showdescription}}
+                          {{#showdescription}}
+                            <span class="float-right pl-2 pr-2">
+                                {{coursecount}}+Courses
+                            </span>
+                          {{/showdescription}}
+                        </div>
+                      </div>
+                    </div>
+                    {{/block08total}}
+                    {{^block08total}}
+                    <div class="hy__info hy-pt-15">
+                        <h6 class="text-center hytext">{{teachername}}</h6>
+                    </div>
+                    {{/block08total}}
+                    {{#showdescription}}
+                    <div class="hy__overlay">
+                        <div class="hy__text">
+                          <h6 class="text-center">{{teachername}}</h6>
+                          {{{description}}} 
+						 </div>
+                    </div> 
+                    {{/showdescription}}   
+                </li>
+            {{/block08}}    
+            </ul>
+        </div>
+    </div>
+  </div>
+</div> 
+<script>
+document.addEventListener( 'DOMContentLoaded', function () {
+	new Splide( '#block08design2-slider', {
+        type    : 'loop',
+        autoplay: true,
+        gap: '1rem',
+        perPage: 4,
+	    	perMove: 1,
+        pagination: false,
+        direction: document.dir,
+        breakpoints: {
+            1200:{ 
+              perPage: 3,
+            },
+            980:{
+                perPage: 2,
+            },
+            700: {
+                perPage: 1,
+                pagination: false,
+ 		    },
+	    }
+	} ).mount();
+} );
+</script>

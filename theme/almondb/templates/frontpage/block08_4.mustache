@@ -1,0 +1,73 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+<div class="block08design4 blockbgwhite ">
+  <div class="container">
+    <div class="row">
+        <div class="col-md-12" >
+            <div class="section-title-fp hytext text-center blockbgwhite-b">
+                <h4>{{block08header}}</h4>
+            </div>
+            <div class="item-content text-center  blockbgwhite-b">    
+                  {{{block08caption}}}
+            </div>
+        </div>
+    </div>
+    <div class="row">
+      {{#block08}}
+      <div class="col-lg-6 col-md-12 col-sm-12 mb-4">
+        <div class="card h-100" >
+          <div class="row ">
+            <div class="col-md-5">
+              <a href="{{userURL}}">
+                <img src="{{userpictureURL}}" class="card-img-top" style="width:100%;" alt="..." >
+              </a>  
+            </div>
+            <div class="col-md-7">
+              <div class="card-body">
+                <h6 class="card-title hytext">{{teachername}}</h6>
+                <div class="d-none d-xl-block">
+                  <p class="card-text"> {{#shortentext}} 140, {{{description}}} {{/shortentext}}</p>
+                </div>
+                <div class="d-none d-lg-block d-xl-none">
+                  <p class="card-text"> {{#shortentext}} 70, {{{description}}} {{/shortentext}}</p>
+                </div>
+                <div class="d-none d-block d-md-block d-sm-block d-lg-none">
+                  <p class="card-text"> {{#shortentext}} 350, {{{description}}} {{/shortentext}}</p>
+                </div>
+                {{#block08total}}
+                <span class="">&nbsp;</span>  
+                <div class="card-text hytext" style="position:absolute; bottom:10px; width:78%; font-size: 13px; font-weight: 600;">
+                    <span data-toggle="tooltip" data-placement="top"
+                      title="{{#str}}block08tooltipstudents, theme_almondb {{/str}}">
+                      <i class="fa fa-user" aria-hidden="true"> </i> {{studentscount}}+ 
+                    </span>
+                    <span class="float-right" 
+                      data-toggle="tooltip" data-placement="top" 
+                      title="{{#str}}block08tooltipcourse, theme_almondb {{/str}}">
+                      <i class="fa fa-graduation-cap" aria-hidden="true"> </i> {{coursecount}}+
+                    </span>  
+                </div>
+                {{/block08total}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+      {{/block08}}
+    </div>  
+  </div>
+</div>    
