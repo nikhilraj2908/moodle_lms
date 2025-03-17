@@ -17,18 +17,21 @@
 {{!
     @template core_course/coursecard
 
-    This template renders the a card for the course cards.
+    This template renders a card for the course cards.
 
     Example context (json):
     {
         "courses": [
             {
+                "id": 2,
                 "name": "Assignment due 1",
                 "viewurl": "https://moodlesite/course/view.php?id=2",
                 "courseimage": "https://moodlesite/pluginfile/123/course/overviewfiles/123.jpg",
                 "fullname": "course 3",
+                "shortname": "C3",
                 "hasprogress": true,
                 "progress": 10,
+                "coursetime": "3 hours 55 minutes",
                 "visible": true
             }
         ]
@@ -62,17 +65,39 @@
                     </span>
                     {{$coursename}}{{/coursename}}
                 </a>
-                <div class="text-muted muted d-flex flex-wrap">
-                    {{$coursecategory}}{{/coursecategory}}
+                <div class="text-muted muted d-flex flex-wrap justify-content-between">
+    <!-- Custom Course Duration (if defined) -->
+
+                     <div class="text-decoration-underline text-end">
+                        {{#hasprogress}}
+                            <a href="{{{viewurl}}}" class="text-decoration-underline">Continue learning</a>
+                        {{/hasprogress}}
+                        {{^hasprogress}}
+                            <a href="{{{viewurl}}}" class="text-decoration-underline">Start learning</a>
+                        {{/hasprogress}}
+                    </div>
+                    {{$coursecategory}}{{/coursecategory}}   
                 </div>
                 {{^visible}}
                     <div class="d-flex flex-wrap">
-                        <span class="badge bg-info text-white">{{#str}} hiddenfromstudents {{/str}}</span>
+                        <span class="badge bg-info text-white">
+                            {{#str}} hiddenfromstudents {{/str}}
+                        </span>
                     </div>
                 {{/visible}}
             </div>
         </div>
     </div>
+    
+    {{#coursetime}}
+    <div class="card-duration text-muted px-2">
+        <small>{{coursetime}}</small>
+    </div>
+    {{/coursetime}}
+    
+    <!-- Custom Button: Start learning / Continue learning -->
+   
+    
     <div class="d-flex align-items-start">
         {{$progress}}{{/progress}}
         {{$menu}}{{/menu}}
