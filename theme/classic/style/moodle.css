@@ -33640,8 +33640,10 @@ textarea[data-auto-rows] {
 
 @media (min-width: 768px) {
   .login-container {
-    width: 500px !important; /* stylelint-disable-line declaration-no-important */
     border-radius: 0.25rem;
+    /* width: 500px !important;  */
+    width: 100% !important; /* stylelint-disable-line declaration-no-important */
+
   }
 }
 /* modules.less */
