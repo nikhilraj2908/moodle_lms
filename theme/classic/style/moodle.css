@@ -33642,7 +33642,7 @@ textarea[data-auto-rows] {
   .login-container {
     border-radius: 0.25rem;
     /* width: 500px !important;  */
-    width: 100% !important; /* stylelint-disable-line declaration-no-important */
+    width: 70% !important; /* stylelint-disable-line declaration-no-important */
 
   }
 }

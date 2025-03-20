@@ -6,270 +6,341 @@
     <title>Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-      .main-progress-1{
-        display:grid;
-        grid-template-columns:4fr 4fr 4fr;
-      }
+        body {
+            background-color: #f5f5f5;
+        }
         .dashboard-header {
             background-color: #204070;
             color: white;
-            padding: 20px;
+            padding: 15px 20px;
             display: flex;
             align-items: center;
             font-size: 20px;
         }
+        .dashboard-header img {
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+        .container {
+            padding: 20px;
+        }
+        .dashboard-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
         .dashboard-card {
             background: white;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
+            padding: 15px;
             text-align: center;
-                padding: 10px;
-            margin-right:10px;
-            height:100%;
+            height: 100%;
+        }
+        .dashboard-card h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .img-heading {
+            color: #204070;
         }
         .user-stats img {
-            width: 85%;
-            }
-        .chart-placeholder {
-            width: 60%;
-            height: 80%;
-            margin: auto;
+            width: 70%;
+            margin: 0 auto;
         }
-        .learning-path-circles {
+        .user-stats-legend {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
+            margin-top: 10px;
         }
-        .circle {
-            width: 50px;
-            height: 50px;
-            border: 3px solid gray;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .points-bars .bar {
-            height: 15px;
-            background-color: lightblue;
-            border-radius: 5px;
-        }
-        .img-heading, .coursecount {
-            color: #204070;
-          
-        }
-        .img-whole_head{
-              position:absolute;
-            top: 0%;
-            text-align:center;
-        }
-        .progress-carddashboard{
-            height:220px;
-        }
-         .bullet {
+        .bullet {
             display: inline-block;
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            margin-right: 10px;
+            margin-right: 5px;
         }
-         .excellent { background-color: #204070; }
-        .good { background-color:rgb(60, 104, 148); }
+        .excellent { background-color: #204070; }
+        .good { background-color: rgb(60, 104, 148); }
         .keep-going { background-color: gray; }
-        .img-details{
-            text-align:left;
+        .course-enrolled {
+            position: relative;
         }
-        .card-progress p {
-    font-size: 16px; /* Increased font size for better readability */
-    color: #666;
-    margin-bottom: 15px;
-
-}
-.progress-container {
-    position: relative;
-    width: 120px;
-    margin: 2px;
-    display:flex;
-    justify-content:center;
-}
-
-canvas {
-    width: 90px !important;
-    height: 90px !important;
-}
-
-.progress-text-new {
-    position: absolute;
-    top: 37%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 14px;
-    font-weight: bold;
-    color: #333;
-}
-
-.progress {
-    border-radius: 5px;
-    overflow: hidden; /* Prevents overflow issues */
-    position: relative;
-    width: 100%; /* Ensure all bars take full width */
-}
-
-.progress .bar {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.progress-text {
-    font-size: 12px;
-    color: black;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.points-bars {
-    display: flex;
-    flex-direction: column;
-    gap: 10px; /* Ensures consistent spacing */
-}#page.drawers .main-inner {
-    max-width: 100%;
-    width: 100%;
-    margin: 0 auto;
-    border-radius: .5rem;
-    background-color: transparent;
-    /* padding: 1.5rem .5rem; */
-    margin-top: .5rem;
-    margin-bottom: 3rem;
-    flex: 1 0 auto;
-}
-.pagelayout-mydashboard #region-main {
-    padding: 1px 0px; 
-}
-#user-notifications {
-    display: none;
-    overflow: hidden;
-}
-#page #page-header {
-    max-width: none;
-    display: none;
-    margin-bottom: 15px;
-    padding-top: 0;
-}@media (min-width: 768px) {
-    #page.drawers .main-inner {
-        padding: .1rem .1rem;
-    }
-}
-
+        .course-enrolled .dotted-line {
+            border-bottom: 3px dotted black;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+        }
+        .course-enrolled img {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 50px;
+        }
+        .course-enrolled h2 {
+            font-size: 36px;
+            color: #204070;
+            margin: 0;
+        }
+        .learning-path {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+        .progress-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+        }
+        .progress-container canvas {
+            width: 100px !important;
+            height: 100px !important;
+        }
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+        .learning-path-labels {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        .points-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+        }
+        .points-bars {
+            width: 70%;
+        }
+        .points-bars .progress {
+            height: 10px;
+            background: lightgray;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        .points-bars .bar {
+            height: 100%;
+            border-radius: 5px;
+        }
+        .points-bars .course-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        .points-total {
+            text-align: center;
+        }
+        .points-total img {
+            width: 60px;
+            margin-bottom: 10px;
+        }
+        .points-total h4 {
+            font-size: 18px;
+            margin: 0;
+        }
+        .hours-activity-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+        }
+        .hours-activity-chart {
+            width: 70%;
+            height: 150px;
+        }
+        .hours-activity-details {
+            font-size: 14px;
+            text-align: left;
+        }
+        .hours-activity-details .arrow {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 20px;
+            margin-right: 5px;
+        }
+        .increase .arrow {
+            background-color: #90ee90;
+            color: green;
+        }
+        .decrease .arrow {
+            background-color: #ffcccb;
+            color: red;
+        }
+        .hours-activity-details p {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body>
-    <div class="dashboard-header">
-        {{{userpicture}}}
-        <span class="ms-3">Hey! {{username}}</span>
-    </div>
+    <div class="bg-light">
+        <div class="dashboard-header">
+            {{{userpicture}}}
+            <span>Hey! {{username}}</span>
+        </div>
 
-    <div class="container mt-4">
-        <div class="main-progress-1">
-            <div class="w-100 me-2  progress-carddashboard">   
-                <div class="dashboard-card user">
-                        <div class=" d-flex justify-content-center">
-                              <h3 >User <span class="img-heading">Stats</span></h3>
-                        </div>
-                        <div class="d-flex img-details">
-                            <div class="chart-placeholder user-stats ">
-                                <img src="{{asset1_image_url}}" alt="User Stats Chart">
-                            </div>
-                            <div class="d-block align-content-center">
-                                <div><span class="bullet excellent"></span>Excellent</div>
-                                <div><span class="bullet good"></span>Good</div>
-                                <div><span class="bullet keep-going"></span>Keep Going</div>
-                            </div>
-                        </div>
-                </div>
-            </div>
-            <div class=" w-100 me-2 progress-carddashboard">
+        <div class="container">
+            <!-- First Row: User Stats, Course Enrolled, Learning Path -->
+            <div class="dashboard-row">
+                <!-- User Stats -->
                 <div class="dashboard-card">
-                   <div class="d-flex justify-content-between" style="border-bottom: 3px dotted black; padding-bottom: 15px;">
-                   <span>
-                            <h3 class="text-left">Course <br><span class="img-heading">Enrolled</span> </h3>
-
-                   </span>
-                   <span >
-                           <img src={{course_enrolled_url}} alt="User enrollments" width="80">
-                   </span>
-                   
-                    </div>
-                    <h2 class="coursecount text-left" >{{totalCourses}}</h2>
-                </div>
-            </div>
-           <div class="dashboard-card card-progresss">
-    <h3>Learning <span class="img-heading">Path</span></h3>
-
-    <div class="d-flex justify-content-center ">
-        <!-- Completed -->
-        <div class="progress-container">
-            <canvas id="learningPathChart" data-progress="{{learningPathPercentage}}"></canvas>
-            <div class="progress-text-new" id="learningPathText">{{learningPathPercentage}}%</div>
-        </div>
-        
-        <!-- Overdue -->
-        <div class="progress-container">
-            <canvas id="curriculumChart" data-progress="{{overduePercentage}}"></canvas>
-            <div class="progress-text-new" id="curriculumText">{{overduePercentage}}%</div>
-        </div>
-    </div>
-    <h5>{{completedCourses}} Completed / {{totalOverdue}} Overdue</h5>
-</div>
-
-            
-        </div>
-     <div class="w-100 mt-5">
-    <div class="dashboard-card  ">
-        <h3>Total <span class="img-heading">Earned Points</span></h3>
-        <div class="d-flex justify-content-around align-items-center">
-            <div class="points-bars w-75" style="max-height: 150px; overflow-y: auto;">
-            {{#courses}}
-            <div class="d-flex align-items-center mb-2">
-                <div class="progress me-2" style="height: 15px; background: lightgray; border-radius: 5px; position: relative; width: 25rem;">
-                    <div class="bar" style="width: {{percentage}}%; background-color: {{bar_color}}; height: 15px; border-radius: 5px; position: relative;">
-                        <span class="progress-text">{{percentage}}%</span>
+                    <h3>User <span class="img-heading">Stats</span></h3>
+                    <div class="user-stats">
+                        <img src="{{asset1_image_url}}" alt="User Stats Chart">
+                        <div class="user-stats-legend">
+                            <div><span class="bullet excellent"></span>Excellent</div>
+                            <div><span class="bullet good"></span>Good</div>
+                            <div><span class="bullet keep-going"></span>Keep Going</div>
+                        </div>
                     </div>
                 </div>
-                <div class="ms-2" style="min-width: 80px; text-align: right;">
-                    <b>{{points_display}}</b>
+
+                <!-- Course Enrolled -->
+                <div class="dashboard-card course-enrolled">
+                    <div class="dotted-line">
+                        <h3>Course <span class="img-heading">Enrolled</span></h3>
+                        <img src="{{course_enrolled_url}}" alt="Course Enrolled">
+                    </div>
+                    <h2>{{totalCourses}}</h2>
                 </div>
-                <div class="ms-2" style="text-align: left;">
-                    {{course_name}}
+
+                <!-- Learning Path -->
+                <div class="dashboard-card">
+                    <h3>Learning <span class="img-heading">Path</span></h3>
+                    <div class="learning-path">
+                        <div class="progress-container">
+                            <canvas id="learningPathChart" data-progress="{{learningPathPercentage}}"></canvas>
+                            <div class="progress-text">{{learningPathPercentage}}%</div>
+                        </div>
+                        <div class="progress-container">
+                            <canvas id="curriculumChart" data-progress="{{overduePercentage}}"></canvas>
+                            <div class="progress-text">{{overduePercentage}}%</div>
+                        </div>
+                    </div>
+                    <div class="learning-path-labels">
+                        {{completedCourses}} Completed / {{totalOverdue}} Overdue
+                    </div>
                 </div>
             </div>
 
-            {{/courses}}
-        </div>
-        <div>
-            <div>
-                <img src={{course_award_url}} width="120">
-            </div>
-            <div>
-                <h4><span  class="img-heading">{{totalPoints}}</span>/{{totalPossiblePoints}}</h4>
+            <!-- Second Row: Total Earned Points -->
+            <div class="dashboard-card">
+                <h3>Total <span class="img-heading">Earned Points</span></h3>
+                <div class="points-section">
+                    <div class="points-bars">
+                        {{#courses}}
+                        <div class="course-info">
+                            <span>{{earned_points}}/{{total_points}} {{course_name}}</span>
+                        </div>
+                        <div class="progress">
+                            <div class="bar" style="width: {{percentage}}%; background-color: {{bar_color}};"></div>
+                        </div>
+                        {{/courses}}
+                    </div>
+                    <div class="points-total">
+                        <img src="{{course_award_url}}" alt="Award">
+                        <h4><span class="img-heading">{{totalPoints}}</span>/{{totalPossiblePoints}}</h4>
+                    </div>
+                </div>
             </div>
 
+            <!-- Third Row: Hours Activity -->
+            <div class="dashboard-card">
+                <h3>Hours Activity</h3>
+                <div class="hours-activity-section">
+                    <div class="hours-activity-chart">
+                        <canvas id="hoursActivityChart"></canvas>
+                    </div>
+                    <div class="hours-activity-details">
+                        <p>Total Hours: {{currentWeekTotal}}</p>
+                        <p>Last Week: {{previousWeekTotal}}</p>
+                        <p style="color: {{#isIncrease}}green{{/isIncrease}}{{^isIncrease}}red{{/isIncrease}};">
+                            <span class="arrow {{#isIncrease}}increase{{/isIncrease}}{{^isIncrease}}decrease{{/isIncrease}}">
+                                {{#isIncrease}}⬆{{/isIncrease}}{{^isIncrease}}⬇{{/isIncrease}}
+                            </span>
+                            {{percentageChange}}% {{#isIncrease}}Increase{{/isIncrease}}{{^isIncrease}}Decrease{{/isIncrease}} than last week
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-        </div>
-    </div>
-</div>
     </div>
 </body>
 <script>
+document.addEventListener("DOMContentLoaded", function () {
+    var ctx = document.getElementById("hoursActivityChart").getContext("2d");
+
+    var hoursData = JSON.parse('{{{hoursActivity}}}');
+
+    var data = {
+        labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        datasets: [{
+            label: "Hours Spent",
+            data: hoursData,
+            backgroundColor: [
+                "black",    // Sunday
+                "navy",     // Monday
+                "gray",     // Tuesday
+                "navy",     // Wednesday
+                "navy",     // Thursday
+                "navy",     // Friday
+                "navy"      // Saturday
+            ],
+            borderRadius: 5
+        }]
+    };
+
+    var options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1,
+                    callback: function(value) {
+                        return value;
+                    }
+                },
+                min: 0,
+                reverse: false // Ensure bars grow upward
+            },
+            x: {
+                ticks: {
+                    font: {
+                        size: 12
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: { display: false }
+        }
+    };
+
+    new Chart(ctx, { type: "bar", data: data, options: options });
+});
+
 document.addEventListener("DOMContentLoaded", function() {
     function createGaugeChart(canvasId, textId, progressValue, color) {
         let canvas = document.getElementById(canvasId);
-        if (!canvas) return; // Prevent errors if canvas doesn't exist
+        if (!canvas) return;
 
         let ctx = canvas.getContext("2d");
 
@@ -278,7 +349,7 @@ document.addEventListener("DOMContentLoaded", function() {
             data: {
                 datasets: [{
                     data: [progressValue, 100 - progressValue],
-                    backgroundColor: [color, "lightgray"], // Dynamic color
+                    backgroundColor: [color, "lightgray"],
                     borderWidth: 2
                 }]
             },
@@ -296,22 +367,15 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById(textId).innerText = progressValue.toFixed(2) + "%";
     }
 
-    // Fetch values dynamically from Mustache variables
     var totalCourses = parseFloat("{{totalCourses}}") || 0;
     var completedCourses = parseFloat("{{completedCourses}}") || 0;
     var overdueCourses = parseFloat("{{totalOverdue}}") || 0;
 
-    // Calculate percentages ensuring total is 100%
     var completedPercentage = (totalCourses > 0) ? (completedCourses / totalCourses) * 100 : 0;
-    var overduePercentage = 100 - completedPercentage; // Ensuring the total is always 100%
+    var overduePercentage = (totalCourses > 0) ? (overdueCourses / totalCourses) * 100 : 0;
 
-    // Initialize both charts with correct colors
-    createGaugeChart("learningPathChart", "learningPathText", completedPercentage, "#204070"); // Dark Blue for Completed
-    createGaugeChart("curriculumChart", "curriculumText", overduePercentage, "#808080"); // Gray for Overdue
+    createGaugeChart("learningPathChart", "learningPathText", completedPercentage, "#204070");
+    createGaugeChart("curriculumChart", "curriculumText", overduePercentage, "#808080");
 });
 </script>
-
-
-
-
 </html>

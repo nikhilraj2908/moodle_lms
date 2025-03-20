@@ -27,11 +27,12 @@
         align-items: center;
         background: #f0f0f0;
         padding: 20px;
+        margin-right: 20px;
     }
 
     .login-form {
     flex: .8;
-    padding: 40px;
+  
     text-align: center;
 }
 
@@ -148,7 +149,14 @@
         .login-svg {
             display: none; /* Hide SVG on small screens */
         }
-    }
+    }@media (min-width: 768px) {
+  .login-container {
+    border-radius: 0.25rem;
+    /* width: 500px !important;  */
+    width: 70% !important; /* stylelint-disable-line declaration-no-important */
+
+  }
+}
 </style>
 
 <body>
