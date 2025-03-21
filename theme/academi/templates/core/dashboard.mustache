@@ -8,6 +8,7 @@
     <style>
         body {
             background-color: #f5f5f5;
+            font-family: Arial, sans-serif;
         }
         .dashboard-header {
             background-color: #204070;
@@ -26,7 +27,7 @@
         }
         .dashboard-row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 8fr 4fr;
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -64,8 +65,8 @@
             margin-right: 5px;
         }
         .excellent { background-color: #204070; }
-        .good { background-color: rgb(60, 104, 148); }
-        .keep-going { background-color: gray; }
+        .good { background-color: #3C6894; }
+        .keep-going { background-color: #808080; }
         .course-enrolled {
             position: relative;
         }
@@ -84,21 +85,24 @@
             font-size: 36px;
             color: #204070;
             margin: 0;
+              filter: drop-shadow(3px 3px 8px rgba(0, 0, 0, 0.3)); /* Adds a smooth shadow */
+    border-radius: 50%; 
         }
         .learning-path {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 20px;
+            gap: 2px;
         }
         .progress-container {
             position: relative;
-            width: 100px;
-            height: 100px;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
         }
         .progress-container canvas {
-            width: 100px !important;
-            height: 100px !important;
+            width: 150px !important;
+            height: 150px !important;
         }
         .progress-text {
             position: absolute;
@@ -107,12 +111,18 @@
             transform: translate(-50%, -50%);
             font-size: 14px;
             font-weight: bold;
-            color: #333;
+            color: #333333;
         }
-        .learning-path-labels {
-            text-align: center;
+        .learning-path-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
             margin-top: 10px;
             font-size: 14px;
+        }
+        .learning-path-legend .bullet {
+            width: 12px;
+            height: 12px;
         }
         .points-section {
             display: flex;
@@ -143,7 +153,7 @@
             text-align: center;
         }
         .points-total img {
-            width: 60px;
+            width: 40%;
             margin-bottom: 10px;
         }
         .points-total h4 {
@@ -152,26 +162,24 @@
         }
         .hours-activity-section {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
+            flex-direction: column;
             padding: 10px;
+            gap: 10px;
         }
-        .hours-activity-chart {
-            width: 70%;
-            height: 150px;
-        }
-        .hours-activity-details {
+        .hours-activity-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             font-size: 14px;
-            text-align: left;
         }
-        .hours-activity-details .arrow {
+        .hours-activity-header .arrow {
             display: inline-block;
             width: 20px;
             height: 20px;
             border-radius: 50%;
             text-align: center;
             line-height: 20px;
-            margin-right: 5px;
+            font-size: 12px;
         }
         .increase .arrow {
             background-color: #90ee90;
@@ -181,9 +189,37 @@
             background-color: #ffcccb;
             color: red;
         }
-        .hours-activity-details p {
-            margin: 5px 0;
+        .hours-activity-chart {
+            width: 70%;
+            height: 200px;
         }
+
+        .hours-total-section {
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 10px;
+}
+
+.total-hours {
+    margin-bottom: 15px;
+}
+
+.total-hours h5 {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.hours-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #204070;
+}
+
     </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -198,44 +234,49 @@
         <div class="container">
             <!-- First Row: User Stats, Course Enrolled, Learning Path -->
             <div class="dashboard-row">
-                <!-- User Stats -->
                 <div class="dashboard-card">
-                    <h3>User <span class="img-heading">Stats</span></h3>
-                    <div class="user-stats">
-                        <img src="{{asset1_image_url}}" alt="User Stats Chart">
-                        <div class="user-stats-legend">
-                            <div><span class="bullet excellent"></span>Excellent</div>
-                            <div><span class="bullet good"></span>Good</div>
-                            <div><span class="bullet keep-going"></span>Keep Going</div>
+                    <h3>Hours <span class="img-heading">Activity</span></h3>
+                  <div class="hours-activity-section d-flex justify-content-between align-items-center">
+
+                        <div class="hours-activity-header">
+                            <span class="arrow {{#isIncrease}}increase{{/isIncrease}}{{^isIncrease}}decrease{{/isIncrease}}">
+                                {{#isIncrease}}⬆{{/isIncrease}}{{^isIncrease}}⬇{{/isIncrease}}
+                            </span>
+                            <span style="color: {{#isIncrease}}green{{/isIncrease}}{{^isIncrease}}red{{/isIncrease}};">
+                                +{{percentageChange}}% {{#isIncrease}}Increase than last week{{/isIncrease}}{{^isIncrease}}Decrease than last week{{/isIncrease}}
+                            </span>
+                        </div>
+                        <div class="hours-activity-chart">
+                            <canvas id="hoursActivityChart"></canvas>
+                        </div>
+                        <div class="hours-total-section">
+                            <div class="total-hours">
+                                <h5>Current Week</h5>
+                                <div class="hours-number">{{currentWeekTotal}} hrs</div>
+                            </div>
+                            <div class="total-hours">
+                                <h5>Previous Week</h5>
+                                <div class="hours-number">{{previousWeekTotal}} hrs</div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Course Enrolled -->
-                <div class="dashboard-card course-enrolled">
-                    <div class="dotted-line">
-                        <h3>Course <span class="img-heading">Enrolled</span></h3>
-                        <img src="{{course_enrolled_url}}" alt="Course Enrolled">
-                    </div>
-                    <h2>{{totalCourses}}</h2>
-                </div>
-
-                <!-- Learning Path -->
-                <div class="dashboard-card">
+                
+                 <div class="dashboard-card ">
                     <h3>Learning <span class="img-heading">Path</span></h3>
-                    <div class="learning-path">
+                     
+                    <div class="learning-path h-75">
                         <div class="progress-container">
-                            <canvas id="learningPathChart" data-progress="{{learningPathPercentage}}"></canvas>
-                            <div class="progress-text">{{learningPathPercentage}}%</div>
-                        </div>
-                        <div class="progress-container">
-                            <canvas id="curriculumChart" data-progress="{{overduePercentage}}"></canvas>
-                            <div class="progress-text">{{overduePercentage}}%</div>
+                            <canvas id="learningPathChart"></canvas>
+                          <div class="progress-text" id="learningPathText">{{learningPathPercentage}}% completed</div>
+
                         </div>
                     </div>
-                    <div class="learning-path-labels">
-                        {{completedCourses}} Completed / {{totalOverdue}} Overdue
+                    <div class="learning-path-legend mb-3">
+                        <div><span class="bullet excellent"></span>Completed</div>
+                        <div><span class="bullet keep-going"></span>Overdue</div>
                     </div>
+                   
                 </div>
             </div>
 
@@ -246,7 +287,8 @@
                     <div class="points-bars">
                         {{#courses}}
                         <div class="course-info">
-                            <span>{{earned_points}}/{{total_points}} {{course_name}}</span>
+                            <span>{{course_name}}</span>
+                            <span>{{points_display}}</span>
                         </div>
                         <div class="progress">
                             <div class="bar" style="width: {{percentage}}%; background-color: {{bar_color}};"></div>
@@ -261,48 +303,24 @@
             </div>
 
             <!-- Third Row: Hours Activity -->
-            <div class="dashboard-card">
-                <h3>Hours Activity</h3>
-                <div class="hours-activity-section">
-                    <div class="hours-activity-chart">
-                        <canvas id="hoursActivityChart"></canvas>
-                    </div>
-                    <div class="hours-activity-details">
-                        <p>Total Hours: {{currentWeekTotal}}</p>
-                        <p>Last Week: {{previousWeekTotal}}</p>
-                        <p style="color: {{#isIncrease}}green{{/isIncrease}}{{^isIncrease}}red{{/isIncrease}};">
-                            <span class="arrow {{#isIncrease}}increase{{/isIncrease}}{{^isIncrease}}decrease{{/isIncrease}}">
-                                {{#isIncrease}}⬆{{/isIncrease}}{{^isIncrease}}⬇{{/isIncrease}}
-                            </span>
-                            {{percentageChange}}% {{#isIncrease}}Increase{{/isIncrease}}{{^isIncrease}}Decrease{{/isIncrease}} than last week
-                        </p>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 </body>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+<script>document.addEventListener("DOMContentLoaded", function () {
+    // ✅ Hours Activity Chart
     var ctx = document.getElementById("hoursActivityChart").getContext("2d");
-
     var hoursData = JSON.parse('{{{hoursActivity}}}');
+    console.log("Hours Activity Data:", hoursData); // Debug: Log the hours data
 
     var data = {
-        labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+        labels: ["sun", "mon", "tue", "wed", "thr", "fri", "sat"],
         datasets: [{
             label: "Hours Spent",
             data: hoursData,
-            backgroundColor: [
-                "black",    // Sunday
-                "navy",     // Monday
-                "gray",     // Tuesday
-                "navy",     // Wednesday
-                "navy",     // Thursday
-                "navy",     // Friday
-                "navy"      // Saturday
-            ],
-            borderRadius: 5
+            backgroundColor: ["#000000", "#808080", "#204070", "#204070", "#204070", "#204070", "#204070"],
+            borderWidth: 0,
+            barThickness: 20
         }]
     };
 
@@ -312,70 +330,83 @@ document.addEventListener("DOMContentLoaded", function () {
         scales: {
             y: {
                 beginAtZero: true,
-                ticks: {
-                    stepSize: 1,
-                    callback: function(value) {
-                        return value;
-                    }
-                },
-                min: 0,
-                reverse: false // Ensure bars grow upward
+                ticks: { stepSize: 1 },
+                grid: { display: true, drawBorder: false },
+                max: 4
             },
             x: {
-                ticks: {
-                    font: {
-                        size: 12
-                    }
-                }
+                grid: { display: false, drawBorder: false },
+                ticks: { font: { size: 12 } }
             }
         },
         plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            tooltip: { enabled: false }
         }
     };
 
     new Chart(ctx, { type: "bar", data: data, options: options });
-});
 
-document.addEventListener("DOMContentLoaded", function() {
-    function createGaugeChart(canvasId, textId, progressValue, color) {
-        let canvas = document.getElementById(canvasId);
-        if (!canvas) return;
+    // ✅ Learning Path Chart with Rounded Edges and Shadow
+    var learningPathCtx = document.getElementById("learningPathChart").getContext("2d");
 
-        let ctx = canvas.getContext("2d");
+    const completedPercentage = {{learningPathPercentage}}; // Dynamic value
+    const overduePercentage = 100 - completedPercentage; // Remaining part
 
-        new Chart(ctx, {
-            type: "doughnut",
-            data: {
-                datasets: [{
-                    data: [progressValue, 100 - progressValue],
-                    backgroundColor: [color, "lightgray"],
-                    borderWidth: 2
-                }]
+    new Chart(learningPathCtx, {
+        type: "doughnut",
+        data: {
+            datasets: [{
+                data: [completedPercentage, overduePercentage],
+                backgroundColor: ["#204070", "#808080"], // Blue for completed, Grey for overdue
+                borderWidth: 0,
+                borderRadius: [15, 0], // Rounded for blue, normal for gray
+                hoverBorderWidth: 6 // Adds a hover effect
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true, 
+            cutout: "65%", // Adjusts the inner hole size
+            plugins: { 
+                legend: { display: false }, 
+                tooltip: { enabled: false } 
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: "70%",
-                plugins: {
-                    legend: { display: false },
-                    tooltip: { enabled: false }
+            animation: {
+                animateRotate: true, // Smooth rotation effect
+                animateScale: true  // Zoom-in effect on load
+            },
+            elements: {
+                arc: {
+                    borderJoinStyle: "round", // Ensures rounded effect only on the first part
+                    hoverBorderWidth: 6, // Adds hover effect
                 }
             }
-        });
+        },
+        plugins: [{
+            beforeDraw: function(chart) {
+                var ctx = chart.ctx;
+                var width = chart.width;
+                var height = chart.height;
+                var centerX = width / 2;
+                var centerY = height / 2;
 
-        document.getElementById(textId).innerText = progressValue.toFixed(2) + "%";
-    }
+                ctx.save();
+                ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; // Shadow color
+                ctx.shadowBlur = 10; // Blurred shadow
+                ctx.shadowOffsetX = 3;
+                ctx.shadowOffsetY = 3;
+                ctx.restore();
+            }
+        }]
+    });
 
-    var totalCourses = parseFloat("{{totalCourses}}") || 0;
-    var completedCourses = parseFloat("{{completedCourses}}") || 0;
-    var overdueCourses = parseFloat("{{totalOverdue}}") || 0;
+    // ✅ Set dynamic text in the center of the Learning Path Chart
+    document.getElementById("learningPathText").innerText = "{{learningPathPercentage}}% completed";
 
-    var completedPercentage = (totalCourses > 0) ? (completedCourses / totalCourses) * 100 : 0;
-    var overduePercentage = (totalCourses > 0) ? (overdueCourses / totalCourses) * 100 : 0;
-
-    createGaugeChart("learningPathChart", "learningPathText", completedPercentage, "#204070");
-    createGaugeChart("curriculumChart", "curriculumText", overduePercentage, "#808080");
 });
+
+document.getElementById("learningPathText").innerText = "{{learningPathPercentage}}% completed";
+
 </script>
 </html>
