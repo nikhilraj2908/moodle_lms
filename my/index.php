@@ -91,15 +91,7 @@ if (!isguestuser() && get_home_page() != HOMEPAGE_MY) {
 }
 
 if (empty($CFG->forcedefaultmymoodle) && $PAGE->user_allowed_editing()) {
-    if ($reset !== null) {
-        if (!is_null($userid)) {
-            require_sesskey();
-            if (!$currentpage = my_reset_page($userid, MY_PAGE_PRIVATE)) {
-                throw new \moodle_exception('reseterror', 'my');
-            }
-            redirect(new moodle_url('/my'));
-        }
-    } else if ($edit !== null) {
+    if ($edit !== null) {
         $USER->editing = $edit;
     } else {
         if ($currentpage->userid) {
@@ -116,7 +108,7 @@ if (empty($CFG->forcedefaultmymoodle) && $PAGE->user_allowed_editing()) {
     }
 
     $params = array('edit' => !$edit);
-    $resetbutton = $OUTPUT->single_button(new moodle_url("$CFG->wwwroot/my/index.php", array('edit' => 1, 'reset' => 1)), get_string('resetpage', 'my'));
+    $resetbutton = '';
     $editstring = !$currentpage->userid || empty($edit) ? get_string('updatemymoodleon') : get_string('updatemymoodleoff');
     $button = !$PAGE->theme->haseditswitch ? $OUTPUT->single_button(new moodle_url("$CFG->wwwroot/my/index.php", $params), $editstring) : '';
     $PAGE->set_button($resetbutton . $button);
@@ -139,7 +131,9 @@ $templatecontext = [
     'isIncrease' => true,
     'currentWeekTotal' => 0,
     'previousWeekTotal' => 0,
-    'courses' => []
+    'courses' => [],
+    'recentCourse' => null,
+    'enrolledCourses' => [] // Initialize enrolledCourses to an empty array
 ];
 
 if (isloggedin() && !isguestuser()) {
@@ -152,119 +146,201 @@ if (isloggedin() && !isguestuser()) {
     $courseenrolledgif = $OUTPUT->image_url('graduate', 'theme_academi')->out();
     $awardgif = $OUTPUT->image_url('award', 'theme_academi')->out();
 
+    // Fetch the last 3 enrolled courses
+    $enrolledCoursesSql = "
+        SELECT c.id AS courseid, c.fullname AS coursename, c.summary AS coursesummary, ue.timecreated AS enrolled_time
+        FROM mdl_course c
+        JOIN mdl_enrol e ON c.id = e.courseid
+        JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
+        WHERE ue.userid = ?
+        ORDER BY ue.timecreated DESC
+        LIMIT 3
+    ";
+
+    try {
+        $enrolledCourses = $DB->get_records_sql($enrolledCoursesSql, [$USER->id]);
+    } catch (dml_exception $e) {
+        error_log("Error fetching enrolled courses: " . $e->getMessage());
+        $enrolledCourses = [];
+    }
+
+    // Clean the course summaries and prepare the data for the template
+    $enrolledCoursesData = [];
+    foreach ($enrolledCourses as $course) {
+        $cleanedSummary = format_string($course->coursesummary, true);
+        $enrolledCoursesData[] = [
+            'courseid' => $course->courseid,
+            'coursename' => $course->coursename,
+            'coursesummary' => $cleanedSummary,
+            'enrolled_time' => $course->enrolled_time,
+            'courseurl' => new moodle_url('/course/view.php', ['id' => $course->courseid])
+        ];
+    }
+
+    // Add enrolled courses to the template context
+    $templatecontext['enrolledCourses'] = $enrolledCoursesData;
+
+    // Query to fetch the most recent course accessed by the user
+    $recentCourseSql = "
+        SELECT 
+            c.id AS courseid,
+            c.fullname AS coursename,
+            c.summary AS coursesummary,
+            c.shortname AS courseshortname,
+            FROM_UNIXTIME(l.timecreated) AS last_accessed_time
+        FROM mdl_logstore_standard_log l
+        JOIN mdl_course c ON l.courseid = c.id
+        WHERE l.userid = ?
+        AND l.courseid IS NOT NULL
+        ORDER BY l.timecreated DESC
+        LIMIT 1
+    ";
+
+    try {
+        $recentCourse = $DB->get_record_sql($recentCourseSql, [$USER->id]);
+        if (!$recentCourse) {
+            error_log("No recent course found for user ID: " . $USER->id);
+        } else {
+            error_log("Recent course found: " . print_r($recentCourse, true)); // Debug the fetched data
+        }
+    } catch (dml_exception $e) {
+        error_log("Error fetching recent course: " . $e->getMessage());
+        $recentCourse = null;
+    }
+
+    // Add recent course data to the template context
+    if ($recentCourse) {
+        $cleanedSummary = format_string($recentCourse->coursesummary, true);
+        $templatecontext['recentCourse'] = [
+            'courseid' => $recentCourse->courseid,
+            'coursename' => $recentCourse->coursename,
+            'coursesummary' => $cleanedSummary,
+            'courseshortname' => $recentCourse->courseshortname,
+            'last_accessed_time' => $recentCourse->last_accessed_time,
+            'courseurl' => new moodle_url('/course/view.php', ['id' => $recentCourse->courseid])
+        ];
+    } else {
+        $templatecontext['recentCourse'] = null;
+    }
+
+    // Debug: Log the recent course data
+    if ($recentCourse) {
+        error_log("Recent Course Found: " . $recentCourse->coursename);
+    } else {
+        error_log("No Recent Course Found for User ID: " . $USER->id);
+    }
+
     // Reset user variables to ensure they are initialized for this query
     $DB->execute("SET @prev_time = NULL, @prev_user = NULL, @session_id = 0");
 
     // Current Week Activity
- // Current Week Activity
-$currentWeekSql = "
-WITH RECURSIVE week_days AS (
-    SELECT DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 2) DAY) AS week_day
-    UNION ALL
-    SELECT DATE_ADD(week_day, INTERVAL 1 DAY)
-    FROM week_days
-    WHERE week_day < DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 8) DAY)
-),
-sessions AS (
+    $currentWeekSql = "
+    WITH RECURSIVE week_days AS (
+        SELECT DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 2) DAY) AS week_day
+        UNION ALL
+        SELECT DATE_ADD(week_day, INTERVAL 1 DAY)
+        FROM week_days
+        WHERE week_day < DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 8) DAY)
+    ),
+    sessions AS (
+        SELECT 
+            log.userid,
+            log.timecreated,
+            @session_id := IF(@prev_user = log.userid AND (log.timecreated > @prev_time) AND (log.timecreated - @prev_time) <= 1800, 
+                              @session_id, 
+                              @session_id + 1) AS session_id,
+            IF(@prev_user = log.userid AND (log.timecreated > @prev_time) AND (log.timecreated - @prev_time) <= 1800, 
+               log.timecreated - @prev_time, 
+               0) AS time_spent,
+            @prev_time := log.timecreated,
+            @prev_user := log.userid
+        FROM mdl_logstore_standard_log AS log,
+             (SELECT @prev_time := NULL, @prev_user := NULL, @session_id := 0) AS vars
+        WHERE log.userid = ?
+        AND YEARWEEK(FROM_UNIXTIME(log.timecreated), 1) = YEARWEEK(CURDATE(), 1)
+        ORDER BY log.userid, log.timecreated ASC
+    ),
+    daily_hours AS (
+        SELECT 
+            DAYNAME(week_days.week_day) AS day_name,
+            ROUND(COALESCE(SUM(activity.time_spent) / 3600, 0), 2) AS hours_spent
+        FROM week_days
+        LEFT JOIN (
+            SELECT DATE(FROM_UNIXTIME(timecreated)) AS activity_date, time_spent
+            FROM sessions
+        ) AS activity
+        ON activity.activity_date = week_days.week_day
+        GROUP BY week_days.week_day
+    )
     SELECT 
-        log.userid,
-        log.timecreated,
-        @session_id := IF(@prev_user = log.userid AND (log.timecreated > @prev_time) AND (log.timecreated - @prev_time) <= 1800, 
-                          @session_id, 
-                          @session_id + 1) AS session_id,
-        IF(@prev_user = log.userid AND (log.timecreated > @prev_time) AND (log.timecreated - @prev_time) <= 1800, 
-           log.timecreated - @prev_time, 
-           0) AS time_spent,
-        @prev_time := log.timecreated,
-        @prev_user := log.userid
-    FROM mdl_logstore_standard_log AS log,
-         (SELECT @prev_time := NULL, @prev_user := NULL, @session_id := 0) AS vars
-    WHERE log.userid = ?
-    AND YEARWEEK(FROM_UNIXTIME(log.timecreated), 1) = YEARWEEK(CURDATE(), 1)
-    ORDER BY log.userid, log.timecreated ASC
-),
-daily_hours AS (
-    SELECT 
-        DAYNAME(week_days.week_day) AS day_name,
-        ROUND(COALESCE(SUM(activity.time_spent) / 3600, 0), 2) AS hours_spent
-    FROM week_days
-    LEFT JOIN (
-        SELECT DATE(FROM_UNIXTIME(timecreated)) AS activity_date, time_spent
-        FROM sessions
-    ) AS activity
-    ON activity.activity_date = week_days.week_day
-    GROUP BY week_days.week_day
-)
-SELECT 
-    day_name, 
-    hours_spent, 
-    (SELECT ROUND(SUM(hours_spent), 2) FROM daily_hours) AS total_week_hours
-FROM daily_hours
-ORDER BY FIELD(day_name, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
-";
-try {
-$currentWeekData = $DB->get_records_sql($currentWeekSql, [$userid]);
-} catch (dml_exception $e) {
-error_log("Error executing current week query: " . $e->getMessage());
-$currentWeekData = [];
-}
+        day_name, 
+        hours_spent, 
+        (SELECT ROUND(SUM(hours_spent), 2) FROM daily_hours) AS total_week_hours
+    FROM daily_hours
+    ORDER BY FIELD(day_name, 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+    ";
+    try {
+        $currentWeekData = $DB->get_records_sql($currentWeekSql, [$userid]);
+    } catch (dml_exception $e) {
+        error_log("Error executing current week query: " . $e->getMessage());
+        $currentWeekData = [];
+    }
 
-// Process the weekly activity using the day names as returned (e.g., "Sunday", "Monday", etc.)
-$hoursActivity = [];
-$currentWeekTotal = 0;
-foreach (['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as $day) {
-$hours = isset($currentWeekData[$day]) ? (float)$currentWeekData[$day]->hours_spent : 0;
-$hoursActivity[] = $hours;
-if (isset($currentWeekData[$day])) {
-    $currentWeekTotal = (float)$currentWeekData[$day]->total_week_hours;
-}
-}
-
+    // Process the weekly activity using the day names as returned (e.g., "Sunday", "Monday", etc.)
+    $hoursActivity = [];
+    $currentWeekTotal = 0;
+    foreach (['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] as $day) {
+        $hours = isset($currentWeekData[$day]) ? (float)$currentWeekData[$day]->hours_spent : 0;
+        $hoursActivity[] = $hours;
+        if (isset($currentWeekData[$day])) {
+            $currentWeekTotal = (float)$currentWeekData[$day]->total_week_hours;
+        }
+    }
 
     // Reset user variables for the next query
     $DB->execute("SET @prev_time = NULL, @prev_user = NULL, @session_id = 0");
 
     // Previous Week Activity
     $previousWeekSql = "
-        WITH RECURSIVE week_days AS (
-            SELECT DATE_SUB(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 2) DAY), INTERVAL 1 WEEK) AS week_day
-            UNION ALL
-            SELECT DATE_ADD(week_day, INTERVAL 1 DAY)
-            FROM week_days
-            WHERE week_day < DATE_SUB(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 8) DAY), INTERVAL 1 WEEK)
-        ),
-        sessions AS (
-            SELECT 
-                log.userid,
-                log.timecreated,
-                @session_id := IF(@prev_user = log.userid AND (log.timecreated > @prev_time) AND (log.timecreated - @prev_time) <= 1800, 
-                                  @session_id, 
-                                  @session_id + 1) AS session_id,
-                IF(@prev_user = log.userid AND (log.timecreated > @prev_time) AND (log.timecreated - @prev_time) <= 1800, 
-                   log.timecreated - @prev_time, 
-                   0) AS time_spent,
-                @prev_time := log.timecreated,
-                @prev_user := log.userid
-            FROM mdl_logstore_standard_log AS log,
-                 (SELECT @prev_time := NULL, @prev_user := NULL, @session_id := 0) AS vars
-            WHERE log.userid = ?
-            AND YEARWEEK(FROM_UNIXTIME(log.timecreated), 1) = YEARWEEK(DATE_SUB(CURDATE(), INTERVAL 1 WEEK), 1)
-            ORDER BY log.userid, log.timecreated ASC
-        ),
-        daily_hours AS (
-            SELECT 
-                DAYNAME(week_days.week_day) AS day_name,
-                ROUND(COALESCE(SUM(activity.time_spent) / 3600, 0), 2) AS hours_spent
-            FROM week_days
-            LEFT JOIN (
-                SELECT DATE(FROM_UNIXTIME(timecreated)) AS activity_date, time_spent
-                FROM sessions
-            ) AS activity
-            ON activity.activity_date = week_days.week_day
-            GROUP BY week_days.week_day
-        )
+    WITH RECURSIVE week_days AS (
+        SELECT DATE_SUB(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 2) DAY), INTERVAL 1 WEEK) AS week_day
+        UNION ALL
+        SELECT DATE_ADD(week_day, INTERVAL 1 DAY)
+        FROM week_days
+        WHERE week_day < DATE_SUB(DATE_SUB(CURDATE(), INTERVAL (DAYOFWEEK(CURDATE()) - 8) DAY), INTERVAL 1 WEEK)
+    ),
+    sessions AS (
         SELECT 
-            (SELECT ROUND(SUM(hours_spent), 2) FROM daily_hours) AS total_week_hours;
+            log.userid,
+            log.timecreated,
+            @session_id := IF(@prev_user = log.userid AND (log.timecreated > @prev_time) AND (log.timecreated - @prev_time) <= 1800, 
+                              @session_id, 
+                              @session_id + 1) AS session_id,
+            IF(@prev_user = log.userid AND (log.timecreated > @prev_time) AND (log.timecreated - @prev_time) <= 1800, 
+               log.timecreated - @prev_time, 
+               0) AS time_spent,
+            @prev_time := log.timecreated,
+            @prev_user := log.userid
+        FROM mdl_logstore_standard_log AS log,
+             (SELECT @prev_time := NULL, @prev_user := NULL, @session_id := 0) AS vars
+        WHERE log.userid = ?
+        AND YEARWEEK(FROM_UNIXTIME(log.timecreated), 1) = YEARWEEK(DATE_SUB(CURDATE(), INTERVAL 1 WEEK), 1)
+        ORDER BY log.userid, log.timecreated ASC
+    ),
+    daily_hours AS (
+        SELECT 
+            DAYNAME(week_days.week_day) AS day_name,
+            ROUND(COALESCE(SUM(activity.time_spent) / 3600, 0), 2) AS hours_spent
+        FROM week_days
+        LEFT JOIN (
+            SELECT DATE(FROM_UNIXTIME(timecreated)) AS activity_date, time_spent
+            FROM sessions
+        ) AS activity
+        ON activity.activity_date = week_days.week_day
+        GROUP BY week_days.week_day
+    )
+    SELECT 
+        (SELECT ROUND(SUM(hours_spent), 2) FROM daily_hours) AS total_week_hours;
     ";
     try {
         $previousWeekData = $DB->get_record_sql($previousWeekSql, [$userid]);
@@ -283,39 +359,39 @@ if (isset($currentWeekData[$day])) {
 
     // User Progress Data
     $sql = "
-        WITH UserID AS (
-            SELECT id AS userid FROM mdl_user WHERE id = ?
-        ),
-        TotalCourses AS (
-            SELECT COUNT(c.id) AS total_assigned_courses
-            FROM mdl_course c
-            JOIN mdl_enrol e ON c.id = e.courseid
-            JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
-            WHERE ue.userid = (SELECT userid FROM UserID)
-        ),
-        CompletedCourses AS (
-            SELECT COUNT(DISTINCT cm.course) AS total_completed_courses
-            FROM mdl_course_modules_completion cmc
-            JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
-            WHERE cmc.userid = (SELECT userid FROM UserID) AND cmc.completionstate = 1
-        ),
-        TotalPoints AS (
-            SELECT COALESCE(SUM(g.finalgrade), 0) AS total_points_earned
-            FROM mdl_grade_grades g
-            WHERE g.userid = (SELECT userid FROM UserID)
-        ),
-        MaxPoints AS (
-            SELECT COALESCE(SUM(g.rawgrademax), 0) AS max_total_points
-            FROM mdl_grade_grades g
-            WHERE g.userid = (SELECT userid FROM UserID)
-        )
-        SELECT 
-            (SELECT total_assigned_courses FROM TotalCourses) AS total_courses_assigned,
-            (SELECT total_completed_courses FROM CompletedCourses) AS total_courses_completed,
-            ((SELECT total_assigned_courses FROM TotalCourses) - (SELECT total_completed_courses FROM CompletedCourses)) AS total_courses_overdue,
-            (SELECT total_points_earned FROM TotalPoints) AS total_points_earned,
-            (SELECT max_total_points FROM MaxPoints) AS total_possible_points
-        FROM dual
+    WITH UserID AS (
+        SELECT id AS userid FROM mdl_user WHERE id = ?
+    ),
+    TotalCourses AS (
+        SELECT COUNT(c.id) AS total_assigned_courses
+        FROM mdl_course c
+        JOIN mdl_enrol e ON c.id = e.courseid
+        JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
+        WHERE ue.userid = (SELECT userid FROM UserID)
+    ),
+    CompletedCourses AS (
+        SELECT COUNT(DISTINCT cm.course) AS total_completed_courses
+        FROM mdl_course_modules_completion cmc
+        JOIN mdl_course_modules cm ON cmc.coursemoduleid = cm.id
+        WHERE cmc.userid = (SELECT userid FROM UserID) AND cmc.completionstate = 1
+    ),
+    TotalPoints AS (
+        SELECT COALESCE(SUM(g.finalgrade), 0) AS total_points_earned
+        FROM mdl_grade_grades g
+        WHERE g.userid = (SELECT userid FROM UserID)
+    ),
+    MaxPoints AS (
+        SELECT COALESCE(SUM(g.rawgrademax), 0) AS max_total_points
+        FROM mdl_grade_grades g
+        WHERE g.userid = (SELECT userid FROM UserID)
+    )
+    SELECT 
+        (SELECT total_assigned_courses FROM TotalCourses) AS total_courses_assigned,
+        (SELECT total_completed_courses FROM CompletedCourses) AS total_courses_completed,
+        ((SELECT total_assigned_courses FROM TotalCourses) - (SELECT total_completed_courses FROM CompletedCourses)) AS total_courses_overdue,
+        (SELECT total_points_earned FROM TotalPoints) AS total_points_earned,
+        (SELECT max_total_points FROM MaxPoints) AS total_possible_points
+    FROM dual
     ";
     $userData = $DB->get_record_sql($sql, [$USER->id]);
 
@@ -333,31 +409,31 @@ if (isset($currentWeekData[$day])) {
 
     // Course Progress Data
     $sql = "
-        WITH UserID AS (
-            SELECT id AS userid FROM mdl_user WHERE id = ?
-        ),
-        CompletedCourses AS (
-            SELECT
-                c.id AS course_id,
-                c.fullname AS course_name,
-                SUM(g.finalgrade) AS earned_points,
-                SUM(g.rawgrademax) AS total_points_assigned
-            FROM mdl_course c
-            JOIN mdl_enrol e ON c.id = e.courseid
-            JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
-            JOIN mdl_grade_items gi ON c.id = gi.courseid
-            JOIN mdl_grade_grades g ON gi.id = g.itemid AND g.userid = ue.userid
-            WHERE ue.userid = (SELECT userid FROM UserID)
-            GROUP BY c.id, c.fullname
-        )
-        SELECT 
-            course_id, 
-            course_name,
-            earned_points, 
-            total_points_assigned,
-            ROUND((earned_points / NULLIF(total_points_assigned, 0)) * 100, 0) AS percentage_points_earned
-        FROM CompletedCourses
-        ORDER BY earned_points DESC;
+    WITH UserID AS (
+        SELECT id AS userid FROM mdl_user WHERE id = ?
+    ),
+    CompletedCourses AS (
+        SELECT
+            c.id AS course_id,
+            c.fullname AS course_name,
+            SUM(g.finalgrade) AS earned_points,
+            SUM(g.rawgrademax) AS total_points_assigned
+        FROM mdl_course c
+        JOIN mdl_enrol e ON c.id = e.courseid
+        JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
+        JOIN mdl_grade_items gi ON c.id = gi.courseid
+        JOIN mdl_grade_grades g ON gi.id = g.itemid AND g.userid = ue.userid
+        WHERE ue.userid = (SELECT userid FROM UserID)
+        GROUP BY c.id, c.fullname
+    )
+    SELECT 
+        course_id, 
+        course_name,
+        earned_points, 
+        total_points_assigned,
+        ROUND((earned_points / NULLIF(total_points_assigned, 0)) * 100, 0) AS percentage_points_earned
+    FROM CompletedCourses
+    ORDER BY earned_points DESC;
     ";
     $userCourses = $DB->get_records_sql($sql, [$USER->id]);
     $courses_data = [];
@@ -396,10 +472,13 @@ if (isset($currentWeekData[$day])) {
         'isIncrease' => $isIncrease,
         'currentWeekTotal' => round($currentWeekTotal, 2),
         'previousWeekTotal' => round($previousWeekTotal, 2),
-        'courses' => $courses_data
+        'courses' => $courses_data,
+        'recentCourse' => $templatecontext['recentCourse'],
+        'enrolledCourses' => $enrolledCoursesData // Add enrolled courses to the template context
     ];
 }
 
+// Render the template
 echo $OUTPUT->header();
 
 if (core_userfeedback::should_display_reminder()) {

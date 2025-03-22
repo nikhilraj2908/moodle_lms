@@ -40,7 +40,7 @@
             height: 100%;
         }
         .dashboard-card h3 {
-            font-size: 18px;
+            font-size: 25px;
             margin-bottom: 10px;
             color: #333;
         }
@@ -162,7 +162,6 @@
         }
         .hours-activity-section {
             display: flex;
-            flex-direction: column;
             padding: 10px;
             gap: 10px;
         }
@@ -171,6 +170,8 @@
             align-items: center;
             gap: 10px;
             font-size: 14px;
+            text-align:center;
+                margin-left: 2rem;
         }
         .hours-activity-header .arrow {
             display: inline-block;
@@ -192,15 +193,12 @@
         .hours-activity-chart {
             width: 70%;
             height: 200px;
+            text-align:center;
         }
 
         .hours-total-section {
     width: 30%;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
-    padding: 10px;
+
 }
 
 .total-hours {
@@ -233,25 +231,71 @@
 
         <div class="container">
             <!-- First Row: User Stats, Course Enrolled, Learning Path -->
+            <div class="mb-4">
+    <!-- Row Header: "Continue Learning" on the left, "View All" on the right -->
+    <div class="d-flex justify-content-between align-items-center">
+        <h2>Continue <span class="img-heading">Learning</span></h2>
+        <a href="#" class="text-decoration-none">View All</a>
+    </div>
+
+    <!-- Three Boxes -->
+    <div class="d-flex justify-content-between mt-3">
+        <!-- 1) Most Recent Course -->
+        <div class="dashboard-card flex-grow-1 me-3">
+            <h3>Most <span class="img-heading">Recent Course</span></h3>
+               {{#recentCourse}}
+<div class="recent-course">
+    <p> {{coursename}}</p>
+ 
+    <a href="{{courseurl}}">Go to Course</a>
+</div>
+{{/recentCourse}}
+{{^recentCourse}}
+<p>No recently accessed course found.</p>
+{{/recentCourse}}
+          
+        </div>
+
+        <!-- 2) Recently Enrolled Courses (rotates every 3 seconds) -->
+        <div class="dashboard-card flex-grow-1 me-3">
+                <h3>Recent <span class="img-heading">Enrolled Courses</span></h3>
+                     <div id="course-carousel">
+                        {{#enrolledCourses}}
+                        <div class="course-item">
+                            <p>{{coursename}}</p>
+                            <a href="{{courseurl}}">Go to Course</a>
+                        </div>
+                        {{/enrolledCourses}}
+                    </div>
+            <!-- We'll update this box via JavaScript -->
+          
+        </div>
+
+        <!-- 3) Total Courses Enrolled -->
+        <div class="dashboard-card flex-grow-1">
+                    <h3>Total <span class="img-heading">Courses Enrolled</span></h3>
+
+            <h2>{{totalCourses}}</h2>
+        </div>
+    </div>
+</div>
             <div class="dashboard-row">
                 <div class="dashboard-card">
-                    <h3>Hours <span class="img-heading">Activity</span></h3>
-                  <div class="hours-activity-section d-flex justify-content-between align-items-center">
+                    <h2>Hours <span class="img-heading">Activity</span></h2>
+                  <div class="hours-activity-section d-flex justify-content-around align-items-center">
 
-                        <div class="hours-activity-header">
-                            <span class="arrow {{#isIncrease}}increase{{/isIncrease}}{{^isIncrease}}decrease{{/isIncrease}}">
-                                {{#isIncrease}}⬆{{/isIncrease}}{{^isIncrease}}⬇{{/isIncrease}}
-                            </span>
-                            <span style="color: {{#isIncrease}}green{{/isIncrease}}{{^isIncrease}}red{{/isIncrease}};">
-                                +{{percentageChange}}% {{#isIncrease}}Increase than last week{{/isIncrease}}{{^isIncrease}}Decrease than last week{{/isIncrease}}
-                            </span>
-                        </div>
+                       
                         <div class="hours-activity-chart">
+                             <div class="hours-activity-header">
+                                <span style="color: {{#isIncrease}}green{{/isIncrease}}{{^isIncrease}}red{{/isIncrease}};">
+                                    +{{percentageChange}}% {{#isIncrease}}Increase than last week{{/isIncrease}}{{^isIncrease}}Decrease than last week{{/isIncrease}}
+                                </span>
+                            </div>
                             <canvas id="hoursActivityChart"></canvas>
                         </div>
                         <div class="hours-total-section">
                             <div class="total-hours">
-                                <h5>Current Week</h5>
+                                <div><h5>Current Week</h5></div>
                                 <div class="hours-number">{{currentWeekTotal}} hrs</div>
                             </div>
                             <div class="total-hours">
@@ -263,7 +307,7 @@
                 </div>
                 
                  <div class="dashboard-card ">
-                    <h3>Learning <span class="img-heading">Path</span></h3>
+                    <h2>Learning <span class="img-heading">Path</span></h2>
                      
                     <div class="learning-path h-75">
                         <div class="progress-container">
@@ -301,13 +345,32 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Third Row: Hours Activity -->
-            
+            <div class="recent-enrolled-courses">
+   
+</div>
         </div>
     </div>
 </body>
 <script>document.addEventListener("DOMContentLoaded", function () {
+     const courseItems = document.querySelectorAll("#course-carousel .course-item");
+    let currentIndex = 0;
+
+    function showNextCourse() {
+        // Hide all courses
+        courseItems.forEach((item) => (item.style.display = "none"));
+
+        // Show the current course
+        courseItems[currentIndex].style.display = "block";
+
+        // Move to the next course
+        currentIndex = (currentIndex + 1) % courseItems.length;
+    }
+
+    // Show the first course immediately
+    showNextCourse();
+
+    // Rotate courses every 4 seconds
+    setInterval(showNextCourse, 4000);
     // ✅ Hours Activity Chart
     var ctx = document.getElementById("hoursActivityChart").getContext("2d");
     var hoursData = JSON.parse('{{{hoursActivity}}}');
@@ -342,7 +405,12 @@
         plugins: {
             legend: { display: false },
             tooltip: { enabled: false }
-        }
+        },
+             animation: {
+                duration: 2000,     // 3-second animation
+               
+            },
+        
     };
 
     new Chart(ctx, { type: "bar", data: data, options: options });
@@ -350,59 +418,53 @@
     // ✅ Learning Path Chart with Rounded Edges and Shadow
     var learningPathCtx = document.getElementById("learningPathChart").getContext("2d");
 
-    const completedPercentage = {{learningPathPercentage}}; // Dynamic value
-    const overduePercentage = 100 - completedPercentage; // Remaining part
+     const completedPercentage = {{learningPathPercentage}}; 
+    const overduePercentage = 100 - completedPercentage;
 
-    new Chart(learningPathCtx, {
+    // 1) Start the chart at 100% (full circle)
+    let initialData = [100, 0];
+    // 2) Final data from your PHP
+    let finalData = [completedPercentage, overduePercentage];
+
+    // Create the doughnut chart with initialData
+    var learningPathChart = new Chart(document.getElementById("learningPathChart").getContext("2d"), {
         type: "doughnut",
         data: {
             datasets: [{
-                data: [completedPercentage, overduePercentage],
-                backgroundColor: ["#204070", "#808080"], // Blue for completed, Grey for overdue
+                data: initialData,
+                backgroundColor: ["#204070", "#808080"],
                 borderWidth: 0,
-                borderRadius: [15, 0], // Rounded for blue, normal for gray
-                hoverBorderWidth: 6 // Adds a hover effect
+                borderRadius: [5, 5],
+                hoverBorderWidth: 6
             }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: true, 
-            cutout: "65%", // Adjusts the inner hole size
-            plugins: { 
-                legend: { display: false }, 
-                tooltip: { enabled: false } 
+            maintainAspectRatio: true,
+            cutout: "65%",
+            plugins: {
+                legend: { display: false },
+                tooltip: { enabled: false }
             },
             animation: {
-                animateRotate: true, // Smooth rotation effect
-                animateScale: true  // Zoom-in effect on load
+                duration: 1500,     // 3-second animation
+                animateRotate: true,
+                animateScale: true
             },
             elements: {
                 arc: {
-                    borderJoinStyle: "round", // Ensures rounded effect only on the first part
-                    hoverBorderWidth: 6, // Adds hover effect
+                    borderJoinStyle: "round",
+                    hoverBorderWidth: 6
                 }
             }
-        },
-        plugins: [{
-            beforeDraw: function(chart) {
-                var ctx = chart.ctx;
-                var width = chart.width;
-                var height = chart.height;
-                var centerX = width / 2;
-                var centerY = height / 2;
-
-                ctx.save();
-                ctx.shadowColor = "rgba(0, 0, 0, 0.3)"; // Shadow color
-                ctx.shadowBlur = 10; // Blurred shadow
-                ctx.shadowOffsetX = 3;
-                ctx.shadowOffsetY = 3;
-                ctx.restore();
-            }
-        }]
+        }
     });
 
-    // ✅ Set dynamic text in the center of the Learning Path Chart
-    document.getElementById("learningPathText").innerText = "{{learningPathPercentage}}% completed";
+    // 3) After a short delay, animate from 100% to the final data
+    setTimeout(function() {
+        learningPathChart.data.datasets[0].data = finalData;
+        learningPathChart.update(); // triggers the animation
+    }, 1000); // 1-second delay before starting the "shrink" animationntById("learningPathText").innerText = "{{learningPathPercentage}}% completed";
 
 });
 
