@@ -31,15 +31,14 @@
 }}
 
 {{> theme_boost/head }}
-{{^isloginpage}}  {{! Hide header only on login page }}
-    {{> theme_academi/header }}
+{{^isloginpage}}  {{! Hide header only on login page   /header likh denge navbar ki jagha  }}
+    {{> theme_academi/navbar }}
+
 {{/isloginpage}}
 <body {{{ bodyattributes }}}>
     {{> core/local/toast/wrapper}}
-    <div id="page-wrapper" class="mt-1">
+    <div id="page-wrapper" >
         {{{ output.standard_top_of_body_html }}}
-        
-      
         <div id="page" class="container-fluid mt-0">
             <div id="page-content" class="row">
                 <div id="region-main-box" class="col-12">

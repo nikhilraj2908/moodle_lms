@@ -83,16 +83,19 @@
                 </a>
             {{/themestyleheader}}
 
-            {{#themestyleheader}}
-                <nav class="nav navbar-nav hidden-md-down address-head">
-                    {{# phoneno}}
-                        <span><i class="fa fa-phone"></i>{{#str}}callus, theme_academi{{/str}} : {{ phoneno }}</span>
-                    {{/ phoneno}}
-                    {{# emailid}}
-                        <span><i class="fa fa-envelope-o"></i>{{#str}}email, theme_academi{{/str}} : <a href="mailto:{{emailid}}">{{ emailid }}</a></span>
-                    {{/ emailid}}
-                </nav>
-            {{/themestyleheader}}
+          {{^loggedin}}
+  {{#themestyleheader}}
+    <nav class="nav navbar-nav hidden-md-down address-head">
+      {{#phoneno}}
+        <span><i class="fa fa-phone"></i>{{#str}}callus, theme_academi{{/str}} : {{phoneno}}</span>
+      {{/phoneno}}
+      {{#emailid}}
+        <span><i class="fa fa-envelope-o"></i>{{#str}}email, theme_academi{{/str}} : <a href="mailto:{{emailid}}">{{emailid}}</a></span>
+      {{/emailid}}
+    </nav>
+  {{/themestyleheader}}
+{{/loggedin}}
+
 
             {{^themestyleheader  }} {{!-- Hide menu nave for moodle style }}
                 {{#primarymoremenu}}
@@ -113,11 +116,17 @@
             {{/langmenu}}
             {{{ output.search_box }}}
             {{{ output.navbar_plugin_output }}}
-            <div class="d-flex align-items-stretch usermenu-container" data-region="usermenu">
+
+    <div class="d-flex align-items-stretch usermenu-container" data-region="usermenu">
+
+            {{^isloginpage}}  {{! Hide usermenu only on login page   /header likh denge navbar ki jagha  }}
                 {{#usermenu}}
                     {{> core/user_menu }}
                 {{/usermenu}}
+
+            {{/isloginpage}}
             </div>
+            
             {{{ output.edit_switch }}}
         </div>
         <!-- search_box -->

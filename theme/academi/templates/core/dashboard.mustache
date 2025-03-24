@@ -37,7 +37,7 @@
             border-radius: 10px;
             padding: 15px;
             text-align: center;
-            height: 100%;
+            
         }
         .dashboard-card h3 {
             font-size: 25px;
@@ -233,27 +233,24 @@
             <!-- First Row: User Stats, Course Enrolled, Learning Path -->
             <div class="mb-4">
     <!-- Row Header: "Continue Learning" on the left, "View All" on the right -->
-    <div class="d-flex justify-content-between align-items-center">
-        <h2>Continue <span class="img-heading">Learning</span></h2>
-        <a href="#" class="text-decoration-none">View All</a>
-    </div>
+    
 
     <!-- Three Boxes -->
     <div class="d-flex justify-content-between mt-3">
         <!-- 1) Most Recent Course -->
         <div class="dashboard-card flex-grow-1 me-3">
-            <h3>Most <span class="img-heading">Recent Course</span></h3>
+            <h3>Continue <span class="img-heading">Learning</span></h3>
                {{#recentCourse}}
-<div class="recent-course">
-    <p> {{coursename}}</p>
+            <div class="recent-course">
+                <p> {{coursename}}</p>
  
-    <a href="{{courseurl}}">Go to Course</a>
-</div>
-{{/recentCourse}}
-{{^recentCourse}}
-<p>No recently accessed course found.</p>
-{{/recentCourse}}
-          
+            <a href="{{courseurl}}">Go to Course</a>
+            </div>
+            {{/recentCourse}}
+            {{^recentCourse}}
+            <p>No recently accessed course found.</p>
+            {{/recentCourse}}
+                    
         </div>
 
         <!-- 2) Recently Enrolled Courses (rotates every 3 seconds) -->
@@ -268,15 +265,24 @@
                         {{/enrolledCourses}}
                     </div>
             <!-- We'll update this box via JavaScript -->
-          
         </div>
 
         <!-- 3) Total Courses Enrolled -->
         <div class="dashboard-card flex-grow-1">
-                    <h3>Total <span class="img-heading">Courses Enrolled</span></h3>
+                   <div class="d-flex justify-content-between" style="border-bottom: 3px dotted black; padding-bottom: 15px;">
+                        <span>
+                                    <h3 class="text-left">Course <br><span class="img-heading">Enrolled</span> </h3>
 
-            <h2>{{totalCourses}}</h2>
+                        </span>
+                        <span >
+                                <img src={{course_enrolled_url}} alt="User enrollments" width="65">
+                        </span>
+                    </div>
+                    <strong>
+                        <h2 class="coursecount text-bold text-left " style="color:#204070;" >{{totalCourses}}</h2>
+                    </strong>
         </div>
+        
     </div>
 </div>
             <div class="dashboard-row">
@@ -317,8 +323,9 @@
                         </div>
                     </div>
                     <div class="learning-path-legend mb-3">
-                        <div><span class="bullet excellent"></span>Completed</div>
-                        <div><span class="bullet keep-going"></span>Overdue</div>
+
+                        <div><span class="bullet excellent"></span>{{completedCourses}} Completed</div>
+                        <div><span class="bullet keep-going"></span>{{totalOverdue}} Overdue</div>
                     </div>
                    
                 </div>
