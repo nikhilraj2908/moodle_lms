@@ -418,6 +418,7 @@ body#page-login-forgot_password {
     }
 }
 /* Course Card - Horizontal */
+
 .custom-course-card {
     position: relative;
     height: 300px; /* Ensuring all cards are the same height */
@@ -523,6 +524,9 @@ body#page-login-forgot_password {
 .custom-load-more {
     text-align: center;
 }
+
+
+
 /* .custom-course-card {
     position: relative;
     height: 300px;

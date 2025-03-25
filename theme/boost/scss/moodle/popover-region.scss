@@ -91,7 +91,8 @@ $content-header-footer-height: $region-header-height + $region-footer-height;
     border: $standard-border;
     transition: height 0.25s;
     background-color: $popover-region-container-bg;
-    z-index: $region-container-z-index;
+    z-index: $region-container-z-index+199;
+    // z-index: $region-container-z-index; original ye tha
 }
 
 .popover-region-header-container {

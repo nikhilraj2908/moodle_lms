@@ -156,16 +156,21 @@
     <h2 class="d-flex justify-content-center" ><span class="icon-mycourse">📚</span> <span class="custom-section-title ps-3 ">  My Courses</span> </h2>
 
     <div class="custom-course-grid" id="courseGrid">
-        {{#courses}}
-            <div class="custom-course-card">
-               
-                <div class="custom-course-content">
-                    <h3 class="custom-course-title">{{course_name}}</h3>
-                    <p class="custom-course-description">{{course_summary}}</p>
-                    <a href="{{course_url}}" class="custom-view-more">Continue Learning →</a>
-                </div>
-            </div>
-        {{/courses}}
+     {{#courses}}
+<div class="custom-course-card">
+  <div class="custom-course-card-image">
+    <img src="{{course_image_url}}" alt="{{course_name}}">
+  </div>
+  <div class="custom-course-content">
+    <h3 class="custom-course-title">{{course_name}}</h3>
+    <p class="custom-course-description">{{course_summary}}</p>
+    <a href="{{course_url}}" class="custom-view-more">Continue Learning →</a>
+  </div>
+</div>
+{{/courses}}
+
+
+
     </div>
 </div>
 

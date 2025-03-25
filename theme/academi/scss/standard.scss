@@ -194,7 +194,7 @@ legend {
 
 /* Page Content */
 .drawer-toggles .drawer-right-toggle {
-    z-index: 3;
+    z-index: 199;
 }
 .main-inner {
     .drawer-left-toggle,
@@ -316,7 +316,7 @@ legend {
 }
 body:not(.pagelayout-maintenance) #page-wrapper {
     height: auto;
-    margin-top: 60px;
+    // margin-top: 60px;
 }
 #page {
     margin-top: 0;

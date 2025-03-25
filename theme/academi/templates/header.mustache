@@ -28,7 +28,15 @@
         "sitename": "Moodle"
     }
 }}
+<style>
+.header-main {
+    position: sticky;
+    top: 0;
+    z-index: 199; /* Ensure it sits on top of other elements */
+    background-color: #fff; /* Optional: set a background so content underneath doesn’t show through */
+}
 
+</style>
 {{> theme_academi/navbar }}
 
 {{#themestyleheader}}
@@ -59,6 +67,7 @@
                     <div class="primary-navigation">
                         {{> core/moremenu}}
                     </div>
+                    
                 {{/primarymoremenu}}
 
                 <ul class="navbar-nav d-none d-md-flex my-1 px-1">

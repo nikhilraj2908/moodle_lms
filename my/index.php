@@ -79,6 +79,8 @@ $PAGE->add_body_class('limitedwidth');
 $PAGE->set_pagetype('my-index');
 $PAGE->blocks->add_region('content');
 $PAGE->set_subpage($currentpage->id);
+$PAGE->set_heading(''); // Removes default "Hi, user" text
+$PAGE->set_title(''); 
 
 if (!isguestuser() && get_home_page() != HOMEPAGE_MY) {
     if (optional_param('setdefaulthome', false, PARAM_BOOL)) {
@@ -183,17 +185,20 @@ if (isloggedin() && !isguestuser()) {
     // Query to fetch the most recent course accessed by the user
     $recentCourseSql = "
         SELECT 
-            c.id AS courseid,
-            c.fullname AS coursename,
-            c.summary AS coursesummary,
-            c.shortname AS courseshortname,
-            FROM_UNIXTIME(l.timecreated) AS last_accessed_time
-        FROM mdl_logstore_standard_log l
-        JOIN mdl_course c ON l.courseid = c.id
-        WHERE l.userid = ?
-        AND l.courseid IS NOT NULL
-        ORDER BY l.timecreated DESC
-        LIMIT 1
+        c.id AS courseid,
+        c.fullname AS coursename,
+        c.summary AS coursesummary,
+        c.shortname AS courseshortname,
+        FROM_UNIXTIME(l.timecreated) AS last_accessed_time
+    FROM mdl_logstore_standard_log l
+    JOIN mdl_course c ON l.courseid = c.id
+    WHERE l.userid = ?
+      AND l.courseid IS NOT NULL
+      -- Exclude AlogicData by name or by its course ID:
+      AND c.fullname <> 'AlogicData'
+      -- OR if you know its ID, say c.id <> 5
+    ORDER BY l.timecreated DESC
+    LIMIT 1
     ";
 
     try {
@@ -488,6 +493,7 @@ if (core_userfeedback::should_display_reminder()) {
 if (has_capability('moodle/site:manageblocks', context_system::instance())) {
     echo $OUTPUT->addblockbutton('content');
 }
+
 
 echo $OUTPUT->render_from_template('core/dashboard', $templatecontext);
 
