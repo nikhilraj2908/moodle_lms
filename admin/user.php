@@ -160,15 +160,32 @@
     echo $OUTPUT->header();
 
     if (has_capability('moodle/user:create', $sitecontext)) {
-        echo html_writer::start_div('d-flex mb-2');
-        $url = new moodle_url('/user/editadvanced.php', ['id' => -1]);
-        echo html_writer::link($url, get_string('addnewuser', 'moodle'), [
-            'class' => 'btn btn-primary ms-auto',
-            'data-action' => 'add-user',
-        ]);
-        echo html_writer::end_div();
-    }
+        global $DB, $CFG;
 
+        // Exclude system users like admin (id = 1) and guest
+        $sql = "SELECT COUNT(*) 
+                FROM {user} 
+                WHERE deleted = 0 AND suspended = 0 AND id <> 1 AND id <> :guestid";
+        
+        $usercount = $DB->count_records_sql($sql, ['guestid' => $CFG->siteguest]);
+        $maxusers = 6;
+        
+        if ($usercount < $maxusers) {
+            echo html_writer::start_div('d-flex mb-2');
+            $url = new moodle_url('/user/editadvanced.php', ['id' => -1]);
+            echo html_writer::link($url, get_string('addnewuser', 'moodle'), [
+                'class' => 'btn btn-primary ms-auto',
+                'data-action' => 'add-user',
+            ]);
+            echo html_writer::end_div();
+        } else {
+            echo html_writer::div(
+                '⚠️ Maximum user limit reached (5 users). Cannot add more users.',
+                'alert alert-warning mt-3'
+            );
+        }
+        
+    }
     echo html_writer::start_div('', ['data-region' => 'report-user-list-wrapper']);
 
     $bulkactions = new user_bulk_action_form(new moodle_url('/admin/user/user_bulk.php'),
