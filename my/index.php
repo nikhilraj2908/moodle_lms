@@ -150,87 +150,140 @@ if (isloggedin() && !isguestuser()) {
 
     // Fetch the last 3 enrolled courses
     $enrolledCoursesSql = "
-        SELECT c.id AS courseid, c.fullname AS coursename, c.summary AS coursesummary, ue.timecreated AS enrolled_time
-        FROM mdl_course c
-        JOIN mdl_enrol e ON c.id = e.courseid
-        JOIN mdl_user_enrolments ue ON e.id = ue.enrolid
-        WHERE ue.userid = ?
-        ORDER BY ue.timecreated DESC
-        LIMIT 3
+        SELECT 
+    c.id AS course_id,
+    c.fullname AS course_name,
+    c.shortname AS course_shortname,
+    c.summary AS course_summary,
+    c.startdate AS course_startdate,
+    c.enddate AS course_enddate,
+    c.visible AS course_visible,
+    cc.name AS category_name,
+    ue.timecreated AS enrolled_time,
+    f.filename AS course_image_filename,
+    f.filepath AS course_image_filepath,
+    f.mimetype AS course_image_mimetype,
+    CONCAT('/pluginfile.php/', ctx.id, '/course/overviewfiles/', f.filename) AS course_image_url
+FROM mdl_course c
+JOIN mdl_enrol e ON e.courseid = c.id
+JOIN mdl_user_enrolments ue ON ue.enrolid = e.id
+LEFT JOIN mdl_course_categories cc ON c.category = cc.id
+LEFT JOIN mdl_context ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50
+LEFT JOIN mdl_files f ON ctx.id = f.contextid 
+           AND f.component = 'course' 
+           AND f.filearea = 'overviewfiles' 
+           AND f.filename <> '.'
+WHERE ue.userid = ?
+  AND c.visible = 1
+ORDER BY ue.timecreated DESC
+LIMIT 3;
     ";
 
-    try {
-        $enrolledCourses = $DB->get_records_sql($enrolledCoursesSql, [$USER->id]);
-    } catch (dml_exception $e) {
-        error_log("Error fetching enrolled courses: " . $e->getMessage());
-        $enrolledCourses = [];
-    }
+    // Define the default image URL.
+$default_image_url = $CFG->wwwroot . '/theme/academi/pix/defaultcourse.jpg';
 
-    // Clean the course summaries and prepare the data for the template
-    $enrolledCoursesData = [];
-    foreach ($enrolledCourses as $course) {
-        $cleanedSummary = format_string($course->coursesummary, true);
-        $enrolledCoursesData[] = [
-            'courseid' => $course->courseid,
-            'coursename' => $course->coursename,
-            'coursesummary' => $cleanedSummary,
-            'enrolled_time' => $course->enrolled_time,
-            'courseurl' => new moodle_url('/course/view.php', ['id' => $course->courseid])
-        ];
-    }
+// Fetch the last 3 enrolled courses (your query remains the same).
+try {
+    $enrolledCourses = $DB->get_records_sql($enrolledCoursesSql, [$USER->id]);
+} catch (dml_exception $e) {
+    error_log("Error fetching enrolled courses: " . $e->getMessage());
+    $enrolledCourses = [];
+}
 
-    // Add enrolled courses to the template context
-    $templatecontext['enrolledCourses'] = $enrolledCoursesData;
+// Prepare enrolled courses data.
+$enrolledCoursesData = [];
+foreach ($enrolledCourses as $course) {
+    $cleanedSummary = format_string($course->course_summary, true);
+    
+    // Check if the course image exists; if not, use the default image.
+    $course_image_url = (!empty($course->course_image_filename))
+        ? $CFG->wwwroot . $course->course_image_url
+        : $default_image_url;
+    
+    $enrolledCoursesData[] = [
+        'courseid'         => $course->course_id,
+        'coursename'       => $course->course_name,
+        'coursesummary'    => $cleanedSummary,
+        'enrolled_time'    => $course->enrolled_time,
+        'course_image_url' => $course_image_url,  // Use the computed image URL
+        'courseurl'        => new moodle_url('/course/view.php', ['id' => $course->course_id])
+    ];
+}
+
+// Add enrolled courses data to the template context.
+$templatecontext['enrolledCourses'] = $enrolledCoursesData;
+
 
     // Query to fetch the most recent course accessed by the user
-    $recentCourseSql = "
-        SELECT 
-        c.id AS courseid,
-        c.fullname AS coursename,
-        c.summary AS coursesummary,
-        c.shortname AS courseshortname,
-        FROM_UNIXTIME(l.timecreated) AS last_accessed_time
+   // Define the default image URL (if not already defined).
+$default_image_url = $CFG->wwwroot . '/theme/academi/pix/defaultcourse.jpg';
+
+// Query to fetch the most recent course accessed by the user.
+$recentCourseSql = "
+    SELECT 
+        c.id AS course_id,
+        c.fullname AS course_name,
+        c.shortname AS course_shortname,
+        c.summary AS course_summary,
+        FROM_UNIXTIME(l.timecreated) AS last_accessed_time,
+        f.filename AS course_image_filename,
+        f.filepath AS course_image_filepath,
+        f.mimetype AS course_image_mimetype,
+        CONCAT('/pluginfile.php/', ctx.id, '/course/overviewfiles/', f.filename) AS course_image_url
     FROM mdl_logstore_standard_log l
     JOIN mdl_course c ON l.courseid = c.id
+    LEFT JOIN mdl_context ctx ON c.id = ctx.instanceid AND ctx.contextlevel = 50
+    LEFT JOIN mdl_files f ON ctx.id = f.contextid
+                          AND f.component = 'course'
+                          AND f.filearea = 'overviewfiles'
+                          AND f.filename <> '.'
     WHERE l.userid = ?
       AND l.courseid IS NOT NULL
-      -- Exclude AlogicData by name or by its course ID:
-      AND c.fullname <> 'AlogicData'
-      -- OR if you know its ID, say c.id <> 5
+      AND c.fullname <> 'AlogicData' -- or c.id <> 5, whichever you need
+      AND c.visible = 1
     ORDER BY l.timecreated DESC
     LIMIT 1
-    ";
+";
 
-    try {
-        $recentCourse = $DB->get_record_sql($recentCourseSql, [$USER->id]);
-        if (!$recentCourse) {
-            error_log("No recent course found for user ID: " . $USER->id);
-        } else {
-            error_log("Recent course found: " . print_r($recentCourse, true)); // Debug the fetched data
-        }
-    } catch (dml_exception $e) {
-        error_log("Error fetching recent course: " . $e->getMessage());
-        $recentCourse = null;
-    }
-
-    // Add recent course data to the template context
-    if ($recentCourse) {
-        $cleanedSummary = format_string($recentCourse->coursesummary, true);
-        $templatecontext['recentCourse'] = [
-            'courseid' => $recentCourse->courseid,
-            'coursename' => $recentCourse->coursename,
-            'coursesummary' => $cleanedSummary,
-            'courseshortname' => $recentCourse->courseshortname,
-            'last_accessed_time' => $recentCourse->last_accessed_time,
-            'courseurl' => new moodle_url('/course/view.php', ['id' => $recentCourse->courseid])
-        ];
+try {
+    $recentCourse = $DB->get_record_sql($recentCourseSql, [$USER->id]);
+    if (!$recentCourse) {
+        error_log("No recent course found for user ID: " . $USER->id);
     } else {
-        $templatecontext['recentCourse'] = null;
+        error_log("Recent course found: " . print_r($recentCourse, true)); // Debug
     }
+} catch (dml_exception $e) {
+    error_log("Error fetching recent course: " . $e->getMessage());
+    $recentCourse = null;
+}
+
+// Add recent course data to the template context
+if ($recentCourse) {
+    // Clean the course summary using the correct alias:
+    $cleanedSummary = format_string($recentCourse->course_summary, true);
+
+    // Handle the image (fallback to default if not present):
+    $course_image_url = (!empty($recentCourse->course_image_filename))
+        ? $CFG->wwwroot . $recentCourse->course_image_url
+        : $default_image_url;
+
+        $templatecontext['recentCourse'] = [
+            'courseid'         => $recentCourse->course_id,
+            'coursename'       => $recentCourse->course_name,   // Use course_name
+            'coursesummary'    => $cleanedSummary,
+            'courseshortname'  => $recentCourse->course_shortname,
+            'last_accessed_time' => $recentCourse->last_accessed_time,
+            'course_image_url' => $course_image_url,            // computed above
+            'courseurl'        => new moodle_url('/course/view.php', ['id' => $recentCourse->course_id])
+        ];
+} else {
+    $templatecontext['recentCourse'] = null;
+}
 
     // Debug: Log the recent course data
     if ($recentCourse) {
-        error_log("Recent Course Found: " . $recentCourse->coursename);
+        error_log("Recent Course Found: " . $recentCourse->course_name);
+
     } else {
         error_log("No Recent Course Found for User ID: " . $USER->id);
     }

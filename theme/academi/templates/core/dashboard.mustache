@@ -220,6 +220,82 @@
     font-weight: bold;
     color: #204070;
 }
+#course-carousel {
+    position: relative;
+    width: 100%;
+    /* Adjust height to your preference or match parent container */
+    height: 200px;
+    overflow: hidden;
+}
+
+/* Initially all items hidden; we show one at a time via JavaScript */
+#course-carousel .course-item {
+    display: none; 
+    width: 100%;
+    height: 100%;
+    background-size: cover;       /* Ensures the image covers entire div */
+    background-position: center;  /* Centers the image */
+    transition: transform 0.4s ease-in-out;
+    position: relative;
+}
+
+/* Zoom on hover */
+#course-carousel .course-item:hover {
+    transform: scale(1.05);
+}
+
+/* Text overlay container */
+.course-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    color: #fff;
+    background: rgba(0,0,0,0.5); /* Semi-transparent black background */
+    padding: 10px;
+}
+
+.course-overlay h4 {
+    margin: 0;
+}
+
+.course-overlay a {
+    color: #fff;
+    text-decoration: underline;
+}
+.recent-course {
+    position: relative;
+    width: 100%;
+    height: 200px;              /* Adjust height as needed */
+    border-radius: 5px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    transition: transform 0.3s ease;
+}
+
+.recent-course:hover {
+    transform: scale(1.05);    /* Slight zoom on hover */
+}
+
+.course-overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    color: #fff;
+    padding: 10px;
+}
+
+.course-overlay h4 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.course-overlay a {
+    color: #fff;
+    text-decoration: underline;
+    font-size: 14px;
+}
 
     </style>
 </head>
@@ -227,10 +303,19 @@
 
 <body>
     <div class="bg-light">
-        <div class="dashboard-header">
-            {{{userpicture}}}
-            <span>Hey! {{username}}</span>
-        </div>
+<div class="dashboard-header justify-content-between">
+    <div class="d-flex align-items-center">
+        {{{userpicture}}}
+        <span class="ms-2">Hey! {{username}}</span>
+    </div>
+    <div style="position: relative; max-width: 300px;">
+        <input type="text" id="course-search" class="form-control" placeholder="Search courses...">
+        <div id="course-results" class="list-group position-absolute w-100" style="z-index: 999;"></div>
+    </div>
+</div>
+
+
+
 
         <div class="container">
             <!-- First Row: User Stats, Course Enrolled, Learning Path -->
@@ -242,48 +327,50 @@
     <div class="d-flex justify-content-between mt-3">
         <!-- 1) Most Recent Course -->
         <div class="dashboard-card flex-grow-1 me-3">
-            <h3>Continue <span class="img-heading">Learning</span></h3>
-               {{#recentCourse}}
-            <div class="recent-course">
-                <p> {{coursename}}</p>
- 
+    <h3>Continue <span class="img-heading">Learning</span></h3>
+    {{#recentCourse}}
+    <div class="recent-course" style="background-image: url('{{course_image_url}}');">
+        <div class="course-overlay">
+            <h4>{{coursename}}</h4>
             <a href="{{courseurl}}">Go to Course</a>
-            </div>
-            {{/recentCourse}}
-            {{^recentCourse}}
-            <p>No recently accessed course found.</p>
-            {{/recentCourse}}
-                    
         </div>
+    </div>
+    {{/recentCourse}}
+    {{^recentCourse}}
+    <p>No recently accessed course found.</p>
+    {{/recentCourse}}
+</div>
+
 
         <!-- 2) Recently Enrolled Courses (rotates every 3 seconds) -->
-        <div class="dashboard-card flex-grow-1 me-3">
-                <h3>Recent <span class="img-heading">Enrolled Courses</span></h3>
-                     <div id="course-carousel">
-                        {{#enrolledCourses}}
-                        <div class="course-item">
-                            <p>{{coursename}}</p>
-                            <a href="{{courseurl}}">Go to Course</a>
-                        </div>
-                        {{/enrolledCourses}}
-                    </div>
-            <!-- We'll update this box via JavaScript -->
+       <div class="dashboard-card flex-grow-1 me-3">
+    <h3>Recent <span class="img-heading">Enrolled Courses</span></h3>
+    <div id="course-carousel">
+        {{#enrolledCourses}}
+        <div class="course-item" style="background-image: url('{{course_image_url}}');">
+            <div class="course-overlay">
+                <h4>{{coursename}}</h4>
+                <a href="{{courseurl}}">Go to Course</a>
+            </div>
         </div>
+        {{/enrolledCourses}}
+    </div>
+</div>
+
 
         <!-- 3) Total Courses Enrolled -->
         <div class="dashboard-card flex-grow-1">
-                   <div class="d-flex justify-content-between" style="border-bottom: 3px dotted black; padding-bottom: 15px;">
-                        <span>
-                                    <h3 class="text-left">Course <br><span class="img-heading">Enrolled</span> </h3>
+                                    <h3 >Course <span class="img-heading">Enrolled</span> </h3>
 
-                        </span>
-                        <span >
-                                <img src={{course_enrolled_url}} alt="User enrollments" width="65">
+                   <div class="d-flex justify-content-center mt-4" style="border-bottom: 3px dotted black; ">
+                        <span class="text-left">
+                                <h1 class="coursecount  text-left text-center fw-bold" style="color:#204070; font-size:60px;" >{{totalCourses}}</h1>
                         </span>
                     </div>
-                    <strong>
-                        <h2 class="coursecount text-bold text-left " style="color:#204070;" >{{totalCourses}}</h2>
-                    </strong>
+                     <span >
+                                <img src={{course_enrolled_url}} alt="User enrollments" width="90" class="mt-4  ">
+                        </span>
+                    
         </div>
         
     </div>
@@ -297,7 +384,8 @@
                         <div class="hours-activity-chart">
                              <div class="hours-activity-header">
                                 <span style="color: {{#isIncrease}}green{{/isIncrease}}{{^isIncrease}}red{{/isIncrease}};">
-                                    +{{percentageChange}}% {{#isIncrease}}Increase than last week{{/isIncrease}}{{^isIncrease}}Decrease than last week{{/isIncrease}}
+                                    {{#isIncrease}}+{{/isIncrease}}{{^isIncrease}}-{{/isIncrease}}{{percentageChange}}% 
+                                    {{#isIncrease}}Increase than last week{{/isIncrease}}{{^isIncrease}}Decrease than last week{{/isIncrease}}
                                 </span>
                             </div>
                             <canvas id="hoursActivityChart"></canvas>
@@ -363,24 +451,39 @@
 </body>
 <script>document.addEventListener("DOMContentLoaded", function () {
      const courseItems = document.querySelectorAll("#course-carousel .course-item");
+    const carouselContainer = document.getElementById("course-carousel");
     let currentIndex = 0;
+    let rotationInterval;
 
     function showNextCourse() {
         // Hide all courses
         courseItems.forEach((item) => (item.style.display = "none"));
-
         // Show the current course
         courseItems[currentIndex].style.display = "block";
-
         // Move to the next course
         currentIndex = (currentIndex + 1) % courseItems.length;
     }
 
+    // Start rotation
+    function startRotation() {
+        rotationInterval = setInterval(showNextCourse, 2500);
+    }
+
+    // Stop rotation
+    function stopRotation() {
+        clearInterval(rotationInterval);
+    }
+
     // Show the first course immediately
     showNextCourse();
+    // Then start auto-rotation
+    startRotation();
 
-    // Rotate courses every 4 seconds
-    setInterval(showNextCourse, 4000);
+    // Pause on hover
+    carouselContainer.addEventListener("mouseenter", stopRotation);
+    // Resume on mouse leave
+    carouselContainer.addEventListener("mouseleave", startRotation);
+
     // ✅ Hours Activity Chart
     var ctx = document.getElementById("hoursActivityChart").getContext("2d");
     var hoursData = JSON.parse('{{{hoursActivity}}}');
@@ -480,5 +583,45 @@
 
 document.getElementById("learningPathText").innerText = "{{learningPathPercentage}}% completed";
 
+
+
+document.getElementById('course-search').addEventListener('input', function () {
+    const query = this.value.trim();
+    const resultsDiv = document.getElementById('course-results');
+    resultsDiv.innerHTML = '';
+
+    if (query.length < 2) return;
+
+    fetch(`/lib/ajax/service.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify([{
+            methodname: 'core_course_search_courses',
+            args: { criterianame: 'search', criteriavalue: query }
+        }])
+    })
+    .then(res => res.json())
+    .then(data => {
+        const courses = data[0].data.courses;
+        if (courses.length === 0) {
+            resultsDiv.innerHTML = '<div class="list-group-item">No courses found</div>';
+            return;
+        }
+
+        courses.forEach(course => {
+            const item = document.createElement('a');
+            item.className = 'list-group-item list-group-item-action';
+            item.href = `/course/view.php?id=${course.id}`;
+            item.textContent = course.fullname;
+            resultsDiv.appendChild(item);
+        });
+    })
+    .catch(err => {
+        console.error('Search error:', err);
+        resultsDiv.innerHTML = '<div class="list-group-item text-danger">Error searching courses</div>';
+    });
+});
 </script>
 </html>
+
+
