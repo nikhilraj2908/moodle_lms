@@ -35,6 +35,92 @@ $reset = optional_param('reset', null, PARAM_BOOL);
 
 require_login();
 
+
+
+
+// In your index.php file, replace the search section with this:
+
+// Search functionality
+// Search functionality
+$searchquery = optional_param('search', '', PARAM_TEXT);
+
+// Handle AJAX search requests
+if (!empty($searchquery) && !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+    strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    
+    // Start output buffering
+    ob_start();
+    
+    try {
+        $searchsql = "
+            SELECT 
+                c.id AS course_id,
+                c.fullname AS course_name,
+                c.shortname AS course_shortname
+            FROM {course} c
+            JOIN {enrol} e ON c.id = e.courseid
+            JOIN {user_enrolments} ue ON e.id = ue.enrolid
+            WHERE (
+                " . $DB->sql_like('LOWER(c.fullname)', ':query1', false) . " OR 
+                " . $DB->sql_like('LOWER(c.shortname)', ':query2', false) . "
+            )
+            AND c.visible = 1
+            AND ue.userid = :userid
+            ORDER BY c.fullname ASC
+            LIMIT 10
+        ";
+        
+        $searchterm = strtolower($searchquery);
+        $params = [
+            'query1' => '%' . $DB->sql_like_escape($searchterm) . '%',
+            'query2' => '%' . $DB->sql_like_escape($searchterm) . '%',
+            'userid' => $USER->id
+        ];
+        
+        $searchresults = $DB->get_records_sql($searchsql, $params);
+        
+        $formattedsearchresults = [];
+        foreach ($searchresults as $course) {
+            $formattedsearchresults[] = [
+                'courseid' => $course->course_id,
+                'coursename' => $course->course_name,
+                'courseshortname' => $course->course_shortname,
+                'courseurl' => (new moodle_url('/course/view.php', ['id' => $course->course_id]))->out()
+            ];
+        }
+        
+        // Clear any previous output
+        ob_clean();
+        
+        // Set proper headers
+        header('Content-Type: application/json; charset=utf-8');
+        
+        echo json_encode([
+            'success' => true,
+            'searchResults' => $formattedsearchresults,
+            'searchQuery' => $searchquery
+        ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        
+        exit;
+        
+    } catch (Exception $e) {
+        // Clean any output
+        ob_clean();
+        
+        // Return proper JSON error
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'success' => false,
+            'error' => "An error occurred while searching. Please try again."
+        ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+        
+        exit;
+    }
+}
+
+
+
+
 $hassiteconfig = has_capability('moodle/site:config', context_system::instance());
 if ($hassiteconfig && moodle_needs_upgrading()) {
     redirect(new moodle_url('/admin/index.php'));
@@ -135,8 +221,9 @@ $templatecontext = [
     'previousWeekTotal' => 0,
     'courses' => [],
     'recentCourse' => null,
-    'enrolledCourses' => [] // Initialize enrolledCourses to an empty array
-];
+   // Initialize enrolledCourses to an empty array
+   
+]; 
 
 if (isloggedin() && !isguestuser()) {
     global $DB, $USER, $OUTPUT, $CFG;
@@ -212,7 +299,9 @@ foreach ($enrolledCourses as $course) {
 
 // Add enrolled courses data to the template context.
 $templatecontext['enrolledCourses'] = $enrolledCoursesData;
-
+// Later in your template context setup:
+$templatecontext['searchQuery'] = $searchquery;
+$templatecontext['searchResults'] = $formattedsearchresults ?? [];
 
     // Query to fetch the most recent course accessed by the user
    // Define the default image URL (if not already defined).

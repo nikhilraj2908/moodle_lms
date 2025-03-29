@@ -296,23 +296,140 @@
     text-decoration: underline;
     font-size: 14px;
 }
+#search-results-container {
+            position: relative;
+            z-index: 1000;
+        }
+        
+        #course-results {
+            position: absolute;
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 1001;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 0 0 5px 5px;
+        }
+        
+        #course-results a {
+            color: #333;
+            text-decoration: none;
+        }
+        
+        #course-results a:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .search-course-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-course-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+        
+        .search-course-info {
+            flex-grow: 1;
+        }
+        
+        .search-course-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .search-course-summary {
+            font-size: 12px;
+            color: #666;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .course-search-container {
+    position: relative;
+    margin-bottom: 20px;
+}
 
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 1000;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.course-thumbnail {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+
+.course-info h5 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+}
+
+.course-info p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.no-results {
+    padding: 10px;
+    color: #666;
+    text-align: center;
+}
     </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <body>
-    <div class="bg-light">
-<div class="dashboard-header justify-content-between">
-    <div class="d-flex align-items-center">
-        {{{userpicture}}}
-        <span class="ms-2">Hey! {{username}}</span>
+    <div class="bg-light"><div class="dashboard-header justify-content-between">
+            <div class="d-flex align-items-center">
+                {{{userpicture}}}
+                <span class="ms-2">Hey! {{username}}</span>
+            </div>
+            <div class="course-search-container">
+                <input type="text" id="course-search-input" placeholder="Search courses..." 
+                    value="{{searchQuery}}" class="form-control">
+                <div id="search-results-container" class="search-results"></div>
+            </div>
     </div>
-    <div style="position: relative; max-width: 300px;">
-        <input type="text" id="course-search" class="form-control" placeholder="Search courses...">
-        <div id="course-results" class="list-group position-absolute w-100" style="z-index: 999;"></div>
-    </div>
-</div>
 
 
 
@@ -321,8 +438,7 @@
             <!-- First Row: User Stats, Course Enrolled, Learning Path -->
             <div class="mb-4">
     <!-- Row Header: "Continue Learning" on the left, "View All" on the right -->
-    
-
+ 
     <!-- Three Boxes -->
     <div class="d-flex justify-content-between mt-3">
         <!-- 1) Most Recent Course -->
@@ -448,8 +564,127 @@
 </div>
         </div>
     </div>
+    
 </body>
 <script>document.addEventListener("DOMContentLoaded", function () {
+   // Define default image URL
+    const searchInput = document.getElementById('course-search-input');
+    const searchResultsContainer = document.getElementById('search-results-container');
+    
+    if (searchInput && searchResultsContainer) {
+        searchInput.addEventListener('input', debounce(function(e) {
+            const query = e.target.value.trim();
+            
+            if (query.length >= 2) {
+                fetchSearchResults(query);
+            } else {
+                clearSearchResults();
+            }
+        }, 300));
+        
+        // Close results when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!searchResultsContainer.contains(e.target) && e.target !== searchInput) {
+                clearSearchResults();
+            }
+        });
+    }
+    
+    // Debounce function to limit API calls
+    function debounce(func, wait) {
+        let timeout;
+        return function() {
+            const context = this, args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(context, args), wait);
+        };
+    }
+    
+    function fetchSearchResults(query) {
+        // Show loading indicator
+        searchResultsContainer.innerHTML = '<div class="text-center p-2">Searching...</div>';
+        searchResultsContainer.style.display = 'block';
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: 'search=' + encodeURIComponent(query)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                displaySearchResults(data.searchResults);
+            } else {
+                displayError(data?.error || 'No results found');
+            }
+        })
+        .catch(error => {
+            console.error('Search error:', error);
+            displayError('Failed to complete search. Please try again.');
+        });
+    }
+    
+    function displaySearchResults(results) {
+        if (!searchResultsContainer) return;
+        
+        searchResultsContainer.innerHTML = '';
+        
+        if (!results || results.length === 0) {
+            searchResultsContainer.innerHTML = '<div class="no-results p-2">No courses found</div>';
+            return;
+        }
+        
+        results.forEach(course => {
+            const courseElement = document.createElement('div');
+            courseElement.className = 'search-result-item';
+            courseElement.innerHTML = `
+                <a href="${escapeHtml(course.courseurl)}" class="d-block p-2 text-decoration-none">
+                    <div class="course-info">
+                        <h5 class="text-dark mb-1">${escapeHtml(course.coursename)}</h5>
+                        <small class="text-muted">${escapeHtml(course.courseshortname)}</small>
+                    </div>
+                </a>
+            `;
+            searchResultsContainer.appendChild(courseElement);
+        });
+        
+        searchResultsContainer.style.display = 'block';
+    }
+    
+    function displayError(message) {
+        if (!searchResultsContainer) return;
+        searchResultsContainer.innerHTML = `<div class="alert alert-danger p-2">${escapeHtml(message)}</div>`;
+        searchResultsContainer.style.display = 'block';
+    }
+    
+    function clearSearchResults() {
+        if (searchResultsContainer) {
+            searchResultsContainer.innerHTML = '';
+            searchResultsContainer.style.display = 'none';
+        }
+    }
+    
+    // Helper function to escape HTML
+    function escapeHtml(unsafe) {
+        if (!unsafe) return '';
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+
+
      const courseItems = document.querySelectorAll("#course-carousel .course-item");
     const carouselContainer = document.getElementById("course-carousel");
     let currentIndex = 0;
@@ -583,44 +818,6 @@
 
 document.getElementById("learningPathText").innerText = "{{learningPathPercentage}}% completed";
 
-
-
-document.getElementById('course-search').addEventListener('input', function () {
-    const query = this.value.trim();
-    const resultsDiv = document.getElementById('course-results');
-    resultsDiv.innerHTML = '';
-
-    if (query.length < 2) return;
-
-    fetch(`/lib/ajax/service.php`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify([{
-            methodname: 'core_course_search_courses',
-            args: { criterianame: 'search', criteriavalue: query }
-        }])
-    })
-    .then(res => res.json())
-    .then(data => {
-        const courses = data[0].data.courses;
-        if (courses.length === 0) {
-            resultsDiv.innerHTML = '<div class="list-group-item">No courses found</div>';
-            return;
-        }
-
-        courses.forEach(course => {
-            const item = document.createElement('a');
-            item.className = 'list-group-item list-group-item-action';
-            item.href = `/course/view.php?id=${course.id}`;
-            item.textContent = course.fullname;
-            resultsDiv.appendChild(item);
-        });
-    })
-    .catch(err => {
-        console.error('Search error:', err);
-        resultsDiv.innerHTML = '<div class="list-group-item text-danger">Error searching courses</div>';
-    });
-});
 </script>
 </html>
 
