@@ -22,7 +22,14 @@
     }
 
 }}
-<div class="tool_courserating-widget pt-2 pt-0 {{extraclasses}}">
+<style>
+
+.tool_courserating-widget{
+
+    z-index:1000
+}
+</style>
+<div class="tool_courserating-widget  pt-0 {{extraclasses}}">
     <div data-for="tool_courserating-cfield-wrapper" data-courseid="{{courseid}}" class="rating-summary">
         {{>tool_courserating/summary_for_cfield}}
     </div>
@@ -40,16 +47,38 @@
     {{/canrate}}
 </div>
 {{#parentelement}}
-    {{#js}}
-        /* Move the widget to the header area */
-        const widget = document.querySelector(".tool_courserating-widget");
-        const parents = "{{parentelement}}".split(',');
-        for (let i in parents) {
-            const header = document.querySelector(parents[i]);
-            if (header) {
-                header.appendChild(widget);
-                break;
+{{#js}}
+require(['jquery'], function($) {
+    // Wait for DOM and plugin to load
+    $(document).ready(function() {
+        // Initialize rating tool safely
+        if (typeof M !== 'undefined' && M.tool_courserating) {
+            try {
+                M.tool_courserating.init();
+            } catch (e) {
+                console.error('Rating initialization failed:', e);
             }
         }
-    {{/js}}
+
+        // Move rating widget with error handling
+        const moveRatingWidget = function() {
+            const ratingWidget = $(".tool_courserating-widget");
+            const targetLocation = $("#page-header .header-sub-section");
+            
+            if (ratingWidget.length && targetLocation.length) {
+                try {
+                    ratingWidget.detach().prependTo(targetLocation);
+                    console.log('Rating widget moved successfully');
+                } catch (e) {
+                    console.error('Failed to move rating widget:', e);
+                }
+            }
+        };
+
+        // Initial attempt
+        moveRatingWidget();
+
+    });
+});
+{{/js}}
 {{/parentelement}}
