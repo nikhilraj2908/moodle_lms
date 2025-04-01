@@ -10,14 +10,17 @@
             background-color: #f5f5f5;
             font-family: Arial, sans-serif;
         }
-        .dashboard-header {
-            background-color: #204070;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            font-size: 20px;
-        }
+      .dashboard-header {
+    background-color: #204070;
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    align-items: center;
+    font-size: 20px;
+    position: relative; /* 🔥 Required for absolute positioning of child */
+    z-index: 1; /* Ensure it stacks above other content */
+}
+
         .dashboard-header img {
             border-radius: 50%;
             margin-right: 15px;
@@ -296,11 +299,7 @@
     text-decoration: underline;
     font-size: 14px;
 }
-#search-results-container {
-            position: relative;
-            z-index: 1000;
-        }
-        
+
         #course-results {
             position: absolute;
             width: 100%;
@@ -353,28 +352,49 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        .course-search-container {
+   .course-search-container {
     position: relative;
-    margin-bottom: 20px;
+    width: 100%; /* Or set a fixed width like 300px if preferred */
+    max-width: 300px;
 }
 
+#search-results-container {
+    position: absolute;
+    top: 100%; /* just below the input */
+    left: 0;
+    right: 0;
+    background-color: #204070;
+    color: white;
+    z-index: 999;
+    border-radius: 0 0 5px 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    display: none; /* shown dynamically */
+}
+
+.search-result-item {
+    padding: 8px 12px;
+    border-bottom: 1px solid white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover {
+    background-color: #3c6894;
+}
 .search-results {
     position: absolute;
-    top: 100%;
+    top: 100%;  /* below the input box */
     left: 0;
     right: 0;
     background: white;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 1000;
+    z-index: 9999;
     max-height: 400px;
     overflow-y: auto;
-}
-
-.search-result-item {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
 }
 
 .search-result-item:last-child {
@@ -425,9 +445,9 @@
                 <span class="ms-2">Hey! {{username}}</span>
             </div>
             <div class="course-search-container">
-                <input type="text" id="course-search-input" placeholder="Search courses..." 
-                    value="{{searchQuery}}" class="form-control">
+                <input type="text" id="course-search-input" class="form-control" placeholder="Search courses...">
                 <div id="search-results-container" class="search-results"></div>
+                
             </div>
     </div>
 
@@ -632,32 +652,27 @@
         });
     }
     
-    function displaySearchResults(results) {
-        if (!searchResultsContainer) return;
-        
-        searchResultsContainer.innerHTML = '';
-        
-        if (!results || results.length === 0) {
-            searchResultsContainer.innerHTML = '<div class="no-results p-2">No courses found</div>';
-            return;
-        }
-        
-        results.forEach(course => {
-            const courseElement = document.createElement('div');
-            courseElement.className = 'search-result-item';
-            courseElement.innerHTML = `
-                <a href="${escapeHtml(course.courseurl)}" class="d-block p-2 text-decoration-none">
-                    <div class="course-info">
-                        <h5 class="text-dark mb-1">${escapeHtml(course.coursename)}</h5>
-                        <small class="text-muted">${escapeHtml(course.courseshortname)}</small>
-                    </div>
-                </a>
-            `;
-            searchResultsContainer.appendChild(courseElement);
-        });
-        
-        searchResultsContainer.style.display = 'block';
+ function displaySearchResults(results) {
+    const container = document.getElementById('search-results-container');
+    container.innerHTML = '';
+
+    if (!results || results.length === 0) {
+        container.innerHTML = '<div class="search-result-item">No courses found</div>';
+        container.style.display = 'block';
+        return;
     }
+
+    results.forEach(course => {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.textContent = course.coursename;
+        item.onclick = () => window.location.href = course.courseurl;
+        container.appendChild(item);
+    });
+
+    container.style.display = 'block';
+}
+
     
     function displayError(message) {
         if (!searchResultsContainer) return;
