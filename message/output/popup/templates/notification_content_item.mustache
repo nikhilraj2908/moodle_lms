@@ -49,37 +49,110 @@
     }
 
 }}
+
+<style>
+/* General container for notification */
+.content-item-container.notification {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 12px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    margin: 5px 0px;
+    transition: all 0.3s ease;
+    font-family: Arial, sans-serif;
+    position: relative;
+    width: 100%;
+}
+
+
+
+
+
+/* Main notification text */
+
+
+/* Additional information text (e.g., time) */
+.timestamp {
+    font-size: 12px;
+    color: #888;
+    margin-top: 3px;
+}
+
+/* Notification button for "Follow" or any other action */
+.view-more {
+    font-size: 12px;
+    color: #007bff;
+    text-decoration: none;
+    margin-top: 10px;
+    padding: 5px 10px;
+    border-radius: 3px;
+    border: 1px solid #007bff;
+    display: inline-block;
+}
+
+.view-more:hover {
+    background-color: #007bff;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Add 'unread' class for unread notifications */
+.content-item-container.notification.unread {
+    border-left: 4px solid #007bff; /* Blue left border for unread notification */
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .content-item-container.notification {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .notification-image {
+        margin-bottom: 10px;
+    }
+}
+
+</style>
 <div class="content-item-container notification {{^read}}unread{{/read}}"
     data-region="notification-content-item-container"
     data-id="{{id}}"
     role="listitem">
 
     {{#contexturl}}
-    <a class="context-link" href="{{{.}}}" data-action="content-item-link"
+    <!-- Make the entire notification clickable to redirect to the related page -->
+    <a href="{{{contexturl}}}" class="context-link" data-action="content-item-link"
+       aria-label="{{#str}} viewnotification, message, {{subject}} {{/str}}">
     {{/contexturl}}
+
     {{^contexturl}}
-    <div tabindex="0"
+    <div tabindex="0">
     {{/contexturl}}
-        {{#read}}aria-label="{{subject}}"{{/read}}
-        {{^read}}aria-label="{{#str}} unreadnotification, message, {{subject}} {{/str}}"{{/read}}>
 
-        <div class="content-item-body">
-            <div class="notification-image">
-                {{#pix}} e/text_highlight, core, {{#str}} notificationimage, message {{/str}} {{/pix}}
-            </div>
-            <div class="notification-message">{{shortenedsubject}}</div>
+    <div class="content-item-body">
+        <div class="notification-image">
+            {{#pix}} e/text_highlight, core, {{#str}} notificationimage, message {{/str}} {{/pix}}
         </div>
-        <div class="content-item-footer">
-            <div class="timestamp">{{timecreatedpretty}}</div>
-        </div>
+        <div class="notification-message">{{shortenedsubject}}</div>
+    </div>
+    <div class="content-item-footer">
+        <div class="timestamp">{{timecreatedpretty}}</div>
+    </div>
 
-        {{#viewmoreurl}}
-            <a href="{{{.}}}" class="view-more" data-action="view-more">{{#str}} viewfullnotification, message {{/str}}</a>
-        {{/viewmoreurl}}
+    {{#viewmoreurl}}
+        <a href="{{{viewmoreurl}}}" class="view-more" data-action="view-more">{{#str}} viewfullnotification, message {{/str}}</a>
+    {{/viewmoreurl}}
+
     {{#contexturl}}
-    </a>
+    </a> <!-- Close the <a> tag here -->
     {{/contexturl}}
+
     {{^contexturl}}
     </div>
     {{/contexturl}}
+
 </div>
+

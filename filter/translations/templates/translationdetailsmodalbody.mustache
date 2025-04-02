@@ -1,0 +1,22 @@
+{{#staletranslation}}
+    <div class="alert alert-warning">{{#str}}staletranslation, filter_translations{{/str}}</div>
+{{/staletranslation}}
+<dl>
+    <dt>{{#str}}rawtext, filter_translations{{/str}}</dt>
+    <dd>{{{rawtext}}}</dd>
+    <dt>{{#str}}generatedhash, filter_translations{{/str}}</dt>
+    <dd>{{generatedhash}}</dd>
+    <dt>{{#str}}foundhash, filter_translations{{/str}}</dt>
+    <dd>{{#foundhash}}{{foundhash}}{{/foundhash}}{{^foundhash}}{{#str}}nohash, filter_translations{{/str}}{{/foundhash}}</dd>
+    <dt>{{#str}}translationid, filter_translations{{/str}}</dt>
+    <dd>{{#translationid}}{{translationid}}{{/translationid}}{{^translationid}}{{#str}}notranslation, filter_translations{{/str}}{{/translationid}}</dd>
+</dl>
+<form action="{{globals.config.wwwroot}}/filter/translations/edittranslation.php" method="post">
+    <input type="hidden" name="rawtext" value="{{rawtext}}">
+    <input type="hidden" name="generatedhash" value="{{{generatedhash}}}">
+    <input type="hidden" name="foundhash" value="{{{foundhash}}}">
+    <input type="hidden" name="id" value="{{{translationid}}}">
+    <input type="hidden" name="returnurl" value="{{{returnurl}}}">
+    <input type="hidden" name="contextid" value="{{{contextid}}}">
+    <button type="submit" class="btn btn-primary">{{#str}}edittranslationsbutton, filter_translations{{/str}}</button>
+</form>
