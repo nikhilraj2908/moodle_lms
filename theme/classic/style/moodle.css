@@ -27503,7 +27503,7 @@ aside[id^=block-region-side-] .block_recentlyaccesseditems .card:nth-of-type(n+4
 }
 
 #region-main .maincalendar .calendarwrapper td > div {
-  height: 11.5em;
+  /* height: 11.5em; */
   overflow: hidden;
 }
 

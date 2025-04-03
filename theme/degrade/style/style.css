@@ -9589,7 +9589,7 @@ body.limitedwidth.pagelayout-frontpage #page.drawers .main-inner #page-content {
 }
 @media (min-width: 768px) {
     #region-main .maincalendar .calendarwrapper td > div {
-        line-height: 11.5em;
+        /* line-height: 11.5em; */
     }
 }
 @media (min-width: 576px) and (max-width: 767px) {
