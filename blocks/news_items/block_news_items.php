@@ -147,7 +147,7 @@ $text="";
     justify-content: space-around;
     margin:20px
 }
-
+ 
 /* Left block (calendar) */
 .block_calendar_month {
     flex: 1 1 48%;
