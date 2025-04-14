@@ -1,0 +1,38 @@
+div.item-detail-image {
+    padding: 10px;
+    display: inline-block;
+    border: 1px solid #E3DFD4;
+
+    -webkit-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.21);
+    -moz-box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.21);
+    box-shadow: 0px 0px 5px rgba(50, 50, 50, 0.21);
+}
+div.item-detail-image img {
+    max-width: 800px;
+    max-height: 600px;
+}
+
+.generaltable .exaport-shared-list {
+    font-size: 0.75em;
+}
+
+.generaltable .exaport-shared-list li {
+    list-style: none;
+}
+
+.exaport-icon.exaport-remove-icon {
+    color: red;
+    opacity: 0.5;
+}
+.exaport-icon.exaport-remove-icon:hover {
+    opacity: 1;
+}
+
+.exaport-icon.exaport-items-category-big,
+.exaport-icon.exaport-items-category-middle {
+    color: #7a7a7a;
+}
+
+.exaport-icon.exaport-export-import-scorm-icon {
+    opacity: 0.75;
+}

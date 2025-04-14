@@ -29,7 +29,7 @@
     z-index:1000
 }
 </style>
-<div class="tool_courserating-widget  pt-0 {{extraclasses}}">
+<div class="tool_courserating-widget  pt-5 {{extraclasses}}">
     <div data-for="tool_courserating-cfield-wrapper" data-courseid="{{courseid}}" class="rating-summary">
         {{>tool_courserating/summary_for_cfield}}
     </div>
@@ -63,7 +63,7 @@ require(['jquery'], function($) {
         // Move rating widget with error handling
         const moveRatingWidget = function() {
             const ratingWidget = $(".tool_courserating-widget");
-            const targetLocation = $("#page-header .header-sub-section");
+            const targ   etLocation = $("#page-header .header-sub-section");
             
             if (ratingWidget.length && targetLocation.length) {
                 try {

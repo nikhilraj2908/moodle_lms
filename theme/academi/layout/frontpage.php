@@ -161,6 +161,12 @@ if (isloggedin() && !isguestuser()) {
     
     $templatecontext['alert_gif'] = $OUTPUT->image_url('alert', 'theme_academi')->out(false);
 
+    $templatecontext['1'] = $OUTPUT->image_url('1', 'theme_academi')->out(false);
+    $templatecontext['2'] = $OUTPUT->image_url('2', 'theme_academi')->out(false);
+    $templatecontext['3'] = $OUTPUT->image_url('3', 'theme_academi')->out(false);
+    $templatecontext['4'] = $OUTPUT->image_url('4', 'theme_academi')->out(false);
+    $templatecontext['5'] = $OUTPUT->image_url('5', 'theme_academi')->out(false);
+
 
     $is_admin = is_siteadmin($USER->id);
     $showpopup = false;

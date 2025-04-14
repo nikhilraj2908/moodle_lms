@@ -78,9 +78,41 @@
   100% { background-position: 50px 50px; }
 }
 
+#lms-train-wrapper {
+  overflow: hidden;
+  white-space: nowrap;
+  width: 100%;
+  background: #f5f5f5;
 
+  border-top: 2px dashed #ccc;
+  border-bottom: 2px dashed #ccc;
+  text-align: center;
+}
+.lms-train {
+        transition: transform 0.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
 
+    body.train-scroll-lock {
+        overflow: hidden;
+    }
 
+    #train-section {
+        height: 400px;
+        position: relative;
+    }
+
+    #lms-train-wrapper {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 100%;
+    }
+
+    .train-part {
+        width: 400px;
+        margin: 0 20px;
+        transition: transform 0.3s ease;
+    }
 
 </style>
 {{> theme_boost/head }}
@@ -179,6 +211,23 @@
 <div class="sun3"></div>
 
                       </div>
+
+
+
+              <div id="train-section" style="height: 400px;">
+  <div id="lms-train-wrapper">
+    <div class="lms-train" id="lmsTrain">
+      <img src={{1}} alt="Courses" class="train-part">
+      <img src={{2}} alt="Assessments" class="train-part">
+      <img src={{3}} alt="Skills" class="train-part">
+      <img src={{4}} alt="Certification" class="train-part">
+      <img src={{5}} alt="Growth" class="train-part">
+    </div>
+  </div>
+</div>
+
+
+
 <div class="custom-courses-container bg-courses-section">
                         <div class="custom-courses-container">
                             <h2 class="d-flex justify-content-center" ><span class="icon-mycourse">📚</span> <span class="custom-section-title ps-3 ">  My Courses</span> </h2>
@@ -260,12 +309,11 @@
 
 
 </body>
+
 <script>
- function closePopup() {
+function closePopup() {
     let popup = document.getElementById("customPopup");
     popup.style.animation = "fadeOut 0.5s ease-out forwards";
-    
-    // Wait for animation to complete before hiding the popup
     setTimeout(() => {
         popup.style.display = "none";
     }, 500);
@@ -275,98 +323,152 @@ function redirectToCreateCourse() {
     window.location.href = window.location.origin + "/moodle/course/edit.php";
 }
 
-
-
 document.addEventListener("DOMContentLoaded", function () {
-    var showPopup = {{showpopup}}; // If using Mustache
-    if (showPopup) {
-        let popup = document.getElementById("customPopup");
-        popup.style.display = "flex"; // Show the popup
+    const train = document.getElementById('lmsTrain');
+    const trainSection = document.getElementById('train-section');
+    const body = document.body;
+
+    if (!train || !trainSection) return;
+
+    let isAnimating = false;
+    let trainOffset = 0;
+    let maxOffset = 0;
+    let totalWidth = 0;
+    let visibleWidth = 0;
+
+    function calculateDimensions() {
+        totalWidth = train.scrollWidth;
+        visibleWidth = trainSection.offsetWidth;
+        maxOffset = visibleWidth - totalWidth;
     }
-});
 
+    function lockScroll() {
+        body.classList.add('train-scroll-lock');
+    }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        function createGaugeChart(canvasId, textId, value) {
-            let canvas = document.getElementById(canvasId);
-            if (!canvas) return; // Prevent errors if element doesn't exist
-            
-            let progressValue = parseFloat(canvas.getAttribute('data-progress')) || 0; // Read value from data-progress
-            
-            let ctx = canvas.getContext('2d');
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Completed', 'Remaining'],
-                    datasets: [{
-                        data: [progressValue, 100 - progressValue],
-                        backgroundColor: ['green', 'lightgray']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '70%',
-                    plugins: {
-                        legend: { display: false }
-                    }
-                }
-            });
+    function unlockScroll() {
+        body.classList.remove('train-scroll-lock');
+    }
 
-            document.getElementById(textId).innerText = progressValue.toFixed(2) + "%";
-        }
+    function updateTrainPosition(offset) {
+        train.style.transform = `translateX(${offset}px)`;
+    }
 
-        // Call function for Learning Path & Curriculum only (not for Points)
-        createGaugeChart('learningPathChart', 'learningPathText');
-        createGaugeChart('curriculumChart', 'curriculumText');
+    function initializeTrain() {
+        calculateDimensions();
+        trainOffset = 0;
+        updateTrainPosition(trainOffset);
+        lockScroll();
+    }
+
+    initializeTrain();
+
+    window.addEventListener('resize', () => {
+        calculateDimensions();
+        trainOffset = Math.max(maxOffset, Math.min(0, trainOffset));
+        updateTrainPosition(trainOffset);
     });
 
-document.addEventListener("DOMContentLoaded", function () {
+    window.addEventListener('wheel', function (e) {
+        if (isAnimating) return;
+
+        const delta = Math.sign(e.deltaY);
+        const atStart = trainOffset >= 0;
+        const atEnd = trainOffset <= maxOffset;
+
+        if ((delta === 1 && !atEnd) || (delta === -1 && !atStart)) {
+            e.preventDefault();
+            lockScroll();
+        } else {
+            unlockScroll();
+            return;
+        }
+
+        isAnimating = true;
+
+        let newOffset = trainOffset - (delta * 100); // invert for natural scroll
+        newOffset = Math.max(maxOffset, Math.min(0, newOffset));
+
+        if (newOffset !== trainOffset) {
+            trainOffset = newOffset;
+            updateTrainPosition(trainOffset);
+
+            setTimeout(() => {
+                isAnimating = false;
+
+                if (trainOffset === maxOffset || trainOffset === 0) {
+                    unlockScroll();
+                }
+            }, 400);
+        }
+    }, { passive: false });
+
+    // Touch Events for Mobile
+    let touchStartX = 0;
+    let isTouching = false;
+
+    trainSection.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].clientX;
+        isTouching = true;
+    });
+
+    trainSection.addEventListener('touchmove', (e) => {
+        if (!isTouching) return;
+
+        const currentX = e.touches[0].clientX;
+        const deltaX = touchStartX - currentX;
+        touchStartX = currentX;
+
+        const newOffset = Math.max(maxOffset, Math.min(0, trainOffset - deltaX));
+        trainOffset = newOffset;
+        updateTrainPosition(trainOffset);
+
+        if (trainOffset > maxOffset && trainOffset < 0) {
+            e.preventDefault();
+            lockScroll();
+        }
+    });
+
+    trainSection.addEventListener('touchend', () => {
+        isTouching = false;
+
+        if (trainOffset === maxOffset || trainOffset === 0) {
+            unlockScroll();
+        }
+    });
+
+    // Popup
+    const showPopup = {{showpopup}};
+    if (showPopup) {
+        const popup = document.getElementById("customPopup");
+        if (popup) popup.style.display = "flex";
+    }
+
+    // Load More Courses
     const courses = document.querySelectorAll(".custom-course-card");
     const loadMoreBtn = document.getElementById("loadMoreBtn");
+    let visibleCourses = 4;
 
-    let visibleCourses = 4; // Initially show only 4 courses
-
-    // Hide all courses except the first 4
     courses.forEach((course, index) => {
-        if (index >= visibleCourses) {
-            course.style.display = "none";
-        }
+        if (index >= visibleCourses) course.style.display = "none";
     });
 
-    // Load More Button Click Event
-    loadMoreBtn.addEventListener("click", function () {
-        if (loadMoreBtn.innerText === "Load More") {
-            let nextCourses = visibleCourses + 4;
-
+    loadMoreBtn?.addEventListener('click', function () {
+        if (this.innerText === "Load More") {
+            visibleCourses += 4;
             courses.forEach((course, index) => {
-                if (index < nextCourses) {
-                    course.style.display = "flex";
-                }
+                if (index < visibleCourses) course.style.display = "flex";
             });
-
-            visibleCourses = nextCourses;
-
-            // If all courses are visible, change button text to "See Less"
-            if (visibleCourses >= courses.length) {
-                loadMoreBtn.innerText = "See Less";
-            }
+            if (visibleCourses >= courses.length) this.innerText = "See Less";
         } else {
-            // Reset to show only the first 4 courses
             visibleCourses = 4;
-
             courses.forEach((course, index) => {
-                if (index >= visibleCourses) {
-                    course.style.display = "none";
-                }
+                if (index >= visibleCourses) course.style.display = "none";
             });
-
-            loadMoreBtn.innerText = "Load More";
+            this.innerText = "Load More";
         }
     });
 });
-
-
 </script>
 
 
